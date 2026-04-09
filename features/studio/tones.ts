@@ -1,0 +1,46 @@
+// Curated tone presets — single-select in the guided form. Picked to give
+// Claude strong stylistic anchors without overwhelming users with choices.
+
+export interface TonePreset {
+  id: string;
+  label: string;
+  hint: string; // passed to Claude verbatim
+}
+
+export const TONE_PRESETS: TonePreset[] = [
+  {
+    id: 'minimal',
+    label: 'Minimal & confident',
+    hint: 'Restrained typography, short copy, lots of whitespace. Swiss/editorial influence.',
+  },
+  {
+    id: 'editorial',
+    label: 'Editorial & elegant',
+    hint: 'Fashion-magazine aesthetic. Serif headlines, considered pacing, cultured voice.',
+  },
+  {
+    id: 'playful',
+    label: 'Playful & warm',
+    hint: 'Friendly, approachable, a little cheeky. Conversational copy, inviting.',
+  },
+  {
+    id: 'technical',
+    label: 'Technical & precise',
+    hint: 'Direct, specific, engineer-to-engineer. No marketing fluff. Facts and specs.',
+  },
+  {
+    id: 'luxurious',
+    label: 'Luxurious',
+    hint: 'High-end, aspirational, understated prestige. Less is more.',
+  },
+  {
+    id: 'bold',
+    label: 'Bold & loud',
+    hint: 'Confident, opinionated, declarative. Strong stance, short statements.',
+  },
+];
+
+export function getToneById(id: string | null): TonePreset | undefined {
+  if (!id) return undefined;
+  return TONE_PRESETS.find((t) => t.id === id);
+}

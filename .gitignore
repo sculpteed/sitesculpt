@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.cache/
+*.log
+.env
+.env.local
+.env.*.local
+.DS_Store
+next-env.d.ts
+dist/
+out/
+tsconfig.tsbuildinfo
+test-results/
+public/logo*.png
+public/homepage-bg*
