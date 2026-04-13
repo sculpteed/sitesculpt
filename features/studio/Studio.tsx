@@ -452,9 +452,8 @@ export function Studio() {
       {/* ─── Body — funnel step router ────────────────────────────────── */}
 
       {/* Steps 4+5: Full-width preview with floating editor panel */}
-      {(funnelStep === 'copy-review' || funnelStep === 'preview') ? (
+      {(funnelStep === 'copy-review' || funnelStep === 'preview') && (
         <div className="relative" style={{ height: 'calc(100vh - 110px)' }}>
-          {/* Full-bleed preview */}
           {projectId && site ? (
             <iframe
               key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
@@ -469,8 +468,6 @@ export function Studio() {
               <div className="text-[11px] text-warm-subtle">Writing copy and structuring sections</div>
             </div>
           )}
-
-          {/* Floating editor panel — slides in from right */}
           <div className="absolute right-0 top-0 z-20 flex h-full w-[380px] flex-col border-l border-[var(--color-border)] bg-[rgba(13,10,8,0.95)] backdrop-blur-xl">
             <SidebarTabs
               funnelStep={funnelStep}
@@ -484,9 +481,10 @@ export function Studio() {
             />
           </div>
         </div>
-      ) : (
+      )}
 
-      <div className="grid grid-cols-1 gap-5 p-5 sm:gap-6 sm:p-6 lg:grid-cols-[1fr_340px]">
+      {funnelStep !== 'copy-review' && funnelStep !== 'preview' ? (
+        <div className="grid grid-cols-1 gap-5 p-5 sm:gap-6 sm:p-6 lg:grid-cols-[1fr_340px]">
         {/* ── Left: Main content area ── */}
         <section className="relative flex min-h-[72vh] flex-col overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.012)]">
           {funnelStep === 'brief' ? (
@@ -623,8 +621,10 @@ export function Studio() {
           funnelBusy={funnelBusy}
         />
       </div>
-      )}
+      ) : null}
     </main>
+
+
   );
 }
 
