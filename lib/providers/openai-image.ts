@@ -30,19 +30,40 @@ export async function generateKeyframeImage(args: {
   aspect: Aspect;
 }): Promise<Buffer> {
   const c = getClient();
-  // NOTE: gpt-image-1.x returns b64_json by default (no response_format param).
-  // Medium quality saves ~$0.125/gen vs high and is visually nearly identical
-  // for hero backgrounds. If the model ID needs changing, bump
-  // OPENAI_IMAGE_MODEL in .env.local.
-  const response = await c.images.generate({
-    model: env().OPENAI_IMAGE_MODEL,
-    prompt: args.prompt,
-    n: 1,
-    size: sizeForAspect(args.aspect),
-    quality: 'medium',
-  });
 
-  const b64 = response.data?.[0]?.b64_json;
-  if (!b64) throw new Error('OpenAI image API returned no b64_json');
-  return Buffer.from(b64, 'base64');
+  // Wrap the prompt with a safe-for-work preamble to reduce moderation blocks.
+  // OpenAI's safety filter can be aggressive with cinematic/atmospheric prompts.
+  const safePrompt = `Professional website hero image, commercial photography style. ${args.prompt}. Clean, brand-safe, suitable for a corporate website.`;
+
+  try {
+    const response = await c.images.generate({
+      model: env().OPENAI_IMAGE_MODEL,
+      prompt: safePrompt,
+      n: 1,
+      size: sizeForAspect(args.aspect),
+      quality: 'medium',
+    });
+
+    const b64 = response.data?.[0]?.b64_json;
+    if (!b64) throw new Error('OpenAI image API returned no b64_json');
+    return Buffer.from(b64, 'base64');
+  } catch (err: unknown) {
+    // If moderation blocked, retry with a minimal safe prompt
+    const error = err as { code?: string; message?: string };
+    if (error.code === 'moderation_blocked') {
+      console.warn('[openai-image] moderation blocked, retrying with simplified prompt');
+      const fallback = `Professional website hero background image. Abstract, elegant, modern design. Brand-safe commercial photography. Color palette suggestion: atmospheric and sophisticated.`;
+      const response = await c.images.generate({
+        model: env().OPENAI_IMAGE_MODEL,
+        prompt: fallback,
+        n: 1,
+        size: sizeForAspect(args.aspect),
+        quality: 'medium',
+      });
+      const b64 = response.data?.[0]?.b64_json;
+      if (!b64) throw new Error('OpenAI image API returned no b64_json');
+      return Buffer.from(b64, 'base64');
+    }
+    throw err;
+  }
 }
