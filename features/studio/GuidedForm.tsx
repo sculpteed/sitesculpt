@@ -6,6 +6,7 @@ import { Sparkles } from 'lucide-react';
 import { useStudioStore } from './store';
 import { PAGE_PRESETS } from './pages';
 import { TONE_PRESETS } from './tones';
+import { TEMPLATES } from './templates';
 import { compilePrompt } from './compilePrompt';
 import { DataPanels } from './DataPanels';
 import type { Aspect } from '@/features/pipeline/types';
@@ -47,6 +48,7 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
   const setCustomPalette = useStudioStore((s) => s.setCustomPalette);
   const togglePage = useStudioStore((s) => s.togglePage);
   const setAttachedMedia = useStudioStore((s) => s.setAttachedMedia);
+  const applyTemplate = useStudioStore((s) => s.applyTemplate);
 
   const [error, setError] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -93,6 +95,27 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
       onSubmit={handleSubmit}
       className="w-full max-w-2xl space-y-5 rounded-2xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.015)] p-5 backdrop-blur-md sm:p-6"
     >
+      {/* Quick-fill from template */}
+      {!description && (
+        <div>
+          <div className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-warm-subtle">
+            Quick start
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {TEMPLATES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => applyTemplate(t)}
+                className="rounded-full border border-[var(--color-border)] px-2.5 py-1 text-[11px] text-warm-muted transition hover:border-[var(--color-accent)] hover:text-warm"
+              >
+                {t.title}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Brand + describe */}
       <div className="space-y-4">
         <Field label="Brand name" optional>

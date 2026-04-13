@@ -10,6 +10,7 @@ import type {
   Progress,
 } from '@/features/pipeline/types';
 import { emptyUserData, type UserData } from './userData';
+import type { Template } from './templates';
 
 export type PipelineState = 'idle' | 'running' | 'done' | 'error';
 
@@ -121,6 +122,7 @@ export interface StudioState {
   setHeroOverride: (patch: Partial<SiteStructure['hero']>) => void;
   setBrandOverride: (value: string | null) => void;
   setSectionOverride: (index: number, patch: Partial<SiteSection>) => void;
+  applyTemplate: (t: Template) => void;
   clearEdits: () => void;
   reset: () => void;
 }
@@ -220,6 +222,15 @@ export const useStudioStore = create<StudioState>((set) => ({
         [index]: { ...(prev.sectionOverrides[index] ?? {}), ...patch },
       },
     })),
+  applyTemplate: (t) =>
+    set({
+      brandName: t.brandName,
+      description: t.description,
+      toneId: t.toneId,
+      includedPages: t.pages,
+      paletteMode: 'ai',
+      funnelStep: 'brief',
+    }),
   clearEdits: () =>
     set({
       heroOverride: {},

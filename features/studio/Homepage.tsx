@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useStudioStore } from './store';
+import { TEMPLATES, type Template } from './templates';
 import {
   SmoothScroll,
   FadeIn,
@@ -9,22 +10,15 @@ import {
   StaggerChild,
   ScaleOnHover,
   PageTransition,
-  ParallaxScroll,
-  TextReveal,
   GlowPulse,
 } from '@/components/motion';
 
-/**
- * Homepage — editorial / premium aesthetic with a looping Sora-generated
- * drone-style hero video. Palette is warm (cream on warm near-black) to
- * harmonize with the golden-hour footage rather than fight it with cold black.
- */
 export function Homepage() {
   const router = useRouter();
-  const setDescription = useStudioStore((s) => s.setDescription);
+  const applyTemplate = useStudioStore((s) => s.applyTemplate);
 
-  const handleChipClick = (text: string): void => {
-    setDescription(text);
+  const handleTemplateClick = (t: Template): void => {
+    applyTemplate(t);
     router.push('/studio');
   };
 
@@ -36,7 +30,7 @@ export function Homepage() {
     <SmoothScroll>
     <PageTransition>
     <main className="relative min-h-screen overflow-hidden">
-      {/* Background: looping Sora-generated footage, subtle warm overlay */}
+      {/* Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-warm">
         <video
           className="bg-video"
@@ -48,7 +42,6 @@ export function Homepage() {
           preload="auto"
           aria-hidden="true"
         />
-        {/* Gentle atmospheric darken — minimal, preserves footage crispness */}
         <div
           className="absolute inset-0"
           style={{
@@ -56,7 +49,6 @@ export function Homepage() {
               'linear-gradient(to bottom, rgba(13,10,8,0.08) 0%, rgba(13,10,8,0.18) 55%, rgba(13,10,8,0.32) 100%)',
           }}
         />
-        {/* Very light grain — film-like, not noise */}
         <div className="grain absolute inset-0 opacity-[0.08]" />
       </div>
 
@@ -67,11 +59,11 @@ export function Homepage() {
           <span className="text-sm font-medium tracking-tight text-warm">sitesculpt</span>
         </div>
         <div className="flex items-center gap-4 text-[12px] text-warm-muted sm:gap-7 sm:text-[13px]">
+          <a href="#templates" className="hidden transition hover:text-warm sm:inline">
+            Templates
+          </a>
           <a href="#pipeline" className="hidden transition hover:text-warm sm:inline">
             Pipeline
-          </a>
-          <a href="#principles" className="hidden transition hover:text-warm sm:inline">
-            Principles
           </a>
           <a
             href="/get-started"
@@ -83,9 +75,9 @@ export function Homepage() {
       </nav>
 
       {/* Hero */}
-      <section className="relative z-20 mx-auto flex min-h-[82vh] max-w-4xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
+      <section className="relative z-20 mx-auto flex min-h-[72vh] max-w-4xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
         <FadeIn delay={0.2} y={30}>
-          <h1 className="mb-10 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] text-warm sm:mb-12 sm:text-[88px] sm:leading-[0.92] md:text-[128px]">
+          <h1 className="mb-6 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] text-warm sm:mb-8 sm:text-[88px] sm:leading-[0.92] md:text-[128px]">
             Start{' '}
             <em className="italic" style={{ color: '#f5d9a8' }}>
               sculpting.
@@ -93,8 +85,14 @@ export function Homepage() {
           </h1>
         </FadeIn>
 
+        <FadeIn delay={0.4} y={20}>
+          <p className="mb-8 max-w-md text-[14px] leading-relaxed text-warm-muted sm:text-[15px]">
+            Describe your business. Get a cinematic, production-ready website in minutes.
+          </p>
+        </FadeIn>
+
         <FadeIn delay={0.5} y={20}>
-          <div className="flex flex-col items-center gap-6">
+          <div className="flex flex-col items-center gap-4">
             <GlowPulse color="#e8b874">
               <ScaleOnHover>
                 <button
@@ -102,39 +100,22 @@ export function Homepage() {
                   className="rounded-full px-7 py-3.5 text-[14px] font-medium text-[#0d0a08] transition"
                   style={{ backgroundColor: '#e8b874' }}
                 >
-                  Start your project →
+                  Start from scratch
                 </button>
               </ScaleOnHover>
             </GlowPulse>
-            <StaggerGroup className="flex flex-wrap justify-center gap-2" stagger={0.05}>
-              {[
-                'Editorial fashion house',
-                'Restrained SaaS landing',
-                'Art gallery portfolio',
-                'AI research lab',
-              ].map((chip) => (
-                <StaggerChild key={chip}>
-                  <ScaleOnHover scale={1.05}>
-                    <button
-                      onClick={() => handleChipClick(chip)}
-                      className="rounded-full border border-[rgba(243,234,217,0.12)] bg-[rgba(243,234,217,0.025)] px-3 py-1.5 text-[11px] text-warm-muted backdrop-blur transition hover:border-[rgba(243,234,217,0.25)] hover:text-warm"
-                    >
-                      {chip}
-                    </button>
-                  </ScaleOnHover>
-                </StaggerChild>
-              ))}
-            </StaggerGroup>
+            <a
+              href="#templates"
+              className="text-[12px] text-warm-subtle transition hover:text-warm"
+            >
+              or pick a template below
+            </a>
           </div>
         </FadeIn>
       </section>
 
-      {/* Reading surface — everything below the hero sits on warm near-black,
-          with a soft gradient fade that reaches UP into the hero for a smooth
-          handoff from the video to the editorial sections. */}
+      {/* Reading surface */}
       <div className="relative z-10 bg-warm">
-        {/* Fade overlay — long generous gradient reaching up into the hero
-            for a silky handoff from the video to the reading surface. */}
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 -top-80 h-80"
@@ -143,6 +124,49 @@ export function Homepage() {
               'linear-gradient(to bottom, transparent 0%, rgba(13,10,8,0.1) 25%, rgba(13,10,8,0.3) 50%, rgba(13,10,8,0.65) 75%, rgba(13,10,8,0.92) 92%, #0d0a08 100%)',
           }}
         />
+
+        {/* Templates */}
+        <section id="templates" className="relative z-20 mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
+          <FadeIn>
+            <div className="mb-12 flex flex-col items-start gap-3 sm:mb-16">
+              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-warm-subtle sm:text-[11px]">
+                <span className="inline-block h-px w-5 bg-[var(--color-border-strong)] sm:w-6" />
+                <span>Start here</span>
+              </div>
+              <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] text-warm sm:text-5xl md:text-6xl">
+                Pick a{' '}
+                <em className="italic" style={{ color: '#f5d9a8' }}>
+                  template.
+                </em>
+              </h2>
+              <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-warm-muted">
+                Each template pre-fills the brief with smart defaults. You can customize everything before generating.
+              </p>
+            </div>
+          </FadeIn>
+
+          <StaggerGroup
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            stagger={0.06}
+          >
+            {TEMPLATES.map((t) => (
+              <StaggerChild key={t.id}>
+                <TemplateCard template={t} onClick={() => handleTemplateClick(t)} />
+              </StaggerChild>
+            ))}
+          </StaggerGroup>
+
+          <FadeIn delay={0.4}>
+            <div className="mt-10 text-center">
+              <button
+                onClick={handleGetStarted}
+                className="text-[13px] text-warm-muted transition hover:text-warm"
+              >
+                Or describe your own from scratch &rarr;
+              </button>
+            </div>
+          </FadeIn>
+        </section>
 
         {/* Pipeline */}
         <section id="pipeline" className="relative z-20 mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
@@ -170,7 +194,7 @@ export function Homepage() {
             ].map((s) => (
               <StaggerChild key={s.n}>
                 <ScaleOnHover scale={1.01} className="group px-6 py-8 transition hover:bg-[rgba(243,234,217,0.015)]">
-                  <div className="mb-10 text-[11px] font-mono tracking-wider text-warm-subtle">
+                  <div className="mb-10 font-mono text-[11px] tracking-wider text-warm-subtle">
                     {s.n}
                   </div>
                   <div className="mb-2 text-base font-medium text-warm">{s.t}</div>
@@ -235,5 +259,48 @@ export function Homepage() {
     </main>
     </PageTransition>
     </SmoothScroll>
+  );
+}
+
+// ─── Template Card ──────────────────────────────────────────────────────────
+
+function TemplateCard({
+  template,
+  onClick,
+}: {
+  template: Template;
+  onClick: () => void;
+}) {
+  return (
+    <ScaleOnHover scale={1.03}>
+      <button
+        type="button"
+        onClick={onClick}
+        className="group relative flex h-[180px] w-full flex-col justify-end overflow-hidden rounded-xl border border-[rgba(243,234,217,0.08)] p-5 text-left transition-all hover:border-[rgba(243,234,217,0.2)]"
+        style={{
+          background: `linear-gradient(135deg, ${template.gradient[0]}, ${template.gradient[1]})`,
+        }}
+      >
+        {/* Subtle noise overlay */}
+        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'0.5\'/%3E%3C/svg%3E")' }} />
+
+        {/* Category badge */}
+        <div className="absolute right-3 top-3">
+          <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.15em] text-white/60 backdrop-blur-sm">
+            {template.category}
+          </span>
+        </div>
+
+        {/* Text */}
+        <div className="relative">
+          <div className="font-serif text-[20px] leading-tight tracking-[-0.01em] text-white">
+            {template.title}
+          </div>
+          <div className="mt-1 text-[11px] leading-relaxed text-white/50 transition group-hover:text-white/70">
+            {template.subtitle}
+          </div>
+        </div>
+      </button>
+    </ScaleOnHover>
   );
 }
