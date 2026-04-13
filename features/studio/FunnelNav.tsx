@@ -6,7 +6,7 @@ import { StepDot } from '@/components/LoadingStates';
 const STEPS: { id: FunnelStep; label: string; short: string }[] = [
   { id: 'brief', label: 'Brief', short: '01' },
   { id: 'art-direction', label: 'Direction', short: '02' },
-  { id: 'keyframe', label: 'Keyframe', short: '03' },
+  { id: 'keyframe', label: 'Hero', short: '03' },
   { id: 'copy-review', label: 'Copy', short: '04' },
   { id: 'preview', label: 'Preview', short: '05' },
 ];

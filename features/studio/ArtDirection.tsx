@@ -170,7 +170,7 @@ export function ArtDirection({ onContinue, busy = false }: ArtDirectionProps) {
             className="rounded-full px-7 py-3 text-[14px] font-medium text-[#0d0a08] transition disabled:cursor-not-allowed disabled:opacity-25"
             style={{ backgroundColor: '#e8b874' }}
           >
-            {busy ? 'Generating keyframe…' : 'Continue with this direction →'}
+            {busy ? 'Generating hero…' : 'Continue with this direction →'}
           </button>
           {selectedPaletteIdx !== null && selectedConceptIdx !== null ? (
             <span className="text-[11px] text-warm-subtle">

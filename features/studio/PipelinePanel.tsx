@@ -7,7 +7,7 @@ import { Check, Loader2, Circle, AlertCircle } from 'lucide-react';
 const LABELS: Record<StepName, { title: string; hint: string }> = {
   expandPrompt: { title: 'Scene brief', hint: 'Expanding your brief into a scene' },
   composeSite: { title: 'Copy + sections', hint: 'Writing hero copy and structure' },
-  generateImage: { title: 'Keyframe', hint: 'Rendering the cinematic keyframe' },
+  generateImage: { title: 'Hero image', hint: 'Rendering your hero visual' },
   generateVideo: { title: 'Motion', hint: 'Synthesising the motion loop' },
   extractFrames: { title: 'Frames', hint: 'Extracting frames for scroll playback' },
 };

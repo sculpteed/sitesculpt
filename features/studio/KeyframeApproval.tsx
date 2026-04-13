@@ -64,12 +64,12 @@ export function KeyframeApproval({ onApprove, onRegenerate, busy }: KeyframeAppr
                 </div>
               </LoadingRing>
               <div className="flex items-center gap-2 text-[13px] text-warm-muted">
-                <span>Sculpting your keyframe</span>
+                <span>Sculpting your hero image</span>
                 <PulsingDots />
               </div>
               <p className="max-w-xs text-center text-[11px] text-warm-subtle">
-                Generating a high-resolution hero image from your chosen concept. This typically
-                takes 15–30 seconds.
+                Generating your hero visual from the chosen concept. This typically takes
+                15–30 seconds.
               </p>
             </div>
           </div>
@@ -79,7 +79,7 @@ export function KeyframeApproval({ onApprove, onRegenerate, busy }: KeyframeAppr
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`/api/preview/${projectId}/keyframe?t=${Date.now()}`}
-              alt="Generated hero keyframe"
+              alt="Generated hero image"
               className="absolute inset-0 h-full w-full object-cover"
               style={{
                 animation: 'kenBurns 30s ease-in-out infinite alternate',
@@ -106,7 +106,7 @@ export function KeyframeApproval({ onApprove, onRegenerate, busy }: KeyframeAppr
               <div className="flex max-w-2xl flex-col gap-4">
                 <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-warm-subtle">
                   <span className="inline-block h-px w-6 bg-[var(--color-border-strong)]" />
-                  <span>Step 3 of 4 · Hero keyframe</span>
+                  <span>Step 3 of 4 · Hero image</span>
                 </div>
 
                 {concept ? (

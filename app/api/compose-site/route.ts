@@ -1,8 +1,9 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { envStatus } from '@/lib/env';
-import { writeJson } from '@/lib/cache';
+import { writeJson, readJson } from '@/lib/cache';
 import { composeSite } from '@/features/pipeline/steps/composeSite';
+import { auth } from '@clerk/nextjs/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -39,6 +40,24 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     // Persist to cache so /preview/[id] can read it
     await writeJson(projectId, 'site.json', site);
+
+    // Save project metadata for "My Projects" — ties to the logged-in user
+    try {
+      const { userId } = await auth();
+      const scene = await readJson<{ palette: { background: string; foreground: string; accent: string } }>(projectId, 'scene.json');
+      if (userId) {
+        await writeJson(projectId, 'meta.json', {
+          projectId,
+          userId,
+          brandName: site.brandName,
+          headline: site.hero.headline,
+          palette: scene?.palette ?? { background: '#0a0a0a', foreground: '#fafafa', accent: '#e8b874' },
+          createdAt: Date.now(),
+        });
+      }
+    } catch {
+      // Non-critical — project still works without metadata
+    }
 
     return Response.json({ site });
   } catch (err) {
