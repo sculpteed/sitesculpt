@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useStudioStore } from './store';
 import { motion, AnimatePresence } from 'motion/react';
-import { MessageSquare, X, Send, Sparkles, Check } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, Check, Paperclip, Image as ImageIcon } from 'lucide-react';
 import { PulsingDots } from '@/components/LoadingStates';
 import type { SiteStructure } from '@/features/pipeline/types';
 
@@ -32,12 +32,12 @@ export function ChatPanel() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const [attachedImage, setAttachedImage] = useState<{ name: string; dataUrl: string } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Only show on steps where there's a site to edit
-  const canChat = funnelStep === 'copy-review' || funnelStep === 'preview';
-  if (!canChat || !site) return null;
+  // Chat is available at EVERY step — context-aware based on funnel position
 
   const scrollToBottom = (): void => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -162,15 +162,43 @@ export function ChatPanel() {
                 <div className="flex flex-col items-center gap-3 py-8 text-center">
                   <Sparkles className="h-8 w-8 text-[var(--color-accent)] opacity-40" />
                   <p className="text-[13px] text-warm-muted">
-                    Tell me what to change. I&apos;ll update your site instantly.
+                    {funnelStep === 'brief'
+                      ? 'Need help describing your site? I can help.'
+                      : funnelStep === 'art-direction'
+                        ? 'Want a different direction? Tell me what you\'re looking for.'
+                        : funnelStep === 'keyframe'
+                          ? 'Not feeling the hero? Tell me what to change.'
+                          : 'Tell me what to change. I\'ll update your site instantly.'}
                   </p>
                   <div className="flex flex-wrap justify-center gap-1.5">
-                    {[
-                      'Make the headline shorter',
-                      'Add a FAQ section',
-                      'More playful tone',
-                      'Change colors to blue',
-                    ].map((suggestion) => (
+                    {(funnelStep === 'brief'
+                      ? [
+                          'Help me write the description',
+                          'What tone fits a SaaS tool?',
+                          'Which pages should I include?',
+                          'Suggest a brand name',
+                        ]
+                      : funnelStep === 'art-direction'
+                        ? [
+                            'I want something darker',
+                            'More colorful and bold',
+                            'Minimalist and clean',
+                            'Warm and inviting',
+                          ]
+                        : funnelStep === 'keyframe'
+                          ? [
+                              'Make it brighter',
+                              'Different subject entirely',
+                              'More abstract',
+                              'Warmer lighting',
+                            ]
+                          : [
+                              'Make the headline shorter',
+                              'Add a FAQ section',
+                              'More playful tone',
+                              'Change colors to blue',
+                            ]
+                    ).map((suggestion) => (
                       <button
                         key={suggestion}
                         type="button"
@@ -224,9 +252,44 @@ export function ChatPanel() {
               )}
             </div>
 
+            {/* Attached image preview */}
+            {attachedImage ? (
+              <div className="flex items-center gap-2 border-t border-[var(--color-border)] px-3 pt-2">
+                <div className="flex items-center gap-2 rounded-md bg-[rgba(243,234,217,0.04)] px-2 py-1">
+                  <ImageIcon className="h-3 w-3 text-[var(--color-accent)]" />
+                  <span className="max-w-[200px] truncate text-[11px] text-warm-muted">{attachedImage.name}</span>
+                  <button onClick={() => setAttachedImage(null)} className="text-warm-subtle hover:text-warm">
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              </div>
+            ) : null}
+
             {/* Input */}
             <div className="border-t border-[var(--color-border)] px-3 py-3">
               <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-warm-subtle transition hover:bg-[rgba(243,234,217,0.06)] hover:text-warm"
+                  title="Attach an image (logo, screenshot, reference)"
+                >
+                  <Paperclip className="h-4 w-4" />
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = '';
+                    if (!file) return;
+                    const reader = new FileReader();
+                    reader.onload = () => setAttachedImage({ name: file.name, dataUrl: String(reader.result) });
+                    reader.readAsDataURL(file);
+                  }}
+                />
                 <input
                   ref={inputRef}
                   type="text"
@@ -238,15 +301,15 @@ export function ChatPanel() {
                       void handleSend();
                     }
                   }}
-                  placeholder="Make a change…"
+                  placeholder={funnelStep === 'brief' ? 'Ask me anything…' : 'Make a change…'}
                   disabled={busy}
                   className="flex-1 rounded-lg border border-[var(--color-border)] bg-[rgba(243,234,217,0.02)] px-3 py-2 text-[13px] text-warm placeholder:text-warm-subtle outline-none transition focus:border-[var(--color-border-strong)] disabled:opacity-50"
                 />
                 <button
                   type="button"
                   onClick={() => void handleSend()}
-                  disabled={busy || !input.trim()}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg transition disabled:opacity-30"
+                  disabled={busy || (!input.trim() && !attachedImage)}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition disabled:opacity-30"
                   style={{ backgroundColor: '#e8b874' }}
                 >
                   <Send className="h-3.5 w-3.5 text-[#0d0a08]" />
