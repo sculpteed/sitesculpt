@@ -465,15 +465,50 @@ export function Studio() {
               busy={funnelBusy}
             />
 
-          ) : funnelStep === 'copy-review' ? (
-            // ─── Step 4: Structure review ───
-            <StructureReview
-              onApprove={handleStructureApprove}
-              busy={funnelBusy}
-            />
+          ) : funnelStep === 'copy-review' || funnelStep === 'preview' ? (
+            // ─── Steps 4+5: Live site preview as the main canvas ───
+            // The actual rendered site is embedded in an iframe. The section
+            // list moves to the right rail. User edits via chat or inline.
+            <div className="relative flex-1 overflow-hidden">
+              {projectId ? (
+                <div className="flex h-full flex-col">
+                  {/* Toolbar above the preview */}
+                  <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-[rgba(13,10,8,0.6)] px-4 py-2 backdrop-blur">
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-warm-subtle">
+                        Live preview
+                      </span>
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`/preview/${projectId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-md border border-[var(--color-border-strong)] px-3 py-1.5 text-[11px] text-warm-muted transition hover:border-[var(--color-accent)] hover:text-warm"
+                      >
+                        Open full screen ↗
+                      </a>
+                    </div>
+                  </div>
+                  {/* Embedded preview iframe */}
+                  <iframe
+                    key={`preview-${projectId}`}
+                    src={`/preview/${projectId}`}
+                    className="flex-1 border-0"
+                    style={{ width: '100%', minHeight: '60vh' }}
+                    title="Site preview"
+                  />
+                </div>
+              ) : (
+                <div className="flex h-full items-center justify-center text-warm-muted">
+                  Generating your site…
+                </div>
+              )}
+            </div>
 
           ) : (
-            // ─── Running / done state ───
+            // ─── Fallback ───
             <div className="relative flex-1 overflow-hidden">
               {hasFrames && projectId ? (
                 <ScrollFlipbook
@@ -554,16 +589,23 @@ export function Studio() {
 
         {/* ── Right: Context rail ── */}
         <aside className="flex flex-col gap-4">
-          <PipelinePanel />
-          {site ? (
-            <SiteStructureCard
-              site={site}
-              overrides={sectionOverrides}
-              onEdit={setSectionOverride}
-            />
-          ) : null}
-          {scene ? <SceneCard scene={scene} /> : null}
-          {state === 'running' ? <TipCard /> : null}
+          {(funnelStep === 'copy-review' || funnelStep === 'preview') && site ? (
+            // When previewing, the section list IS the sidebar editor
+            <StructureReview onApprove={handleStructureApprove} busy={funnelBusy} />
+          ) : (
+            <>
+              <PipelinePanel />
+              {site ? (
+                <SiteStructureCard
+                  site={site}
+                  overrides={sectionOverrides}
+                  onEdit={setSectionOverride}
+                />
+              ) : null}
+              {scene ? <SceneCard scene={scene} /> : null}
+              {state === 'running' ? <TipCard /> : null}
+            </>
+          )}
         </aside>
       </div>
 
