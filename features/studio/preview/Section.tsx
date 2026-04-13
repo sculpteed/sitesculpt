@@ -1,16 +1,6 @@
 // Section dispatcher — renders block-library-quality layouts using shadcn/ui
-// primitives + real Tailwind classes. Design tokens resolve via CSS custom
-// properties set on the <PreviewSite> wrapper from the scene palette.
-//
-// Unlike the previous hand-coded inline-style version, this uses:
-// - Button, Card, Badge, Accordion primitives from @/components/ui
-// - Tailwind utility classes that map to shadcn design tokens
-//   (bg-background, text-foreground, bg-primary, text-muted-foreground, etc.)
-// - Proper typography hierarchy with font-serif / font-sans / font-mono
-// - Generous whitespace, asymmetric grids, editorial rhythm
-//
-// The exported Next.js project gets a synced copy of this file so the
-// downloaded zip matches the preview.
+// primitives + real Tailwind classes. Now supports inline editing via
+// EditableText when `editable` is true (postMessage to parent Studio).
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ArrowRight, Check } from 'lucide-react';
 import { CountUp, HoverLift, Marquee, Reveal, Stagger, StaggerItem } from './motion';
+import { EditableText } from './EditableText';
 
 export type SectionLayout =
   | 'intro'
@@ -49,17 +40,17 @@ export interface SectionItem {
 
 export interface SectionProps {
   layout: SectionLayout;
-  /** Brand-specific eyebrow label from Claude. Falls back to layout default. */
   label?: string;
   title: string;
   body: string;
   cta?: string;
   items?: SectionItem[];
+  editable?: boolean;
+  sectionIndex?: number;
 }
 
 // ─── Shared helpers ─────────────────────────────────────────────────────────
 
-/** Italicize the last sentence of a headline for mixed-weight feel. */
 function italicizeLast(headline: string): React.ReactNode {
   const parts = headline.split(/(?<=\.)\s/);
   if (parts.length >= 2) {
@@ -84,7 +75,6 @@ function SectionEyebrow({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Fallback eyebrow labels per layout — only used if Claude didn't provide one. */
 const DEFAULT_LABELS: Partial<Record<SectionLayout, string>> = {
   intro: 'Introduction',
   'feature-grid': 'Capabilities',
@@ -105,95 +95,145 @@ function getLabel(props: SectionProps): string {
   return props.label ?? DEFAULT_LABELS[props.layout] ?? '';
 }
 
-function DisplayHeading({ children }: { children: React.ReactNode }) {
+// Editable label component
+function ELabel({ props }: { props: SectionProps }) {
+  const label = getLabel(props);
+  if (props.editable && props.sectionIndex !== undefined) {
+    return (
+      <SectionEyebrow>
+        <EditableText
+          value={label}
+          path={`sections.${props.sectionIndex}.label`}
+          editable
+          tag="span"
+        />
+      </SectionEyebrow>
+    );
+  }
+  return <SectionEyebrow>{label}</SectionEyebrow>;
+}
+
+// Editable display heading
+function EHeading({ title, props }: { title: string; props: SectionProps }) {
+  if (props.editable && props.sectionIndex !== undefined) {
+    return (
+      <EditableText
+        value={title}
+        path={`sections.${props.sectionIndex}.title`}
+        editable
+        tag="h2"
+        className="font-serif text-4xl leading-[0.95] tracking-[-0.025em] text-foreground sm:text-5xl md:text-6xl"
+      />
+    );
+  }
   return (
     <h2 className="font-serif text-4xl leading-[0.95] tracking-[-0.025em] text-foreground sm:text-5xl md:text-6xl">
-      {children}
+      {italicizeLast(title)}
     </h2>
   );
 }
 
-function Lede({ children }: { children: React.ReactNode }) {
+// Editable body/lede
+function EBody({ body, props, className }: { body: string; props: SectionProps; className?: string }) {
+  const cls = className ?? 'mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg';
+  if (props.editable && props.sectionIndex !== undefined) {
+    return (
+      <EditableText
+        value={body}
+        path={`sections.${props.sectionIndex}.body`}
+        editable
+        tag="p"
+        className={cls}
+      />
+    );
+  }
+  return <p className={cls}>{body}</p>;
+}
+
+// Editable CTA button
+function ECta({ cta, props }: { cta: string; props: SectionProps }) {
+  if (props.editable && props.sectionIndex !== undefined) {
+    return (
+      <EditableText
+        value={cta}
+        path={`sections.${props.sectionIndex}.cta`}
+        editable
+        tag="span"
+        className="inline-flex items-center gap-2 text-foreground"
+      />
+    );
+  }
   return (
-    <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-      {children}
-    </p>
+    <Button variant="link" className="mt-8 h-auto px-0 text-foreground transition-transform hover:translate-x-1">
+      {cta}
+      <ArrowRight className="size-4 text-primary" />
+    </Button>
   );
 }
 
 // ─── Dispatcher ─────────────────────────────────────────────────────────────
 
 export function Section(props: SectionProps) {
-  // Resolve the eyebrow label — Claude provides brand-specific labels,
-  // fallback to layout defaults if not present.
   const resolved = {
     ...props,
     label: props.label ?? DEFAULT_LABELS[props.layout] ?? '',
   };
   switch (resolved.layout) {
-    case 'intro':
-      return <IntroLayout {...resolved} />;
-    case 'feature-grid':
-      return <FeatureGridLayout {...resolved} />;
-    case 'split-image':
-      return <SplitImageLayout {...resolved} />;
-    case 'stat-grid':
-      return <StatGridLayout {...resolved} />;
-    case 'quote':
-      return <QuoteLayout {...resolved} />;
-    case 'numbered-steps':
-      return <NumberedStepsLayout {...resolved} />;
-    case 'faq-accordion':
-      return <FaqLayout {...resolved} />;
-    case 'logo-strip':
-      return <LogoStripLayout {...resolved} />;
-    case 'pricing-tiers':
-      return <PricingTiersLayout {...resolved} />;
-    case 'team-grid':
-      return <TeamGridLayout {...resolved} />;
-    case 'testimonial-wall':
-      return <TestimonialWallLayout {...resolved} />;
-    case 'contact-block':
-      return <ContactBlockLayout {...resolved} />;
-    case 'cta':
-      return <CtaLayout {...resolved} />;
-    default:
-      return <IntroLayout {...resolved} />;
+    case 'intro': return <IntroLayout {...resolved} />;
+    case 'feature-grid': return <FeatureGridLayout {...resolved} />;
+    case 'split-image': return <SplitImageLayout {...resolved} />;
+    case 'stat-grid': return <StatGridLayout {...resolved} />;
+    case 'quote': return <QuoteLayout {...resolved} />;
+    case 'numbered-steps': return <NumberedStepsLayout {...resolved} />;
+    case 'faq-accordion': return <FaqLayout {...resolved} />;
+    case 'logo-strip': return <LogoStripLayout {...resolved} />;
+    case 'pricing-tiers': return <PricingTiersLayout {...resolved} />;
+    case 'team-grid': return <TeamGridLayout {...resolved} />;
+    case 'testimonial-wall': return <TestimonialWallLayout {...resolved} />;
+    case 'contact-block': return <ContactBlockLayout {...resolved} />;
+    case 'cta': return <CtaLayout {...resolved} />;
+    default: return <IntroLayout {...resolved} />;
   }
 }
 
 // ─── Layouts ────────────────────────────────────────────────────────────────
 
-function IntroLayout({ label, title, body }: SectionProps) {
+function IntroLayout(props: SectionProps) {
+  const { title, body } = props;
   return (
     <section className="mx-auto max-w-3xl px-6 py-24 md:py-36">
       <Reveal>
-        <SectionEyebrow>{label}</SectionEyebrow>
-        <h2 className="font-serif text-4xl leading-[0.92] tracking-[-0.025em] text-foreground sm:text-6xl md:text-7xl">
-          {italicizeLast(title)}
-        </h2>
+        <ELabel props={props} />
+        {props.editable ? (
+          <EHeading title={title} props={props} />
+        ) : (
+          <h2 className="font-serif text-4xl leading-[0.92] tracking-[-0.025em] text-foreground sm:text-6xl md:text-7xl">
+            {italicizeLast(title)}
+          </h2>
+        )}
       </Reveal>
       <Reveal delay={0.15}>
-        <p className="mt-10 max-w-2xl font-serif text-xl italic leading-[1.5] text-foreground/80 md:text-2xl">
-          {body}
-        </p>
+        <EBody
+          body={body}
+          props={props}
+          className="mt-10 max-w-2xl font-serif text-xl italic leading-[1.5] text-foreground/80 md:text-2xl"
+        />
       </Reveal>
     </section>
   );
 }
 
-function FeatureGridLayout({ label, title, body, items = [] }: SectionProps) {
-  // Bento-style: first item spans the full width as a "hero feature",
-  // remaining items in a 2- or 3-col grid. Creates visual asymmetry.
+function FeatureGridLayout(props: SectionProps) {
+  const { title, body, items = [] } = props;
   const heroFeature = items[0];
   const restFeatures = items.slice(1);
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <Reveal>
-        <SectionEyebrow>{label}</SectionEyebrow>
+        <ELabel props={props} />
         <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-end">
-          <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
-          <p className="max-w-xl text-base leading-relaxed text-muted-foreground">{body}</p>
+          <EHeading title={title} props={props} />
+          <EBody body={body} props={props} className="max-w-xl text-base leading-relaxed text-muted-foreground" />
         </div>
       </Reveal>
       <Separator className="mt-16 mb-12 bg-border" />
@@ -201,9 +241,7 @@ function FeatureGridLayout({ label, title, body, items = [] }: SectionProps) {
         <Reveal>
           <HoverLift className="group mb-12 rounded-2xl border border-border bg-card/30 px-8 py-10 transition-colors hover:border-primary/30">
             <div className="grid gap-6 md:grid-cols-[auto_1fr]">
-              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">
-                01
-              </div>
+              <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">01</div>
               <div>
                 <div className="font-serif text-3xl leading-tight tracking-tight text-foreground md:text-4xl">
                   {heroFeature.name}
@@ -229,9 +267,7 @@ function FeatureGridLayout({ label, title, body, items = [] }: SectionProps) {
                 {item.name}
               </div>
               {item.description ? (
-                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                  {item.description}
-                </p>
+                <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.description}</p>
               ) : null}
             </HoverLift>
           </StaggerItem>
@@ -241,26 +277,25 @@ function FeatureGridLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function SplitImageLayout({ label, title, body, cta }: SectionProps) {
-  // Typography-first editorial pull statement — no placeholder image box.
+function SplitImageLayout(props: SectionProps) {
+  const { title, body, cta } = props;
   return (
     <section className="mx-auto max-w-6xl px-6 py-32 md:py-40">
       <div className="grid gap-12 md:grid-cols-[1.4fr_1fr] md:items-start">
         <Reveal>
-          <SectionEyebrow>{label}</SectionEyebrow>
-          <h2 className="font-serif text-5xl leading-[0.92] tracking-[-0.025em] text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
-            {italicizeLast(title)}
-          </h2>
+          <ELabel props={props} />
+          {props.editable ? (
+            <EHeading title={title} props={props} />
+          ) : (
+            <h2 className="font-serif text-5xl leading-[0.92] tracking-[-0.025em] text-foreground sm:text-6xl md:text-7xl lg:text-8xl">
+              {italicizeLast(title)}
+            </h2>
+          )}
         </Reveal>
         <Reveal delay={0.2}>
           <div className="md:pt-8">
-            <p className="text-[17px] leading-[1.65] text-muted-foreground">{body}</p>
-            {cta ? (
-              <Button variant="link" className="mt-8 h-auto px-0 text-foreground transition-transform hover:translate-x-1">
-                {cta}
-                <ArrowRight className="size-4 text-primary" />
-              </Button>
-            ) : null}
+            <EBody body={body} props={props} className="text-[17px] leading-[1.65] text-muted-foreground" />
+            {cta ? <ECta cta={cta} props={props} /> : null}
           </div>
         </Reveal>
       </div>
@@ -268,13 +303,14 @@ function SplitImageLayout({ label, title, body, cta }: SectionProps) {
   );
 }
 
-function StatGridLayout({ label, title, body, items = [] }: SectionProps) {
+function StatGridLayout(props: SectionProps) {
+  const { title, body, items = [] } = props;
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <Reveal>
-        <SectionEyebrow>{label}</SectionEyebrow>
-        <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
-        <Lede>{body}</Lede>
+        <ELabel props={props} />
+        <EHeading title={title} props={props} />
+        <EBody body={body} props={props} />
       </Reveal>
       <Separator className="mt-14 mb-14 bg-border" />
       <Stagger className="grid gap-12 sm:grid-cols-2 md:grid-cols-4" stagger={0.12}>
@@ -293,15 +329,26 @@ function StatGridLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function QuoteLayout({ body, items = [] }: SectionProps) {
+function QuoteLayout(props: SectionProps) {
+  const { body, items = [] } = props;
   const attribution = items[0];
   return (
     <section className="mx-auto max-w-3xl px-6 py-28 md:py-40">
       <Reveal>
         <div className="font-serif text-6xl leading-none text-primary">&ldquo;</div>
-        <blockquote className="mt-4 font-serif text-3xl leading-[1.2] tracking-tight text-foreground md:text-5xl">
-          <em className="italic">{body}</em>
-        </blockquote>
+        {props.editable && props.sectionIndex !== undefined ? (
+          <EditableText
+            value={body}
+            path={`sections.${props.sectionIndex}.body`}
+            editable
+            tag="blockquote"
+            className="mt-4 font-serif text-3xl leading-[1.2] tracking-tight text-foreground md:text-5xl"
+          />
+        ) : (
+          <blockquote className="mt-4 font-serif text-3xl leading-[1.2] tracking-tight text-foreground md:text-5xl">
+            <em className="italic">{body}</em>
+          </blockquote>
+        )}
         {attribution ? (
           <footer className="mt-12 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
             <span className="inline-block h-px w-8 bg-border" />
@@ -316,13 +363,14 @@ function QuoteLayout({ body, items = [] }: SectionProps) {
   );
 }
 
-function NumberedStepsLayout({ label, title, body, items = [] }: SectionProps) {
+function NumberedStepsLayout(props: SectionProps) {
+  const { title, body, items = [] } = props;
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <Reveal>
-        <SectionEyebrow>{label}</SectionEyebrow>
-        <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
-        <Lede>{body}</Lede>
+        <ELabel props={props} />
+        <EHeading title={title} props={props} />
+        <EBody body={body} props={props} />
       </Reveal>
       <Stagger className="mt-14 border-t border-border" stagger={0.1}>
         {items.map((item, i) => (
@@ -335,9 +383,7 @@ function NumberedStepsLayout({ label, title, body, items = [] }: SectionProps) {
                 {item.name}
               </span>
               {item.description ? (
-                <span className="text-[15px] leading-relaxed text-muted-foreground">
-                  {item.description}
-                </span>
+                <span className="text-[15px] leading-relaxed text-muted-foreground">{item.description}</span>
               ) : null}
             </div>
           </StaggerItem>
@@ -347,18 +393,15 @@ function NumberedStepsLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function FaqLayout({ label, title, body, items = [] }: SectionProps) {
+function FaqLayout(props: SectionProps) {
+  const { title, body, items = [] } = props;
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <div className="grid gap-12 md:grid-cols-[1fr_1.4fr]">
         <Reveal>
-          <SectionEyebrow>{label}</SectionEyebrow>
-          <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
-          {body ? (
-            <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-muted-foreground">
-              {body}
-            </p>
-          ) : null}
+          <ELabel props={props} />
+          <EHeading title={title} props={props} />
+          {body ? <EBody body={body} props={props} className="mt-6 max-w-sm text-[15px] leading-relaxed text-muted-foreground" /> : null}
         </Reveal>
         <Reveal delay={0.1}>
           <Accordion type="single" collapsible className="w-full">
@@ -381,7 +424,8 @@ function FaqLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function LogoStripLayout({ title, items = [] }: SectionProps) {
+function LogoStripLayout(props: SectionProps) {
+  const { title, items = [] } = props;
   return (
     <section className="border-y border-border py-16">
       <div className="mx-auto max-w-6xl">
@@ -394,10 +438,7 @@ function LogoStripLayout({ title, items = [] }: SectionProps) {
         ) : null}
         <Marquee speed={38}>
           {items.map((item, i) => (
-            <div
-              key={i}
-              className="font-serif text-2xl italic leading-none tracking-tight text-foreground/50"
-            >
+            <div key={i} className="font-serif text-2xl italic leading-none tracking-tight text-foreground/50">
               {item.name}
             </div>
           ))}
@@ -407,31 +448,23 @@ function LogoStripLayout({ title, items = [] }: SectionProps) {
   );
 }
 
-function PricingTiersLayout({ label, title, body, items = [] }: SectionProps) {
+function PricingTiersLayout(props: SectionProps) {
+  const { title, body, items = [] } = props;
   const gridCols =
-    items.length === 1
-      ? 'md:grid-cols-1'
-      : items.length === 2
-        ? 'md:grid-cols-2'
-        : 'md:grid-cols-3';
+    items.length === 1 ? 'md:grid-cols-1' :
+    items.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3';
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <Reveal>
         <div className="mx-auto max-w-2xl text-center">
           <SectionEyebrow>
-            <span className="mx-auto">{label}</span>
+            <span className="mx-auto">{getLabel(props)}</span>
           </SectionEyebrow>
-          <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
-          {body ? (
-            <p className="mt-6 text-base leading-relaxed text-muted-foreground">{body}</p>
-          ) : null}
+          <EHeading title={title} props={props} />
+          {body ? <EBody body={body} props={props} className="mt-6 text-base leading-relaxed text-muted-foreground" /> : null}
         </div>
       </Reveal>
-      <Stagger
-        className={`mt-16 grid gap-5 ${gridCols}`}
-        stagger={0.1}
-        amount={0.1}
-      >
+      <Stagger className={`mt-16 grid gap-5 ${gridCols}`} stagger={0.1} amount={0.1}>
         {items.map((tier, i) => {
           const highlighted = tier.highlighted;
           return (
@@ -456,12 +489,8 @@ function PricingTiersLayout({ label, title, body, items = [] }: SectionProps) {
                   {tier.value ?? '—'}
                 </div>
                 {tier.description ? (
-                  <p className="mb-7 text-sm leading-relaxed text-muted-foreground">
-                    {tier.description}
-                  </p>
-                ) : (
-                  <div className="mb-7" />
-                )}
+                  <p className="mb-7 text-sm leading-relaxed text-muted-foreground">{tier.description}</p>
+                ) : <div className="mb-7" />}
                 {tier.features && tier.features.length > 0 ? (
                   <ul className="mb-8 flex-1 space-y-3">
                     {tier.features.map((f, fi) => (
@@ -487,16 +516,14 @@ function PricingTiersLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function TeamGridLayout({ label, title, body, items = [] }: SectionProps) {
-  // Typography-first team cards with staggered fade-in + subtle hover lift.
-  // Real photos when provided; otherwise oversized serif initials as the
-  // identity mark.
+function TeamGridLayout(props: SectionProps) {
+  const { title, body, items = [] } = props;
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <Reveal>
-        <SectionEyebrow>{label}</SectionEyebrow>
-        <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
-        <Lede>{body}</Lede>
+        <ELabel props={props} />
+        <EHeading title={title} props={props} />
+        <EBody body={body} props={props} />
         <Separator className="mt-14 mb-14 bg-border" />
       </Reveal>
       <Stagger className="grid gap-x-12 gap-y-16 sm:grid-cols-2 md:grid-cols-3" stagger={0.1}>
@@ -512,10 +539,7 @@ function TeamGridLayout({ label, title, body, items = [] }: SectionProps) {
                   />
                 ) : (
                   <div className="mb-6 flex h-24 items-center">
-                    <div
-                      aria-hidden="true"
-                      className="font-serif text-[7rem] leading-none tracking-[-0.04em] text-primary"
-                    >
+                    <div aria-hidden="true" className="font-serif text-[7rem] leading-none tracking-[-0.04em] text-primary">
                       {initial}
                     </div>
                   </div>
@@ -529,9 +553,7 @@ function TeamGridLayout({ label, title, body, items = [] }: SectionProps) {
                   </div>
                 )}
                 {person.bio ? (
-                  <p className="mt-5 text-[14px] leading-[1.65] text-muted-foreground">
-                    {person.bio}
-                  </p>
+                  <p className="mt-5 text-[14px] leading-[1.65] text-muted-foreground">{person.bio}</p>
                 ) : null}
               </HoverLift>
             </StaggerItem>
@@ -542,13 +564,14 @@ function TeamGridLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function TestimonialWallLayout({ label, title, body, items = [] }: SectionProps) {
+function TestimonialWallLayout(props: SectionProps) {
+  const { title, body, items = [] } = props;
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <Reveal>
-        <SectionEyebrow>{label}</SectionEyebrow>
-        <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
-        <Lede>{body}</Lede>
+        <ELabel props={props} />
+        <EHeading title={title} props={props} />
+        <EBody body={body} props={props} />
       </Reveal>
       <Stagger className="mt-12 grid gap-5 md:grid-cols-2" stagger={0.12}>
         {items.map((t, i) => (
@@ -573,18 +596,15 @@ function TestimonialWallLayout({ label, title, body, items = [] }: SectionProps)
   );
 }
 
-function ContactBlockLayout({ label, title, body, items = [] }: SectionProps) {
+function ContactBlockLayout(props: SectionProps) {
+  const { title, body, items = [] } = props;
   return (
     <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
       <div className="grid gap-16 md:grid-cols-2 md:items-end">
         <Reveal>
-          <SectionEyebrow>{label}</SectionEyebrow>
-          <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
-          {body ? (
-            <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-              {body}
-            </p>
-          ) : null}
+          <ELabel props={props} />
+          <EHeading title={title} props={props} />
+          {body ? <EBody body={body} props={props} className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground" /> : null}
         </Reveal>
         <Stagger stagger={0.08}>
           {items.map((item, i) => (
@@ -605,33 +625,42 @@ function ContactBlockLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function CtaLayout({ label, title, body, cta }: SectionProps) {
-  // CTA sits on the accent-colored zone from PreviewSite's getZone().
-  // Zone overrides --color-foreground to primary-foreground (dark) and
-  // --color-background to primary (green). Button uses bg-foreground
-  // text-background = dark button with green text. Clean contrast.
+function CtaLayout(props: SectionProps) {
+  const { title, body, cta } = props;
   return (
     <section className="mx-auto max-w-3xl px-6 py-28 text-center md:py-40">
       <Reveal>
         <SectionEyebrow>
-          <span className="mx-auto">{label}</span>
+          <span className="mx-auto">{getLabel(props)}</span>
         </SectionEyebrow>
-        <h2 className="mx-auto max-w-xl font-serif text-5xl leading-[0.92] tracking-[-0.025em] text-foreground md:text-7xl">
-          {italicizeLast(title)}
-        </h2>
-        <p className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-foreground/70">
-          {body}
-        </p>
+        {props.editable ? (
+          <EHeading title={title} props={props} />
+        ) : (
+          <h2 className="mx-auto max-w-xl font-serif text-5xl leading-[0.92] tracking-[-0.025em] text-foreground md:text-7xl">
+            {italicizeLast(title)}
+          </h2>
+        )}
+        <EBody body={body} props={props} className="mx-auto mt-6 max-w-md text-lg leading-relaxed text-foreground/70" />
       </Reveal>
       {cta ? (
         <Reveal delay={0.2}>
-          <Button
-            size="xl"
-            className="mt-10 rounded-full bg-foreground px-8 text-background transition-transform hover:scale-105"
-          >
-            {cta}
-            <ArrowRight className="size-4" />
-          </Button>
+          {props.editable ? (
+            <EditableText
+              value={cta}
+              path={`sections.${props.sectionIndex}.cta`}
+              editable
+              tag="span"
+              className="mt-10 inline-flex items-center gap-2 rounded-full bg-foreground px-8 py-3 text-background"
+            />
+          ) : (
+            <Button
+              size="xl"
+              className="mt-10 rounded-full bg-foreground px-8 text-background transition-transform hover:scale-105 hover:bg-foreground/85"
+            >
+              {cta}
+              <ArrowRight className="size-4" />
+            </Button>
+          )}
         </Reveal>
       ) : null}
     </section>

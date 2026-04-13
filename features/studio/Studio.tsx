@@ -85,6 +85,36 @@ export function Studio() {
   const esRef = useRef<EventSource | null>(null);
   const autoStartRef = useRef(false);
 
+  // Listen for inline edits from the preview iframe
+  useEffect(() => {
+    const handler = (ev: MessageEvent) => {
+      if (!ev.data || ev.data.type !== 'sitesculpt-edit') return;
+      const { path, value } = ev.data as { path: string; value: string };
+      if (!value || !path) return;
+
+      if (path === 'brandName') {
+        setBrandOverride(value);
+      } else if (path === 'hero.headline') {
+        setHeroOverride({ headline: value });
+      } else if (path === 'hero.subheadline') {
+        setHeroOverride({ subheadline: value });
+      } else if (path === 'hero.ctaPrimary') {
+        setHeroOverride({ ctaPrimary: value });
+      } else if (path === 'hero.ctaSecondary') {
+        setHeroOverride({ ctaSecondary: value });
+      } else if (path.startsWith('sections.')) {
+        const parts = path.split('.');
+        const idx = parseInt(parts[1] ?? '', 10);
+        const field = parts[2];
+        if (!isNaN(idx) && field) {
+          setSectionOverride(idx, { [field]: value });
+        }
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [setBrandOverride, setHeroOverride, setSectionOverride]);
+
   // Resume an existing project from the URL: /studio?project=<id>
   // On mount, if ?project= is present, open an SSE subscription to that
   // project id. The /api/jobs/[id] endpoint now sends a snapshot on
@@ -488,14 +518,8 @@ export function Studio() {
                       Open full screen ↗
                     </a>
                   </div>
-                  {/* Embedded preview — keyed on site content so it refreshes after chat edits */}
-                  <iframe
-                    key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
-                    src={`/preview/${projectId}`}
-                    className="flex-1 border-0"
-                    style={{ width: '100%', minHeight: '60vh' }}
-                    title="Site preview"
-                  />
+                  {/* Embedded preview — rendered at 1280px then CSS-scaled to fit container */}
+                  <PreviewFrame projectId={projectId} site={site} />
                 </div>
               ) : (
                 // Loading state while compose-site is running
@@ -604,6 +628,38 @@ export function Studio() {
 }
 
 // ─── Subcomponents ───────────────────────────────────────────────────────────
+
+function PreviewFrame({ projectId, site }: { projectId: string; site: SiteStructure }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.55);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (!entry) return;
+      setScale(entry.contentRect.width / 1280);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="relative flex-1 overflow-auto">
+      <iframe
+        key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
+        src={`/preview/${projectId}?edit=1`}
+        className="origin-top-left border-0"
+        style={{
+          width: '1280px',
+          height: `${Math.round(100 / scale)}%`,
+          transform: `scale(${scale})`,
+        }}
+        title="Site preview"
+      />
+    </div>
+  );
+}
 
 function PreviewPlaceholder() {
   return (

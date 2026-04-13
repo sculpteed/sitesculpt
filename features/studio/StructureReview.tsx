@@ -3,8 +3,7 @@
 import { useState, useRef } from 'react';
 import { useStudioStore } from './store';
 import { FadeIn, StaggerGroup, StaggerChild, ScaleOnHover } from '@/components/motion';
-import { ArrowRight, ArrowUp, ArrowDown, Pencil, Trash2, Plus } from 'lucide-react';
-import type { SiteSection } from '@/features/pipeline/types';
+import { ArrowRight, ArrowUp, ArrowDown, Pencil, Trash2 } from 'lucide-react';
 
 interface StructureReviewProps {
   onApprove: () => void;
@@ -14,13 +13,8 @@ interface StructureReviewProps {
 /**
  * Step 4 — Copy + Structure Review.
  *
- * Redesigned to feel drag-and-drop easy:
- * - Every text field shows a pencil icon + highlight on hover
- * - Focus state = clear edit mode with accent border
- * - Up/down arrows to reorder sections
- * - Delete button per section
- * - "Add section" at the bottom
- * - Prominent banner: "Everything is editable"
+ * EVERY text field is editable: brand name, headline, subheadline,
+ * CTA buttons, section labels, titles, bodies, and CTAs.
  */
 export function StructureReview({ onApprove, busy = false }: StructureReviewProps) {
   const site = useStudioStore((s) => s.site);
@@ -28,6 +22,8 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
   const selectedPaletteIdx = useStudioStore((s) => s.selectedPaletteIdx);
   const heroOverride = useStudioStore((s) => s.heroOverride);
   const setHeroOverride = useStudioStore((s) => s.setHeroOverride);
+  const brandOverride = useStudioStore((s) => s.brandOverride);
+  const setBrandOverride = useStudioStore((s) => s.setBrandOverride);
   const sectionOverrides = useStudioStore((s) => s.sectionOverrides);
   const setSectionOverride = useStudioStore((s) => s.setSectionOverride);
   const setSite = useStudioStore((s) => s.setSite);
@@ -38,6 +34,9 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
 
   const headline = heroOverride.headline ?? site.hero.headline;
   const subheadline = heroOverride.subheadline ?? site.hero.subheadline;
+  const ctaPrimary = heroOverride.ctaPrimary ?? site.hero.ctaPrimary;
+  const ctaSecondary = heroOverride.ctaSecondary ?? site.hero.ctaSecondary;
+  const brandName = brandOverride ?? site.brandName;
 
   // Section reorder
   const moveSection = (from: number, to: number): void => {
@@ -81,7 +80,7 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
               Everything below is editable
             </div>
             <div className="text-[11px] text-warm-muted">
-              Click any text to rewrite it. Use arrows to reorder. Delete sections you don&apos;t need. Changes are free.
+              Click any text to rewrite it — headlines, buttons, labels, everything.
             </div>
           </div>
         </div>
@@ -100,34 +99,49 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
           <div className="mb-3 font-mono text-[9px] uppercase tracking-[0.2em] text-warm-subtle">
             Hero section
           </div>
-          <div className="mb-2 font-mono text-[10px] uppercase tracking-wider text-warm-subtle">
-            {site.brandName}
-          </div>
+
+          {/* Brand name */}
+          <EditableField
+            value={brandName}
+            onSave={(v) => setBrandOverride(v !== site.brandName ? v : null)}
+            className="mb-2 font-mono text-[10px] uppercase tracking-wider text-warm-subtle"
+            placeholder="Brand name"
+          />
+
+          {/* Headline */}
           <EditableField
             value={headline}
             onSave={(v) => setHeroOverride({ headline: v })}
             className="font-serif text-2xl leading-[1] tracking-[-0.02em] text-warm sm:text-3xl"
             placeholder="Hero headline"
           />
+
+          {/* Subheadline */}
           <EditableField
             value={subheadline}
             onSave={(v) => setHeroOverride({ subheadline: v })}
             className="mt-2 max-w-lg text-[13px] leading-relaxed text-warm-muted"
             placeholder="Subheadline"
           />
-          <div className="mt-3 flex gap-3">
-            <span
+
+          {/* CTA buttons — editable */}
+          <div className="mt-3 flex flex-wrap gap-3">
+            <EditableField
+              value={ctaPrimary}
+              onSave={(v) => setHeroOverride({ ctaPrimary: v })}
               className="rounded-full px-3 py-1 text-[11px] font-medium"
               style={{
                 backgroundColor: palette?.accent ?? '#e8b874',
                 color: palette?.background ?? '#0d0a08',
               }}
-            >
-              {site.hero.ctaPrimary}
-            </span>
-            {site.hero.ctaSecondary ? (
-              <span className="text-[11px] text-warm-muted">{site.hero.ctaSecondary} →</span>
-            ) : null}
+              placeholder="Primary button"
+            />
+            <EditableField
+              value={ctaSecondary ?? ''}
+              onSave={(v) => setHeroOverride({ ctaSecondary: v || undefined })}
+              className="text-[11px] text-warm-muted"
+              placeholder="Secondary link"
+            />
           </div>
         </div>
       </FadeIn>
@@ -138,6 +152,8 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
           const ov = sectionOverrides[i] ?? {};
           const title = ov.title ?? s.title;
           const body = ov.body ?? s.body;
+          const label = ov.label ?? s.label ?? '';
+          const cta = ov.cta ?? s.cta ?? '';
           const itemCount = s.items?.length ?? 0;
           const isFirst = i === 0;
           const isLast = i === site.sections.length - 1;
@@ -192,15 +208,22 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                     >
                       {s.layout}
                     </span>
-                    {s.label ? (
-                      <span className="font-mono text-[9px] text-warm-subtle">{s.label}</span>
-                    ) : null}
                     {itemCount > 0 ? (
                       <span className="font-mono text-[9px] text-warm-subtle">
                         · {itemCount} items
                       </span>
                     ) : null}
                   </div>
+
+                  {/* Editable label (eyebrow) */}
+                  {(label || s.layout) && (
+                    <EditableField
+                      value={label}
+                      onSave={(v) => setSectionOverride(i, { label: v || s.label })}
+                      className="mb-1 font-mono text-[9px] uppercase tracking-[0.2em] text-warm-subtle"
+                      placeholder="Section label"
+                    />
+                  )}
 
                   {/* Editable title */}
                   <EditableField
@@ -219,6 +242,16 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                     multiline
                   />
 
+                  {/* Editable CTA (if present or layout typically has one) */}
+                  {(cta || ['split-image', 'cta', 'contact-block'].includes(s.layout)) && (
+                    <EditableField
+                      value={cta}
+                      onSave={(v) => setSectionOverride(i, { cta: v || undefined })}
+                      className="mt-2 text-[11px] font-medium text-[var(--color-accent)]"
+                      placeholder="Button text"
+                    />
+                  )}
+
                   {/* Mobile reorder controls */}
                   <div className="mt-2 flex gap-1 sm:hidden">
                     <button
@@ -227,7 +260,7 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                       disabled={isFirst}
                       className="rounded px-2 py-1 text-[10px] text-warm-subtle transition hover:bg-[rgba(243,234,217,0.06)] disabled:opacity-20"
                     >
-                      ↑ Move up
+                      Move up
                     </button>
                     <button
                       type="button"
@@ -235,7 +268,7 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                       disabled={isLast}
                       className="rounded px-2 py-1 text-[10px] text-warm-subtle transition hover:bg-[rgba(243,234,217,0.06)] disabled:opacity-20"
                     >
-                      ↓ Move down
+                      Move down
                     </button>
                   </div>
                 </div>
@@ -256,7 +289,7 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
               className="flex items-center gap-2 rounded-full px-7 py-3.5 text-[14px] font-medium text-[#0d0a08] transition disabled:opacity-25"
               style={{ backgroundColor: '#e8b874' }}
             >
-              {busy ? 'Rendering preview…' : 'Generate full preview'}
+              {busy ? 'Rendering preview...' : 'Generate full preview'}
               <ArrowRight className="h-4 w-4" />
             </button>
           </ScaleOnHover>
@@ -270,9 +303,8 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
 }
 
 // ─── EditableField ──────────────────────────────────────────────────────────
-// Click-to-edit: shows static text with an explicit edit button. Clicking
-// anywhere on the field opens a real input/textarea. Much more discoverable
-// than contentEditable (which is invisible on mobile).
+// Click-to-edit: shows static text with a pencil icon. Clicking opens
+// a real input/textarea.
 
 function EditableField({
   value,
@@ -280,12 +312,14 @@ function EditableField({
   className,
   placeholder,
   multiline = false,
+  style,
 }: {
   value: string;
   onSave: (newValue: string) => void;
   className?: string;
   placeholder?: string;
   multiline?: boolean;
+  style?: React.CSSProperties;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -339,9 +373,10 @@ function EditableField({
     <button
       type="button"
       onClick={startEdit}
+      style={style}
       className={`group/edit flex w-full items-start gap-2 rounded-md px-1 py-0.5 text-left transition hover:bg-[rgba(243,234,217,0.04)] ${className ?? ''}`}
     >
-      <span className="flex-1">{value || placeholder}</span>
+      <span className="flex-1">{value || <span className="text-warm-subtle italic">{placeholder}</span>}</span>
       <Pencil className="mt-0.5 h-3 w-3 shrink-0 text-[var(--color-accent)] opacity-40 transition group-hover/edit:opacity-100" />
     </button>
   );

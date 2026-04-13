@@ -8,18 +8,12 @@ export const runtime = 'nodejs';
 
 interface PreviewPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-/**
- * /preview/[id] — full-bleed preview of a generated site.
- *
- * Renders exactly what the exported Next.js project would render, using the
- * SAME Section components the export template uses. No sitesculpt chrome,
- * no dashboard framing. This is what "previewing" should have meant from
- * day one.
- */
-export default async function PreviewPage({ params }: PreviewPageProps) {
+export default async function PreviewPage({ params, searchParams }: PreviewPageProps) {
   const { id } = await params;
+  const sp = await searchParams;
 
   const scene = await readJson<Scene>(id, 'scene.json');
   const site = await readJson<SiteStructure>(id, 'site.json');
@@ -30,6 +24,7 @@ export default async function PreviewPage({ params }: PreviewPageProps) {
 
   const frames = await listFrames(id);
   const hasKeyframe = await fileExists(id, 'keyframe.png');
+  const editable = sp.edit === '1';
 
   return (
     <PreviewSite
@@ -38,6 +33,7 @@ export default async function PreviewPage({ params }: PreviewPageProps) {
       site={site}
       frameCount={frames.length}
       hasKeyframe={hasKeyframe}
+      editable={editable}
     />
   );
 }
