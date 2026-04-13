@@ -4,6 +4,7 @@ import { createSSEStream } from '@/lib/sse';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 /**
  * GET /api/jobs/{id}

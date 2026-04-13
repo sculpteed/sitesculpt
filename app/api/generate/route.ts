@@ -8,6 +8,7 @@ import { tierById } from '@/lib/stripe';
 import { checkQuota, recordGeneration } from '@/lib/usage';
 
 export const runtime = 'nodejs';
+export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
 const bodySchema = z.object({

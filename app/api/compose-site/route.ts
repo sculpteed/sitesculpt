@@ -7,6 +7,7 @@ import { auth } from '@clerk/nextjs/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const bodySchema = z.object({
   brief: z.string().min(10).max(8000),

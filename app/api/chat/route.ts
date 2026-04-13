@@ -6,6 +6,7 @@ import type { SiteStructure } from '@/features/pipeline/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 const bodySchema = z.object({
   message: z.string().min(1).max(2000),
