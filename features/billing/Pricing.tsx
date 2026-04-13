@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Check } from 'lucide-react';
+import { SmoothScroll, FadeIn, StaggerGroup, StaggerChild, ScaleOnHover, PageTransition } from '@/components/motion';
 
 export interface TierCard {
   id: 'starter' | 'pro';
@@ -15,6 +16,8 @@ export interface TierCard {
 
 export function Pricing({ tiers }: { tiers: TierCard[] | null }) {
   return (
+    <SmoothScroll>
+    <PageTransition>
     <main className="relative min-h-screen overflow-hidden bg-warm">
       {/* Soft glow background */}
       <div
@@ -35,18 +38,22 @@ export function Pricing({ tiers }: { tiers: TierCard[] | null }) {
 
       {/* Header */}
       <section className="relative z-10 mx-auto max-w-4xl px-6 pb-10 pt-14 text-center sm:px-8 sm:pt-20">
-        <h1 className="mb-5 font-serif text-4xl leading-[0.95] tracking-[-0.02em] text-warm sm:text-5xl md:text-6xl">
-          Two plans.{' '}
-          <em className="italic" style={{ color: '#f5d9a8' }}>
-            Subscribe to sculpt.
-          </em>
-        </h1>
+        <FadeIn delay={0.15} y={25}>
+          <h1 className="mb-5 font-serif text-4xl leading-[0.95] tracking-[-0.02em] text-warm sm:text-5xl md:text-6xl">
+            Two plans.{' '}
+            <em className="italic" style={{ color: '#f5d9a8' }}>
+              Subscribe to sculpt.
+            </em>
+          </h1>
+        </FadeIn>
       </section>
 
       <Suspense fallback={null}>
         <PricingBody tiers={tiers} />
       </Suspense>
     </main>
+    </PageTransition>
+    </SmoothScroll>
   );
 }
 
@@ -117,12 +124,13 @@ function PricingBody({ tiers }: { tiers: TierCard[] | null }) {
         </div>
       ) : null}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <StaggerGroup className="grid gap-5 sm:grid-cols-2" stagger={0.12}>
         {tiers.map((tier) => {
           const isLoading = loadingTier === tier.id;
           return (
+            <StaggerChild key={tier.id}>
+            <ScaleOnHover scale={1.015}>
             <div
-              key={tier.id}
               className={`relative flex flex-col rounded-2xl border p-6 sm:p-8 ${
                 tier.recommended
                   ? 'border-[var(--color-accent)] bg-[var(--color-accent-soft)]'
@@ -179,9 +187,11 @@ function PricingBody({ tiers }: { tiers: TierCard[] | null }) {
                 )}
               </button>
             </div>
+            </ScaleOnHover>
+            </StaggerChild>
           );
         })}
-      </div>
+      </StaggerGroup>
 
       <div className="mt-10 text-center text-[11px] text-warm-subtle">
         <p>Secure checkout by Stripe. Cancel anytime from the billing portal.</p>

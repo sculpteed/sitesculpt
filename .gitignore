@@ -13,3 +13,4 @@ tsconfig.tsbuildinfo
 test-results/
 public/logo*.png
 public/homepage-bg*
+.vercel
