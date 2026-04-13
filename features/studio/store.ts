@@ -13,6 +13,24 @@ import { emptyUserData, type UserData } from './userData';
 
 export type PipelineState = 'idle' | 'running' | 'done' | 'error';
 
+/** Multi-step funnel: user makes creative decisions at checkpoints
+ *  instead of hoping one-shot Claude nails everything. */
+export type FunnelStep = 'brief' | 'art-direction' | 'keyframe' | 'copy-review' | 'preview';
+
+export interface PaletteOption {
+  name: string;
+  background: string;
+  foreground: string;
+  accent: string;
+}
+
+export interface ConceptOption {
+  title: string;
+  description: string;
+  visualPrompt: string;
+  motionPrompt: string;
+}
+
 export interface AttachedMedia {
   kind: 'image' | 'video';
   name: string;
@@ -21,7 +39,22 @@ export interface AttachedMedia {
 }
 
 export interface StudioState {
-  // Guided input — used to compile a structured prompt at submit time
+  // ─── Funnel state ──────────────────────────────────────────────────────
+  funnelStep: FunnelStep;
+
+  // Step 2: Art direction options from Claude
+  paletteOptions: PaletteOption[] | null;
+  conceptOptions: ConceptOption[] | null;
+  selectedPaletteIdx: number | null;
+  selectedConceptIdx: number | null;
+
+  // Step 3: Keyframe approval
+  keyframeApproved: boolean;
+
+  // Step 4: Copy/structure approval
+  structureApproved: boolean;
+
+  // ─── Guided input (Step 1) ─────────────────────────────────────────────
   brandName: string;
   description: string; // replaces the old `prompt` freeform textarea
   toneId: string | null; // single-select tone id from TONE_PRESETS
@@ -56,7 +89,16 @@ export interface StudioState {
   brandOverride: string | null;
   sectionOverrides: Record<number, Partial<SiteSection>>;
 
-  // Actions
+  // Actions — funnel
+  setFunnelStep: (step: FunnelStep) => void;
+  setPaletteOptions: (options: PaletteOption[]) => void;
+  setConceptOptions: (options: ConceptOption[]) => void;
+  setSelectedPaletteIdx: (idx: number) => void;
+  setSelectedConceptIdx: (idx: number) => void;
+  setKeyframeApproved: (v: boolean) => void;
+  setStructureApproved: (v: boolean) => void;
+
+  // Actions — form
   setBrandName: (v: string) => void;
   setDescription: (v: string) => void;
   setToneId: (v: string | null) => void;
@@ -92,6 +134,13 @@ const initialSteps: Record<StepName, Progress> = {
 };
 
 export const useStudioStore = create<StudioState>((set) => ({
+  funnelStep: 'brief',
+  paletteOptions: null,
+  conceptOptions: null,
+  selectedPaletteIdx: null,
+  selectedConceptIdx: null,
+  keyframeApproved: false,
+  structureApproved: false,
   brandName: '',
   description: '',
   toneId: null,
@@ -112,6 +161,13 @@ export const useStudioStore = create<StudioState>((set) => ({
   heroOverride: {},
   brandOverride: null,
   sectionOverrides: {},
+  setFunnelStep: (step) => set({ funnelStep: step }),
+  setPaletteOptions: (options) => set({ paletteOptions: options }),
+  setConceptOptions: (options) => set({ conceptOptions: options }),
+  setSelectedPaletteIdx: (idx) => set({ selectedPaletteIdx: idx }),
+  setSelectedConceptIdx: (idx) => set({ selectedConceptIdx: idx }),
+  setKeyframeApproved: (v) => set({ keyframeApproved: v }),
+  setStructureApproved: (v) => set({ structureApproved: v }),
   setBrandName: (v) => set({ brandName: v }),
   setDescription: (v) => set({ description: v }),
   setToneId: (v) => set({ toneId: v }),
