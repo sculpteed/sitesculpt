@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useStudioStore } from './store';
 import { FadeIn, StaggerGroup, StaggerChild, ScaleOnHover } from '@/components/motion';
 import { ArrowRight, ArrowUp, ArrowDown, Pencil, Trash2, Plus } from 'lucide-react';
@@ -270,8 +270,9 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
 }
 
 // ─── EditableField ──────────────────────────────────────────────────────────
-// A text field that looks like static text but reveals itself as editable on
-// hover (pencil icon + highlight) and focus (accent border + background).
+// Click-to-edit: shows static text with an explicit edit button. Clicking
+// anywhere on the field opens a real input/textarea. Much more discoverable
+// than contentEditable (which is invisible on mobile).
 
 function EditableField({
   value,
@@ -286,37 +287,62 @@ function EditableField({
   placeholder?: string;
   multiline?: boolean;
 }) {
-  const [focused, setFocused] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState(value);
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
-  const handleBlur = (e: React.FocusEvent<HTMLElement>): void => {
-    setFocused(false);
-    const next = (e.currentTarget.textContent ?? '').trim();
-    if (next !== value) onSave(next);
+  const startEdit = (): void => {
+    setDraft(value);
+    setEditing(true);
+    setTimeout(() => inputRef.current?.focus(), 50);
   };
 
+  const save = (): void => {
+    setEditing(false);
+    const trimmed = draft.trim();
+    if (trimmed && trimmed !== value) onSave(trimmed);
+  };
+
+  if (editing) {
+    return multiline ? (
+      <textarea
+        ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={save}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); save(); }
+          if (e.key === 'Escape') { setEditing(false); }
+        }}
+        rows={3}
+        className="w-full resize-none rounded-md border border-[var(--color-accent)] bg-[rgba(243,234,217,0.04)] px-3 py-2 text-[13px] text-warm outline-none"
+        placeholder={placeholder}
+      />
+    ) : (
+      <input
+        ref={inputRef as React.RefObject<HTMLInputElement>}
+        type="text"
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={save}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') { e.preventDefault(); save(); }
+          if (e.key === 'Escape') { setEditing(false); }
+        }}
+        className="w-full rounded-md border border-[var(--color-accent)] bg-[rgba(243,234,217,0.04)] px-3 py-2 text-[13px] font-medium text-warm outline-none"
+        placeholder={placeholder}
+      />
+    );
+  }
+
   return (
-    <div className="group/edit relative">
-      {/* Pencil hint — appears on hover when not focused */}
-      {!focused ? (
-        <div className="pointer-events-none absolute -left-6 top-0.5 opacity-0 transition-opacity group-hover/edit:opacity-60">
-          <Pencil className="h-3 w-3 text-[var(--color-accent)]" />
-        </div>
-      ) : null}
-      <div
-        contentEditable
-        suppressContentEditableWarning
-        onFocus={() => setFocused(true)}
-        onBlur={handleBlur}
-        className={`rounded-md outline-none transition ${
-          focused
-            ? 'bg-[rgba(243,234,217,0.04)] ring-1 ring-[var(--color-accent)] ring-offset-1 ring-offset-[var(--color-bg)]'
-            : 'hover:bg-[rgba(243,234,217,0.02)]'
-        } ${className ?? ''}`}
-        style={{ cursor: focused ? 'text' : 'pointer', padding: focused ? '4px 6px' : '0' }}
-        data-placeholder={placeholder}
-      >
-        {value || placeholder}
-      </div>
-    </div>
+    <button
+      type="button"
+      onClick={startEdit}
+      className={`group/edit flex w-full items-start gap-2 rounded-md px-1 py-0.5 text-left transition hover:bg-[rgba(243,234,217,0.04)] ${className ?? ''}`}
+    >
+      <span className="flex-1">{value || placeholder}</span>
+      <Pencil className="mt-0.5 h-3 w-3 shrink-0 text-[var(--color-accent)] opacity-40 transition group-hover/edit:opacity-100" />
+    </button>
   );
 }

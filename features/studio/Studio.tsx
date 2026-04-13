@@ -467,12 +467,11 @@ export function Studio() {
 
           ) : funnelStep === 'copy-review' || funnelStep === 'preview' ? (
             // ─── Steps 4+5: Live site preview as the main canvas ───
-            // The actual rendered site is embedded in an iframe. The section
-            // list moves to the right rail. User edits via chat or inline.
             <div className="relative flex-1 overflow-hidden">
-              {projectId ? (
+              {projectId && site ? (
+                // Only load the iframe AFTER site data exists (compose-site returned)
                 <div className="flex h-full flex-col">
-                  {/* Toolbar above the preview */}
+                  {/* Toolbar */}
                   <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-[rgba(13,10,8,0.6)] px-4 py-2 backdrop-blur">
                     <div className="flex items-center gap-3">
                       <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-warm-subtle">
@@ -480,20 +479,18 @@ export function Studio() {
                       </span>
                       <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
                     </div>
-                    <div className="flex items-center gap-2">
-                      <a
-                        href={`/preview/${projectId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-md border border-[var(--color-border-strong)] px-3 py-1.5 text-[11px] text-warm-muted transition hover:border-[var(--color-accent)] hover:text-warm"
-                      >
-                        Open full screen ↗
-                      </a>
-                    </div>
+                    <a
+                      href={`/preview/${projectId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-md border border-[var(--color-border-strong)] px-3 py-1.5 text-[11px] text-warm-muted transition hover:border-[var(--color-accent)] hover:text-warm"
+                    >
+                      Open full screen ↗
+                    </a>
                   </div>
-                  {/* Embedded preview iframe */}
+                  {/* Embedded preview — keyed on site content so it refreshes after chat edits */}
                   <iframe
-                    key={`preview-${projectId}`}
+                    key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
                     src={`/preview/${projectId}`}
                     className="flex-1 border-0"
                     style={{ width: '100%', minHeight: '60vh' }}
@@ -501,8 +498,11 @@ export function Studio() {
                   />
                 </div>
               ) : (
-                <div className="flex h-full items-center justify-center text-warm-muted">
-                  Generating your site…
+                // Loading state while compose-site is running
+                <div className="flex h-full flex-col items-center justify-center gap-4">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-accent)] border-t-transparent" />
+                  <div className="text-[13px] text-warm-muted">Building your site…</div>
+                  <div className="text-[11px] text-warm-subtle">Writing copy and structuring sections</div>
                 </div>
               )}
             </div>
