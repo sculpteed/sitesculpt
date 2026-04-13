@@ -450,6 +450,42 @@ export function Studio() {
       <FunnelNav />
 
       {/* ─── Body — funnel step router ────────────────────────────────── */}
+
+      {/* Steps 4+5: Full-width preview with floating editor panel */}
+      {(funnelStep === 'copy-review' || funnelStep === 'preview') ? (
+        <div className="relative" style={{ height: 'calc(100vh - 110px)' }}>
+          {/* Full-bleed preview */}
+          {projectId && site ? (
+            <iframe
+              key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
+              src={`/preview/${projectId}?edit=1`}
+              className="h-full w-full border-0"
+              title="Site preview"
+            />
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-4">
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-accent)] border-t-transparent" />
+              <div className="text-[13px] text-warm-muted">Building your site…</div>
+              <div className="text-[11px] text-warm-subtle">Writing copy and structuring sections</div>
+            </div>
+          )}
+
+          {/* Floating editor panel — slides in from right */}
+          <div className="absolute right-0 top-0 z-20 flex h-full w-[380px] flex-col border-l border-[var(--color-border)] bg-[rgba(13,10,8,0.95)] backdrop-blur-xl">
+            <SidebarTabs
+              funnelStep={funnelStep}
+              site={site}
+              scene={scene}
+              state={state}
+              sectionOverrides={sectionOverrides}
+              setSectionOverride={setSectionOverride}
+              onStructureApprove={handleStructureApprove}
+              funnelBusy={funnelBusy}
+            />
+          </div>
+        </div>
+      ) : (
+
       <div className="grid grid-cols-1 gap-5 p-5 sm:gap-6 sm:p-6 lg:grid-cols-[1fr_340px]">
         {/* ── Left: Main content area ── */}
         <section className="relative flex min-h-[72vh] flex-col overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.012)]">
@@ -494,48 +530,6 @@ export function Studio() {
               onRegenerate={handleKeyframeRegenerate}
               busy={funnelBusy}
             />
-
-          ) : funnelStep === 'copy-review' || funnelStep === 'preview' ? (
-            // ─── Steps 4+5: Live site preview as the main canvas ───
-            <div className="relative flex-1 overflow-hidden">
-              {projectId && site ? (
-                // Only load the iframe AFTER site data exists (compose-site returned)
-                <div className="flex h-full flex-col">
-                  {/* Toolbar */}
-                  <div className="flex items-center justify-between border-b border-[var(--color-border)] bg-[rgba(13,10,8,0.6)] px-4 py-2 backdrop-blur">
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-warm-subtle">
-                        Live preview
-                      </span>
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
-                    </div>
-                    <a
-                      href={`/preview/${projectId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-md border border-[var(--color-border-strong)] px-3 py-1.5 text-[11px] text-warm-muted transition hover:border-[var(--color-accent)] hover:text-warm"
-                    >
-                      Open full screen ↗
-                    </a>
-                  </div>
-                  {/* Embedded preview — natural width, responsive CSS handles layout */}
-                  <iframe
-                    key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
-                    src={`/preview/${projectId}?edit=1`}
-                    className="flex-1 border-0"
-                    style={{ width: '100%', minHeight: '70vh' }}
-                    title="Site preview"
-                  />
-                </div>
-              ) : (
-                // Loading state while compose-site is running
-                <div className="flex h-full flex-col items-center justify-center gap-4">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-accent)] border-t-transparent" />
-                  <div className="text-[13px] text-warm-muted">Building your site…</div>
-                  <div className="text-[11px] text-warm-subtle">Writing copy and structuring sections</div>
-                </div>
-              )}
-            </div>
 
           ) : (
             // ─── Fallback ───
@@ -617,7 +611,7 @@ export function Studio() {
           )}
         </section>
 
-        {/* ── Right: Tabbed sidebar ── */}
+        {/* ── Right: Tabbed sidebar (non-preview steps) ── */}
         <SidebarTabs
           funnelStep={funnelStep}
           site={site}
@@ -629,6 +623,7 @@ export function Studio() {
           funnelBusy={funnelBusy}
         />
       </div>
+      )}
     </main>
   );
 }
