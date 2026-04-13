@@ -13,6 +13,7 @@ import { ExportButton } from './ExportButton';
 import { savePersistedProject, debounce } from './persistence';
 import { compilePrompt } from './compilePrompt';
 import { SmoothScroll, PageTransition } from '@/components/motion';
+import { FunnelNav } from './FunnelNav';
 import type { Aspect, Scene, SiteStructure } from '@/features/pipeline/types';
 import type { ProjectStatus } from '@/lib/cache';
 
@@ -363,8 +364,8 @@ export function Studio() {
 
   return (
     <main className="relative min-h-screen bg-warm text-warm">
-      {/* ─── Top bar ───────────────────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--color-border)] bg-[rgba(13,10,8,0.88)] px-5 py-3 backdrop-blur-lg sm:px-8">
+      {/* ─── Top bar — higher contrast bg so buttons don't blend ─── */}
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-[var(--color-border)] bg-[rgba(13,10,8,0.95)] px-5 py-3 backdrop-blur-lg sm:px-8">
         <div className="flex items-center gap-6">
           <button
             onClick={() => router.push('/')}
@@ -413,6 +414,9 @@ export function Studio() {
           <ExportButton />
         </div>
       </header>
+
+      {/* ─── Step breadcrumb — shows progress + clickable back navigation ─── */}
+      <FunnelNav />
 
       {/* ─── Body — funnel step router ────────────────────────────────── */}
       <div className="grid grid-cols-1 gap-5 p-5 sm:gap-6 sm:p-6 lg:grid-cols-[1fr_380px]">
