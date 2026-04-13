@@ -14,6 +14,7 @@ import { savePersistedProject, debounce } from './persistence';
 import { compilePrompt } from './compilePrompt';
 import { SmoothScroll, PageTransition } from '@/components/motion';
 import { FunnelNav } from './FunnelNav';
+import { ChatPanel } from './ChatPanel';
 import type { Aspect, Scene, SiteStructure } from '@/features/pipeline/types';
 import type { ProjectStatus } from '@/lib/cache';
 
@@ -565,6 +566,9 @@ export function Studio() {
           {state === 'running' ? <TipCard /> : null}
         </aside>
       </div>
+
+      {/* AI Chat Panel — floating bottom-right, available during copy-review + preview */}
+      <ChatPanel />
     </main>
   );
 }
