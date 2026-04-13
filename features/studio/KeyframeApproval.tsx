@@ -122,7 +122,7 @@ export function KeyframeApproval({ onApprove, onRegenerate, busy }: KeyframeAppr
                     style={{ color: palette?.foreground ?? '#fff' }}
                   >
                     <RefreshCw className="h-3.5 w-3.5" />
-                    {busy ? 'Generating…' : 'Try another (~$0.04)'}
+                    {busy ? 'Generating…' : 'Try another'}
                   </button>
                 </ScaleOnHover>
               </div>
