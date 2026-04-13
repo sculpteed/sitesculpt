@@ -68,6 +68,15 @@ export async function getCustomerIdFromCookie(): Promise<string | null> {
  * Returns null if there's no cookie, tampered cookie, or inactive sub.
  */
 export async function requireActiveSubscription(): Promise<SubscriptionStatus | null> {
+  // Dev bypass — skip paywall in local development for testing
+  if (process.env.DEV_SKIP_PAYWALL === '1') {
+    return {
+      active: true,
+      customerId: 'dev_local',
+      tier: 'pro',
+      cancelAtPeriodEnd: false,
+    };
+  }
   const customerId = await getCustomerIdFromCookie();
   if (!customerId) return null;
   try {
