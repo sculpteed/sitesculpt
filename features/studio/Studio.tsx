@@ -450,7 +450,7 @@ export function Studio() {
       <FunnelNav />
 
       {/* ─── Body — funnel step router ────────────────────────────────── */}
-      <div className="grid grid-cols-1 gap-5 p-5 sm:gap-6 sm:p-6 lg:grid-cols-[1fr_380px]">
+      <div className="grid grid-cols-1 gap-5 p-5 sm:gap-6 sm:p-6 lg:grid-cols-[1fr_340px]">
         {/* ── Left: Main content area ── */}
         <section className="relative flex min-h-[72vh] flex-col overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.012)]">
           {funnelStep === 'brief' ? (
@@ -518,8 +518,14 @@ export function Studio() {
                       Open full screen ↗
                     </a>
                   </div>
-                  {/* Embedded preview — rendered at 1280px then CSS-scaled to fit container */}
-                  <PreviewFrame projectId={projectId} site={site} />
+                  {/* Embedded preview — natural width, responsive CSS handles layout */}
+                  <iframe
+                    key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
+                    src={`/preview/${projectId}?edit=1`}
+                    className="flex-1 border-0"
+                    style={{ width: '100%', minHeight: '70vh' }}
+                    title="Site preview"
+                  />
                 </div>
               ) : (
                 // Loading state while compose-site is running
@@ -628,38 +634,6 @@ export function Studio() {
 }
 
 // ─── Subcomponents ───────────────────────────────────────────────────────────
-
-function PreviewFrame({ projectId, site }: { projectId: string; site: SiteStructure }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.55);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver(([entry]) => {
-      if (!entry) return;
-      setScale(entry.contentRect.width / 1280);
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div ref={containerRef} className="relative flex-1 overflow-auto">
-      <iframe
-        key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
-        src={`/preview/${projectId}?edit=1`}
-        className="origin-top-left border-0"
-        style={{
-          width: '1280px',
-          height: `${Math.round(100 / scale)}%`,
-          transform: `scale(${scale})`,
-        }}
-        title="Site preview"
-      />
-    </div>
-  );
-}
 
 function PreviewPlaceholder() {
   return (
