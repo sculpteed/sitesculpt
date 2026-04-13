@@ -54,13 +54,18 @@ export function ChatPanel({ inline = false }: { inline?: boolean }) {
     setTimeout(scrollToBottom, 50);
 
     try {
+      // Send context based on current funnel step — chat works everywhere
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: msg,
-          site,
+          site: site ?? undefined,
           palette: scene?.palette,
+          // Send concept/scene info so chat works on hero + art-direction steps
+          concept: scene?.concept,
+          visualPrompt: scene?.visualPrompt,
+          funnelStep,
         }),
       });
 
@@ -74,13 +79,15 @@ export function ChatPanel({ inline = false }: { inline?: boolean }) {
       }
 
       const result = (await res.json()) as {
-        site: SiteStructure;
+        site?: SiteStructure;
         paletteUpdate?: { background: string; foreground: string; accent: string };
         summary: string;
       };
 
       // Apply changes to the store — preview updates instantly
-      setSite(result.site);
+      if (result.site) {
+        setSite(result.site);
+      }
       if (result.paletteUpdate && scene) {
         setScene({
           ...scene,

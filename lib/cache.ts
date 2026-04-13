@@ -135,10 +135,14 @@ export async function writeFileBytes(
 /** Get the public blob URL for a file, or null if it doesn't exist. */
 export async function getBlobUrl(projectId: string, file: string): Promise<string | null> {
   if (!USE_BLOB) return null;
-  const { head } = await import('@vercel/blob');
+  const { list } = await import('@vercel/blob');
   try {
-    const info = await head(blobPath(projectId, file), { token: BLOB_TOKEN });
-    return info.url;
+    // Use list() with exact prefix — head() requires a full URL which we
+    // don't have. list() works with pathnames and returns the full URLs.
+    const pathname = blobPath(projectId, file);
+    const result = await list({ prefix: pathname, limit: 1, token: BLOB_TOKEN });
+    const match = result.blobs.find((b) => b.pathname === pathname);
+    return match?.url ?? null;
   } catch {
     return null;
   }
