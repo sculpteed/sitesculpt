@@ -74,8 +74,18 @@ export function PreviewSite({
         </div>
       </nav>
 
-      {/* Hero */}
-      {hasKeyframe ? (
+      {/* Hero — scroll-driven flipbook (Draftly-style) when frames exist,
+           else Ken Burns on keyframe, else gradient */}
+      {frameCount > 0 ? (
+        <HeroFlipbook
+          projectId={projectId}
+          frameCount={frameCount}
+          scrollVh={250}
+          backgroundColor={palette.background}
+        >
+          <HeroOverlay site={site} editable={editable} />
+        </HeroFlipbook>
+      ) : hasKeyframe ? (
         <div className="relative h-screen w-full overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

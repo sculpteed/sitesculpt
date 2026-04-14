@@ -253,7 +253,23 @@ export function Studio() {
         hasAttachedVideo: attachedMedia?.kind === 'video',
       });
 
-      // Call composeSite via a dedicated endpoint
+      // Kick off motion generation in parallel — it takes 2-4 minutes
+      // but shouldn't block the copy + site structure from returning.
+      // The preview picks up frames via SSE once they're ready.
+      const motionPromise = fetch('/api/generate-motion', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId }),
+      }).then(async (r) => {
+        if (!r.ok) return;
+        const { frameCount } = (await r.json()) as { frameCount: number };
+        setFrameCount(frameCount);
+      }).catch(() => {
+        // Motion failed — preview still works with Ken Burns fallback
+      });
+
+      // Call composeSite — this returns fast (~30s) so user sees copy
+      // while motion generation continues in the background
       const res = await fetch('/api/compose-site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -266,6 +282,10 @@ export function Studio() {
       }
       const { site: siteData } = (await res.json()) as { site: SiteStructure };
       setSite(siteData);
+
+      // Don't await motionPromise here — it runs in background.
+      // Preview will update when frames land.
+      void motionPromise;
     } finally {
       setFunnelBusy(false);
     }
@@ -456,7 +476,7 @@ export function Studio() {
         <div className="relative" style={{ height: 'calc(100vh - 110px)' }}>
           {projectId && site ? (
             <iframe
-              key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}`}
+              key={`preview-${projectId}-${site.hero.headline.slice(0, 10)}-frames${frameCount}`}
               src={`/preview/${projectId}?edit=1`}
               className="h-full w-full border-0"
               title="Site preview"
