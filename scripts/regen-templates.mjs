@@ -45,7 +45,15 @@ async function fetchConfig(id) {
   return r.json();
 }
 
-async function generateBg(id, prompt) {
+async function generateBg(id, prompt, skipIfExists = false) {
+  const bgPath = path.join(BG_DIR, `${id}.jpg`);
+  if (skipIfExists) {
+    try {
+      await fs.access(bgPath);
+      console.log(`  → bg already exists, reusing`);
+      return `/templates/bg/${id}.jpg`;
+    } catch {}
+  }
   console.log(`  ↻ generating background (Seedream v4.5)...`);
   const r = await fal.subscribe('fal-ai/bytedance/seedream/v4.5/text-to-image', {
     input: {
@@ -58,7 +66,6 @@ async function generateBg(id, prompt) {
   if (!url) throw new Error('no image URL returned');
   const resp = await fetch(url);
   const buf = Buffer.from(await resp.arrayBuffer());
-  const bgPath = path.join(BG_DIR, `${id}.jpg`);
   await fs.writeFile(bgPath, buf);
   console.log(`  ✓ bg saved (${Math.round(buf.length / 1024)}KB)`);
   return `/templates/bg/${id}.jpg`;
@@ -71,9 +78,9 @@ async function screenshotComposite(browser, id, bgUrl) {
     deviceScaleFactor: 2, // retina-quality screenshot
   });
   const url = `${BASE_URL}/template-render/${id}?bg=${encodeURIComponent(bgUrl)}`;
-  await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
-  // Give fonts + image a moment to settle
-  await page.waitForTimeout(2000);
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  // Wait for the bg image to load + fonts
+  await page.waitForTimeout(3500);
   const outPath = path.join(OUT_DIR, `${id}.jpg`);
   await page.screenshot({ path: outPath, type: 'jpeg', quality: 90 });
   await page.close();
@@ -93,7 +100,8 @@ async function main() {
       console.log(`\n→ ${id}`);
       try {
         const config = await fetchConfig(id);
-        const bgUrl = await generateBg(id, config.bgPrompt);
+        // Reuse existing bg if available — we're only changing the HTML overlay
+        const bgUrl = await generateBg(id, config.bgPrompt, true);
         await screenshotComposite(browser, id, bgUrl);
       } catch (e) {
         console.log(`  ✗ ${e.message?.slice(0, 200)}`);

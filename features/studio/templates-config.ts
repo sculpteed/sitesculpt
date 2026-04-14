@@ -19,6 +19,16 @@ export interface TemplateConfig {
   accentColor: string; // hex
   headlineFont: 'sans' | 'serif' | 'display';
   layout: 'centered' | 'split-left' | 'split-right';
+  /**
+   * Overall site design variant. Each template picks a distinct layout
+   * so the gallery doesn't feel repetitive.
+   */
+  siteStyle?:
+    | 'floating-pill'        // SaaS/modern — nav pill top center
+    | 'editorial-split'      // editorial — minimal wordmark top-left, headline left
+    | 'minimal-top-bar'      // Apple-style — thin top bar, wordmark left
+    | 'centered-split-nav'   // restaurant — brand wordmark centered, nav split
+    | 'boutique-corner';     // boutique — wordmark top-left, cart top-right
   /** The AI background prompt — no UI/text/logos in scene */
   bgPrompt: string;
 }
@@ -87,6 +97,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     accentColor: '#22d3ee',
     headlineFont: 'display',
     layout: 'centered',
+    siteStyle: 'floating-pill',
     bgPrompt: 'Ultra-clean composition, premium color grading, full-bleed website hero background. Multiple floating 3D glass dashboard UI panels arranged in a BORDER FRAME composition — panels ONLY on the far left edge and far right edge of the frame, NOT in the center. Completely empty dark cosmic space in the large CENTER AREA of the image (where text will be placed), soft glowing cyan and violet accent lights along the edges only, subtle particle effects at the edges, depth fog filling the center vignette. The CENTER 60% of the frame must be dark empty space for text readability. Panels show abstract glowing UI shapes with no readable text. Octane render quality. No text, no logos, no watermarks in-frame. Aspect ratio 16:9.',
   },
 
@@ -102,7 +113,8 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     theme: 'light',
     accentColor: '#3b82f6',
     headlineFont: 'sans',
-    layout: 'centered',
+    layout: 'split-left',
+    siteStyle: 'floating-pill',
     bgPrompt: 'Full-bleed website hero background, wide 16:9 aspect. Bright dreamy sky with soft wispy clouds drifting across the entire frame, warm pastel gradient transitioning from soft blue to peach and cream, subtle bokeh depth, cinematic cloud photography. A small 3D-rendered smartphone is tucked into the FAR RIGHT EDGE of the frame, only partially visible (cut off at the right edge) — its black glass screen is completely off (pure black reflection, no UI, no graphics, no gradients on screen), tilted at a soft angle with subtle shadow. The LEFT 75% of the frame is PURE EMPTY SKY with clouds only, zero objects, zero text, zero labels, zero UI. ABSOLUTELY NO TEXT ANYWHERE IN IMAGE, NO BRAND LABELS, NO APP NAMES, NO IPHONE LOGO, NO WORDS OF ANY KIND, NO WATERMARK. Just pure dreamy sky with a sliver of a phone on the right edge. Apple-style product photography aesthetic.',
   },
 
@@ -121,6 +133,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     accentColor: '#1f2937',
     headlineFont: 'serif',
     layout: 'split-left',
+    siteStyle: 'editorial-split',
     bgPrompt: 'Ultra-clean composition, premium color grading, full-bleed website hero background. Modern minimalist consulting firm office interior composed with HEAVY NEGATIVE SPACE on the LEFT HALF of the frame (for text overlay). The RIGHT HALF shows a sculptural oak conference table with leather chairs beside floor-to-ceiling windows overlooking a city skyline at golden hour, warm sunlight casting long shadows. The LEFT HALF is a simple soft wall or floor area with warm diffused light, completely clean uncluttered space with no objects. Curated editorial architectural photography, shallow depth of field, warm cream tones. No text, no logos, no watermarks in-frame. Aspect ratio 16:9.',
   },
 
@@ -140,6 +153,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     accentColor: '#8b6f47',
     headlineFont: 'serif',
     layout: 'split-left',
+    siteStyle: 'boutique-corner',
     bgPrompt: 'Ultra-clean composition, premium color grading, full-bleed website hero background. Brick-and-mortar boutique storefront composed with the WHOLE SCENE PUSHED TO THE RIGHT HALF of the frame. Right half: warm brick facade with large arched glass window displaying curated ceramic vases and linen textiles on raw wooden pedestals, brass pendant lighting, slate sidewalk, small potted olive tree, elegant dark door. LEFT HALF: soft blurred warm neutral background, shadowed brick wall surface, clean empty space suitable for text overlay, no objects or detail in left half. Soft early evening golden light on the right side. Cinematic editorial photography. No signage text, no shop name visible, no watermarks in-frame. Aspect ratio 16:9.',
   },
 
@@ -158,6 +172,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     accentColor: '#d4a574',
     headlineFont: 'serif',
     layout: 'centered',
+    siteStyle: 'centered-split-nav',
     bgPrompt: 'Ultra-clean composition, premium color grading, full-bleed website hero background. Intimate fine-dining restaurant interior at night shot from a WIDE low angle. The foreground bottom-third shows a blurred wooden bar with candles and wine glasses, the background around the edges shows soft amber pendant lights and distant blurred kitchen warmth, but the CENTER of the frame is a SOFT DARK VIGNETTE with heavy shadow and minimal detail — warm dark walnut wall area, out-of-focus candlelight bokeh, deep atmospheric shadows. Large dark calm area in the center of the image for text overlay. Luxury Michelin aesthetic with heavy depth of field, dramatic central darkness. No text, no menu boards, no signage, no watermarks in-frame. Aspect ratio 16:9.',
   },
 
@@ -177,6 +192,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     accentColor: '#5a7db8',
     headlineFont: 'serif',
     layout: 'split-left',
+    siteStyle: 'editorial-split',
     bgPrompt: 'Ultra-clean composition, premium color grading, full-bleed website hero background. Professional photography studio composed with heavy NEGATIVE SPACE on the LEFT HALF of the frame. The RIGHT HALF of the frame shows: vintage medium-format Hasselblad camera on a tripod, a softbox light on a C-stand, polaroid prints pinned on a cork board, wooden stool, warm natural window light. The LEFT HALF of the frame is a clean white seamless paper backdrop with soft natural light gradient, completely empty space suitable for text overlay, no objects on the left. Raw concrete floor visible in foreground. Editorial photography aesthetic. No text, no logos, no watermarks in-frame. Aspect ratio 16:9.',
   },
 
@@ -195,6 +211,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     accentColor: '#a78bfa',
     headlineFont: 'sans',
     layout: 'centered',
+    siteStyle: 'minimal-top-bar',
     bgPrompt: 'Ultra-clean composition, premium color grading, full-bleed website hero background. A sleek minimalist consumer hardware product sitting on an illuminated pedestal in the LOWER THIRD of the frame, positioned toward the bottom center. The UPPER TWO-THIRDS of the frame is completely dark empty studio space — deep void, subtle radial vignette of soft light glow from the product rising upward, completely clean dark space for text overlay above the product. The product is an abstract sculptural metal and glass device with rounded edges and dark anodized finish, dramatic single key light from above catching its edges. Moody Apple-keynote product reveal aesthetic with the product occupying only the bottom section. Cinematic product photography. No text, no branding on the device, no logos, no watermarks in-frame. Aspect ratio 16:9.',
   },
 
@@ -214,6 +231,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     accentColor: '#5e9b8a',
     headlineFont: 'serif',
     layout: 'centered',
+    siteStyle: 'floating-pill',
     bgPrompt: 'Ultra-clean composition, premium color grading, full-bleed website hero background. Serene minimalist yoga studio with objects arranged ONLY on the bottom edge of the frame and FAR LEFT / FAR RIGHT edges. Bottom left: a row of sage-green rolled yoga mats standing upright against a plastered cream wall. Bottom right: a single potted fiddle leaf fig plant beside a wooden bench, a brass singing bowl. The entire UPPER TWO-THIRDS of the frame is a simple plastered cream wall with warm natural morning light streaming softly, subtle dust motes, large clean empty wall area above and around the mid-level for text overlay. Polished blonde hardwood floor visible at the very bottom. Dreamy soft atmosphere. Editorial wellness photography. No text, no logos, no watermarks in-frame. Aspect ratio 16:9.',
   },
 
@@ -236,6 +254,7 @@ export const TEMPLATE_CONFIGS: TemplateConfig[] = [
     accentColor: '#a78bfa',
     headlineFont: 'serif',
     layout: 'centered',
+    siteStyle: 'minimal-top-bar',
     bgPrompt: 'Full-bleed website hero background, wide 16:9 aspect, mountaintop astronomy observatory at night. A small white observatory dome with a telescope peeking out is positioned in the LOWER LEFT CORNER of the frame, appearing small and distant. Rocky desert terrain stretches along the bottom edge. The ENTIRE UPPER 75% of the frame is a vast pure dark starry sky — a dramatic Milky Way galaxy arches softly across, subtle nebula colors in deep violet and soft teal scattered among thousands of stars, completely clean empty sky with no structures, no text, no banners, no letters. ABSOLUTELY NO TEXT, NO LETTERS, NO WORDS, NO TITLES, NO BANNERS, NO HEADLINES, NO SIGNAGE, NO WATERMARKS ANYWHERE IN THE IMAGE. Just a pure astrophotography cosmic scene with a small observatory in the bottom left. Carl Sagan cosmic aesthetic, long exposure, cinematic grandeur.',
   },
 ];
