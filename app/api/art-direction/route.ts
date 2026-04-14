@@ -373,13 +373,14 @@ function buildVisualPrompt(args: {
   scene: Scene;
   palette: ConceptOption['palette'];
 }): string {
-  const { brandName, description, scene, palette } = args;
-  const headline = description.split(/[.!?]/)[0]?.trim().slice(0, 80) || 'Built for what comes next';
-  const subtext = description.slice(0, 160);
+  const { scene, palette } = args;
   const composition = pickRandom(COMPOSITION_VARIATIONS);
   const lighting = pickRandom(LIGHTING_VARIATIONS);
 
-  return `Premium modern landing page hero section. Navigation: Logo ${brandName}, Menu items: Features, Pricing, About, Contact, Button: Get Started. Centered hero layout. Headline: ${headline}. Subtext: ${subtext} CTA button: Start Free + secondary: Learn More. Hero background: ${composition} with ${lighting} — ${scene.background}. Design style: ${scene.style}. Fonts: Inter / DM Sans. Colors: background ${palette.background}, foreground ${palette.foreground}, accent ${palette.accent}. Clean typography, Draftly-tier cinematic quality.`;
+  // Background-only prompt — the HTML overlay adds nav/headline/CTAs on top.
+  // Asking the image model to bake text into the image AND rendering the same
+  // text as HTML = doubled ghost text over the user's hero. Don't do that.
+  return `Ultra-clean composition, premium color grading, full-bleed website hero background. ${composition} with ${lighting} — ${scene.background}. Design style: ${scene.style}. Color palette: ${palette.background} background with ${palette.accent} accents. ABSOLUTELY NO TEXT, NO LOGOS, NO WORDS, NO UI ELEMENTS, NO BUTTONS, NO NAVIGATION, NO HEADLINES, NO LABELS, NO WATERMARKS IN THE IMAGE. Pure atmospheric scene only. Aspect ratio 16:9.`;
 }
 
 export async function POST(req: NextRequest): Promise<Response> {

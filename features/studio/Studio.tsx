@@ -207,6 +207,8 @@ export function Studio() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           visualPrompt: concept.visualPrompt,
+          motionPrompt: concept.motionPrompt,
+          concept: concept.title,
           palette,
           aspect,
         }),

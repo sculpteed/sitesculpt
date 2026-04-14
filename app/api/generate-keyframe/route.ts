@@ -11,6 +11,8 @@ export const maxDuration = 60;
 
 const bodySchema = z.object({
   visualPrompt: z.string().min(10),
+  motionPrompt: z.string().optional(),
+  concept: z.string().optional(),
   palette: z.object({
     background: z.string(),
     foreground: z.string(),
@@ -39,7 +41,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { visualPrompt, palette, aspect } = parsed.data;
+  const { visualPrompt, motionPrompt, concept, palette, aspect } = parsed.data;
 
   // Generate a unique project ID using the visual prompt + a random seed
   const projectId = hashInput({
@@ -54,9 +56,9 @@ export async function POST(req: NextRequest): Promise<Response> {
     // Save the scene JSON so /preview/[id] can read it
     await writeJson(projectId, 'scene.json', {
       visualPrompt,
-      motionPrompt: '',
+      motionPrompt: motionPrompt || 'Slow continuous parallax camera push. Subtle atmospheric motion. Gentle depth shift. No cuts.',
       palette,
-      concept: '',
+      concept: concept || '',
     });
 
     // Generate the keyframe via Ideogram v3 (best-in-class text rendering)
