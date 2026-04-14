@@ -24,17 +24,17 @@ const BG_DIR = 'public/templates/bg';
 const OUT_DIR = 'public/templates';
 
 async function loadConfigs() {
-  // Only the 9 non-cinematic templates need regen (kept: ai-platform, architecture, creative-3d)
+  // All 9 non-cinematic templates
   return [
-    'saas-landing',       // SaaS dashboard
-    'creative-agency',    // Professional services (Atlas & Co)
-    'app-landing',        // Mobile app (TripVault)
-    'ecommerce-brand',    // Retail boutique (Maison)
-    'restaurant',         // Restaurant interior (Ember & Vine)
-    'portfolio',          // Photography studio (Miles Kaplan)
-    'startup-launch',     // Hardware product (Nexus)
-    'nonprofit',          // Wellness studio (Onda)
-    'space-research',     // Research institute (Ortelius)
+    'saas-landing',
+    'creative-agency',
+    'app-landing',
+    'ecommerce-brand',
+    'restaurant',
+    'portfolio',
+    'startup-launch',
+    'nonprofit',
+    'space-research',
   ];
 }
 
