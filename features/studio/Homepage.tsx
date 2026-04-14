@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { useStudioStore } from './store';
 import { TEMPLATES, type Template } from './templates';
 import {
-  SmoothScroll,
   FadeIn,
   StaggerGroup,
   StaggerChild,
@@ -27,7 +26,6 @@ export function Homepage() {
   };
 
   return (
-    <SmoothScroll>
     <PageTransition>
     <main className="relative min-h-screen overflow-hidden">
       {/* Background */}
@@ -44,9 +42,9 @@ export function Homepage() {
         />
         {/* Animated gradient fallback when video is missing/loading */}
         <div
-          className="absolute inset-0 -z-10"
+          className="absolute inset-0"
           style={{
-            background: 'radial-gradient(ellipse 80% 50% at 50% 40%, rgba(232,184,116,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 30% 80%, rgba(180,120,60,0.08) 0%, transparent 50%), #0d0a08',
+            background: 'radial-gradient(ellipse 80% 50% at 50% 40%, rgba(232,184,116,0.15) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 30% 80%, rgba(180,120,60,0.1) 0%, transparent 50%), #0d0a08',
           }}
         />
         <div
@@ -81,44 +79,38 @@ export function Homepage() {
         </div>
       </nav>
 
-      {/* Hero */}
+      {/* Hero — no FadeIn wrappers, renders immediately */}
       <section className="relative z-20 mx-auto flex min-h-[72vh] max-w-4xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
-        <FadeIn delay={0.2} y={30}>
-          <h1 className="mb-6 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] text-warm sm:mb-8 sm:text-[88px] sm:leading-[0.92] md:text-[128px]">
-            Start{' '}
-            <em className="italic" style={{ color: '#f5d9a8' }}>
-              sculpting.
-            </em>
-          </h1>
-        </FadeIn>
+        <h1 className="mb-6 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] text-warm sm:mb-8 sm:text-[88px] sm:leading-[0.92] md:text-[128px]">
+          Start{' '}
+          <em className="italic" style={{ color: '#f5d9a8' }}>
+            sculpting.
+          </em>
+        </h1>
 
-        <FadeIn delay={0.4} y={20}>
-          <p className="mb-8 max-w-md text-[14px] leading-relaxed text-warm-muted sm:text-[15px]">
-            Describe your business. Get a cinematic, production-ready website in minutes.
-          </p>
-        </FadeIn>
+        <p className="mb-8 max-w-md text-[14px] leading-relaxed text-warm-muted sm:text-[15px]">
+          Describe your business. Get a cinematic, production-ready website in minutes.
+        </p>
 
-        <FadeIn delay={0.5} y={20}>
-          <div className="flex flex-col items-center gap-4">
-            <GlowPulse color="#e8b874">
-              <ScaleOnHover>
-                <button
-                  onClick={handleGetStarted}
-                  className="rounded-full px-7 py-3.5 text-[14px] font-medium text-[#0d0a08] transition"
-                  style={{ backgroundColor: '#e8b874' }}
-                >
-                  Start from scratch
-                </button>
-              </ScaleOnHover>
-            </GlowPulse>
-            <a
-              href="#templates"
-              className="text-[12px] text-warm-subtle transition hover:text-warm"
-            >
-              or pick a template below
-            </a>
-          </div>
-        </FadeIn>
+        <div className="flex flex-col items-center gap-4">
+          <GlowPulse color="#e8b874">
+            <ScaleOnHover>
+              <button
+                onClick={handleGetStarted}
+                className="rounded-full px-7 py-3.5 text-[14px] font-medium text-[#0d0a08] transition"
+                style={{ backgroundColor: '#e8b874' }}
+              >
+                Start from scratch
+              </button>
+            </ScaleOnHover>
+          </GlowPulse>
+          <a
+            href="#templates"
+            className="text-[12px] text-warm-subtle transition hover:text-warm"
+          >
+            or pick a template below
+          </a>
+        </div>
       </section>
 
       {/* Reading surface */}
@@ -265,7 +257,6 @@ export function Homepage() {
       </div>
     </main>
     </PageTransition>
-    </SmoothScroll>
   );
 }
 
