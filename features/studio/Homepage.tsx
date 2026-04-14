@@ -30,23 +30,22 @@ export function Homepage() {
     <main className="relative min-h-screen overflow-hidden">
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#0d0a08]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/hero-bg.jpg"
-          alt=""
+        <video
+          className="bg-video"
+          src="/homepage-bg.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
           aria-hidden="true"
-          className="absolute inset-0 h-full w-full object-cover opacity-50"
-          style={{
-            animation: 'kenBurns 30s ease-in-out infinite alternate',
-            transformOrigin: 'center center',
-          }}
         />
         {/* Darken overlay for text legibility */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(to bottom, rgba(13,10,8,0.3) 0%, rgba(13,10,8,0.15) 40%, rgba(13,10,8,0.5) 100%)',
+              'linear-gradient(to bottom, rgba(13,10,8,0.08) 0%, rgba(13,10,8,0.18) 55%, rgba(13,10,8,0.32) 100%)',
           }}
         />
         <div className="grain absolute inset-0 opacity-[0.06]" />
@@ -267,11 +266,11 @@ function TemplateCard({
   return (
     <ScaleOnHover scale={1.02}>
       <div className="group flex flex-col overflow-hidden rounded-xl border border-[rgba(243,234,217,0.08)] transition-all hover:border-[rgba(243,234,217,0.2)]">
-        {/* Preview image area */}
+        {/* Preview image with overlaid text */}
         <button
           type="button"
           onClick={onClick}
-          className="relative h-[200px] w-full overflow-hidden"
+          className="relative h-[220px] w-full overflow-hidden"
           style={{
             background: `linear-gradient(135deg, ${template.gradient[0]}, ${template.gradient[1]})`,
           }}
@@ -281,26 +280,30 @@ function TemplateCard({
             <img
               src={template.previewUrl}
               alt={template.title}
-              className="absolute inset-0 h-full w-full object-cover object-top transition group-hover:scale-[1.04]"
-              style={{ transformOrigin: 'top center' }}
+              className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.04]"
             />
           )}
+          {/* Dark gradient for text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
           {/* Category badge */}
-          <div className="absolute left-3 top-3 z-10">
-            <span className="rounded-sm bg-[rgba(243,234,217,0.12)] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.15em] text-white/80 backdrop-blur-sm">
+          <div className="absolute left-4 top-4 z-10">
+            <span className="rounded-sm bg-white/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.15em] text-white/80 backdrop-blur-sm">
               {template.category}
             </span>
           </div>
+          {/* Overlaid headline — real HTML text, always crisp */}
+          <div className="absolute inset-x-0 bottom-0 z-10 p-5">
+            <div className="font-serif text-[22px] leading-tight tracking-[-0.01em] text-white">
+              {template.title}
+            </div>
+            <div className="mt-1 text-[11px] text-white/60">
+              {template.subtitle}
+            </div>
+          </div>
         </button>
 
-        {/* Info area below the image */}
-        <div className="flex flex-col gap-3 bg-[rgba(243,234,217,0.02)] p-4">
-          <div className="text-[14px] font-medium text-warm">
-            {template.title}
-            <span className="ml-1.5 text-warm-muted"> — </span>
-            <span className="text-warm-muted">{template.subtitle}</span>
-          </div>
-
+        {/* Use This button */}
+        <div className="bg-[rgba(243,234,217,0.02)] p-3">
           <button
             type="button"
             onClick={onClick}
