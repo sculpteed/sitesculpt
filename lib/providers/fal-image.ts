@@ -6,43 +6,42 @@ fal.config({
   credentials: process.env.FAL_API_KEY,
 });
 
-function sizeForAspect(aspect: Aspect): { width: number; height: number } {
+function imageSizeForAspect(aspect: Aspect): 'landscape_16_9' | 'portrait_16_9' | 'square_hd' {
   switch (aspect) {
     case '16:9':
-      return { width: 1536, height: 1024 };
+      return 'landscape_16_9';
     case '9:16':
-      return { width: 1024, height: 1536 };
+      return 'portrait_16_9';
     case '1:1':
-      return { width: 1024, height: 1024 };
+      return 'square_hd';
   }
 }
 
 /**
- * Generate a high-quality image using Flux via fal.ai.
- * Flux has dramatically better text rendering and composition than GPT Image.
- * Returns raw PNG/JPEG bytes.
+ * Generate a high-quality image using Ideogram v3 via fal.ai.
+ * Ideogram v3 has ~95% text rendering accuracy — dramatically better
+ * than Flux (~60%) and GPT Image. Best-in-class for website hero
+ * images that include nav bars, headlines, and UI text.
+ * Returns raw JPEG bytes.
  */
 export async function generateFluxImage(args: {
   prompt: string;
   aspect: Aspect;
 }): Promise<Buffer> {
-  const size = sizeForAspect(args.aspect);
-
-  const result = await fal.subscribe('fal-ai/flux-pro/v1.1-ultra', {
+  const result = await fal.subscribe('fal-ai/ideogram/v3', {
     input: {
       prompt: args.prompt,
+      image_size: imageSizeForAspect(args.aspect),
       num_images: 1,
-      aspect_ratio: args.aspect === '16:9' ? '16:9' : args.aspect === '9:16' ? '9:16' : '1:1',
-      safety_tolerance: '5', // most permissive for creative content
-      output_format: 'jpeg',
+      style: 'DESIGN',
     },
   });
 
   const imageUrl = (result.data as { images: Array<{ url: string }> }).images?.[0]?.url;
-  if (!imageUrl) throw new Error('Flux returned no image URL');
+  if (!imageUrl) throw new Error('Ideogram returned no image URL');
 
   // Download the image bytes
   const resp = await fetch(imageUrl);
-  if (!resp.ok) throw new Error(`Failed to download Flux image: ${resp.status}`);
+  if (!resp.ok) throw new Error(`Failed to download Ideogram image: ${resp.status}`);
   return Buffer.from(await resp.arrayBuffer());
 }

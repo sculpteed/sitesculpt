@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { envStatus } from '@/lib/env';
 import { hashInput, ensureProjectDir, writeJson, writeFileBytes } from '@/lib/cache';
-import { generateKeyframeImage } from '@/lib/providers/openai-image';
+import { generateFluxImage } from '@/lib/providers/fal-image';
 import type { Aspect } from '@/features/pipeline/types';
 
 export const runtime = 'nodejs';
@@ -59,8 +59,8 @@ export async function POST(req: NextRequest): Promise<Response> {
       concept: '',
     });
 
-    // Generate the keyframe
-    const bytes = await generateKeyframeImage({
+    // Generate the keyframe via Ideogram v3 (best-in-class text rendering)
+    const bytes = await generateFluxImage({
       prompt: visualPrompt,
       aspect: aspect as Aspect,
     });
