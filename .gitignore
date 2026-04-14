@@ -17,3 +17,6 @@ public/homepage-bg*
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+# Template compositor backgrounds (source assets, not published)
+public/templates/bg/

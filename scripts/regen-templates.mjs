@@ -1,46 +1,115 @@
+/**
+ * Draftly-style template compositor.
+ *
+ * For each template:
+ * 1. Generate CLEAN background via Seedream v4.5 (no text/UI)
+ * 2. Save to public/templates/bg-{id}.jpg
+ * 3. Playwright navigates to /template-render/{id}?bg=/templates/bg-{id}.jpg
+ * 4. Screenshot the composite at 1376x768
+ * 5. Save final template JPEG to public/templates/{id}.jpg
+ *
+ * Result: pixel-perfect HTML text over AI backgrounds — exactly
+ * what Draftly does.
+ */
 import { fal } from '@fal-ai/client';
-import fs from 'fs';
+import { chromium } from 'playwright';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 
 fal.config({ credentials: process.env.FAL_API_KEY });
 
-// New 3D cinematic templates — showcase the scroll-driven 3D capability
-const templates = [
-  {
-    id: 'ai-platform',
-    prompt: 'Futuristic enterprise AI platform landing page hero with cinematic 3D scene. Navigation: Logo Aura, Menu items: Overview, Infrastructure, Agents, Scale, Deploy, Button: Deploy Now. Centered hero layout. Headline: The intelligence layer for modern enterprise. Subtext: Unify your fragmented data streams. Aura processes billions of events in real-time to deliver autonomous predictive insights straight to your team. CTA button: Request Access + secondary: Explore Architecture. Hero background: breathtaking cinematic 3D render of floating sky islands connected by waterfalls cascading into clouds below, snow-capped mountains in distance, dramatic volumetric god rays piercing through atmospheric mist, Unreal Engine quality. Design style: cinematic 3D scene with epic scale and depth, Ghibli-meets-Inception atmosphere. Fonts: Inter / IBM Plex Sans. Colors: atmospheric blue-grey sky, warm sun highlights, white UI text, subtle gold accents.',
-  },
-  {
-    id: 'space-research',
-    prompt: 'Space research lab and cosmic discovery platform landing page hero. Navigation: Logo UNVRS Labs, Menu items: Premium, Scroll, Research, Missions, Gallery, Button: Start Building. Centered hero layout. Headline: Chart the unknown. Subtext: Advanced deep-space research platform for the next generation of cosmic explorers, astronomers, and theoretical physicists. CTA button: Enter the Lab + secondary: View Missions. Hero background: stunning cinematic 3D space scene with massive glowing ring portal in center, floating planets with rings, distant nebulae, stars and galaxies, a small spacecraft silhouette for scale, volumetric cosmic light, sci-fi concept art. Design style: cinematic space adventure with epic scale, Interstellar-meets-No-Mans-Sky aesthetic. Fonts: Space Grotesk / Inter. Colors: deep cosmic purple and blue, white bright stars, glowing cyan and pink nebula highlights.',
-  },
-  {
-    id: 'architecture',
-    prompt: 'Modern architecture studio landing page hero with 3D cinematic render. Navigation: Logo MERIDIAN in serif caps, Menu items: Projects, Practice, Awards, Journal, Contact, Button: Commission. Centered hero layout over full-bleed 3D render. Headline: Where vision meets form. Italic serif accent on "form". Subtext: A contemporary architecture practice designing residences, cultural institutions, and urban landmarks across North America and Europe. CTA button: View Portfolio + secondary: About Our Practice. Hero background: cinematic 3D architectural visualization of a minimalist modernist building with glass walls and exposed concrete, perched on a cliff overlooking ocean at golden hour, dramatic volumetric sunlight, surrounded by native landscaping, photoreal Unreal Engine render. Design style: sophisticated architectural photography with cinematic lighting, premium print-magazine aesthetic. Fonts: Cormorant Garamond / Inter. Colors: warm golden hour tones, deep shadows, cream text, muted bronze accent.',
-  },
-  {
-    id: 'creative-3d',
-    prompt: 'Bold 3D creative agency landing page hero with abstract cinematic composition. Navigation: Logo PRISM with geometric icon, Menu items: Work, Services, About, Contact, Button: Start a Project. Centered hero layout. Headline: Design at the speed of imagination. Subtext: We craft brand worlds, immersive digital experiences, and cinematic interactive identity systems for ambitious brands. CTA button: View Our Work + secondary: Our Process. Hero background: stunning cinematic 3D abstract scene with floating translucent glass prisms catching rainbow light, liquid chrome spheres reflecting a sunset sky, iridescent metallic ribbons flowing through space, volumetric lighting, ultra-high-detail Octane render. Design style: bold cinematic 3D concept art with dramatic lighting and rich color. Fonts: PP Neue Montreal / Inter. Colors: rich gradient backdrop, iridescent metallic highlights, white typography, vibrant accent spectrum.',
-  },
-];
+const PORT = 3003;
+const BASE_URL = `http://localhost:${PORT}`;
+const BG_DIR = 'public/templates/bg';
+const OUT_DIR = 'public/templates';
 
-for (const t of templates) {
-  console.log('→ ' + t.id);
-  try {
-    const r = await fal.subscribe('fal-ai/ideogram/v3', {
-      input: {
-        prompt: t.prompt,
-        image_size: 'landscape_16_9',
-        num_images: 1,
-        style: 'DESIGN',
-      },
-    });
-    const url = r.data?.images?.[0]?.url;
-    const resp = await fetch(url);
-    const buf = Buffer.from(await resp.arrayBuffer());
-    fs.writeFileSync('public/templates/' + t.id + '.jpg', buf);
-    console.log('  ✓ ' + Math.round(buf.length / 1024) + 'KB');
-  } catch (e) {
-    console.log('  ✗ ' + e.message?.slice(0, 150));
-  }
+async function loadConfigs() {
+  // Import the config dynamically — it's TS so we need to read via a side channel
+  // Easier: re-specify the IDs here matching templates-config.ts
+  return [
+    'saas-landing',
+    'creative-agency',
+    'app-landing',
+    'ecommerce-brand',
+    'restaurant',
+    'portfolio',
+    'startup-launch',
+    'nonprofit',
+    'ai-platform',
+    'space-research',
+    'architecture',
+    'creative-3d',
+  ];
 }
-console.log('Done!');
+
+// Import config via a small fetch to our own dev server — simplest way
+async function fetchConfig(id) {
+  const r = await fetch(`${BASE_URL}/api/template-config/${id}`);
+  if (!r.ok) throw new Error(`Config fetch failed for ${id}: ${r.status}`);
+  return r.json();
+}
+
+async function generateBg(id, prompt) {
+  console.log(`  ↻ generating background (Seedream v4.5)...`);
+  const r = await fal.subscribe('fal-ai/bytedance/seedream/v4.5/text-to-image', {
+    input: {
+      prompt,
+      num_images: 1,
+      image_size: { width: 2048, height: 1152 },
+    },
+  });
+  const url = r.data?.images?.[0]?.url;
+  if (!url) throw new Error('no image URL returned');
+  const resp = await fetch(url);
+  const buf = Buffer.from(await resp.arrayBuffer());
+  const bgPath = path.join(BG_DIR, `${id}.jpg`);
+  await fs.writeFile(bgPath, buf);
+  console.log(`  ✓ bg saved (${Math.round(buf.length / 1024)}KB)`);
+  return `/templates/bg/${id}.jpg`;
+}
+
+async function screenshotComposite(browser, id, bgUrl) {
+  console.log(`  ↻ compositing HTML overlay + background...`);
+  const page = await browser.newPage({
+    viewport: { width: 1376, height: 768 },
+    deviceScaleFactor: 2, // retina-quality screenshot
+  });
+  const url = `${BASE_URL}/template-render/${id}?bg=${encodeURIComponent(bgUrl)}`;
+  await page.goto(url, { waitUntil: 'networkidle', timeout: 30000 });
+  // Give fonts + image a moment to settle
+  await page.waitForTimeout(2000);
+  const outPath = path.join(OUT_DIR, `${id}.jpg`);
+  await page.screenshot({ path: outPath, type: 'jpeg', quality: 90 });
+  await page.close();
+  const size = (await fs.stat(outPath)).size;
+  console.log(`  ✓ composite saved (${Math.round(size / 1024)}KB)`);
+}
+
+async function main() {
+  await fs.mkdir(BG_DIR, { recursive: true });
+  await fs.mkdir(OUT_DIR, { recursive: true });
+
+  const ids = await loadConfigs();
+  const browser = await chromium.launch();
+
+  try {
+    for (const id of ids) {
+      console.log(`\n→ ${id}`);
+      try {
+        const config = await fetchConfig(id);
+        const bgUrl = await generateBg(id, config.bgPrompt);
+        await screenshotComposite(browser, id, bgUrl);
+      } catch (e) {
+        console.log(`  ✗ ${e.message?.slice(0, 200)}`);
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+  console.log('\nDone!');
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
