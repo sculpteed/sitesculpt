@@ -42,6 +42,13 @@ export function Homepage() {
           preload="auto"
           aria-hidden="true"
         />
+        {/* Animated gradient fallback when video is missing/loading */}
+        <div
+          className="absolute inset-0 -z-10"
+          style={{
+            background: 'radial-gradient(ellipse 80% 50% at 50% 40%, rgba(232,184,116,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 30% 80%, rgba(180,120,60,0.08) 0%, transparent 50%), #0d0a08',
+          }}
+        />
         <div
           className="absolute inset-0"
           style={{
