@@ -24,21 +24,17 @@ const BG_DIR = 'public/templates/bg';
 const OUT_DIR = 'public/templates';
 
 async function loadConfigs() {
-  // Import the config dynamically — it's TS so we need to read via a side channel
-  // Easier: re-specify the IDs here matching templates-config.ts
+  // Only the 9 non-cinematic templates need regen (kept: ai-platform, architecture, creative-3d)
   return [
-    'saas-landing',
-    'creative-agency',
-    'app-landing',
-    'ecommerce-brand',
-    'restaurant',
-    'portfolio',
-    'startup-launch',
-    'nonprofit',
-    'ai-platform',
-    'space-research',
-    'architecture',
-    'creative-3d',
+    'saas-landing',       // SaaS dashboard
+    'creative-agency',    // Professional services (Atlas & Co)
+    'app-landing',        // Mobile app (TripVault)
+    'ecommerce-brand',    // Retail boutique (Maison)
+    'restaurant',         // Restaurant interior (Ember & Vine)
+    'portfolio',          // Photography studio (Miles Kaplan)
+    'startup-launch',     // Hardware product (Nexus)
+    'nonprofit',          // Wellness studio (Onda)
+    'space-research',     // Research institute (Ortelius)
   ];
 }
 
