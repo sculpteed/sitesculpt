@@ -29,32 +29,27 @@ export function Homepage() {
     <PageTransition>
     <main className="relative min-h-screen overflow-hidden">
       {/* Background */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-warm">
-        <video
-          className="bg-video"
-          src="/homepage-bg.mp4?v=sora-2"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#0d0a08]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/hero-bg.jpg"
+          alt=""
           aria-hidden="true"
-        />
-        {/* Animated gradient fallback when video is missing/loading */}
-        <div
-          className="absolute inset-0"
+          className="absolute inset-0 h-full w-full object-cover opacity-50"
           style={{
-            background: 'radial-gradient(ellipse 80% 50% at 50% 40%, rgba(232,184,116,0.15) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 30% 80%, rgba(180,120,60,0.1) 0%, transparent 50%), #0d0a08',
+            animation: 'kenBurns 30s ease-in-out infinite alternate',
+            transformOrigin: 'center center',
           }}
         />
+        {/* Darken overlay for text legibility */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(to bottom, rgba(13,10,8,0.08) 0%, rgba(13,10,8,0.18) 55%, rgba(13,10,8,0.32) 100%)',
+              'linear-gradient(to bottom, rgba(13,10,8,0.3) 0%, rgba(13,10,8,0.15) 40%, rgba(13,10,8,0.5) 100%)',
           }}
         />
-        <div className="grain absolute inset-0 opacity-[0.08]" />
+        <div className="grain absolute inset-0 opacity-[0.06]" />
       </div>
 
       {/* Nav */}

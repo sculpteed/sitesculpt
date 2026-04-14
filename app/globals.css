@@ -119,6 +119,15 @@ body {
 }
 
 /* Funnel fade-in on step change */
+@keyframes kenBurns {
+  0% {
+    transform: scale(1) translate(0, 0);
+  }
+  100% {
+    transform: scale(1.12) translate(-1.5%, -1%);
+  }
+}
+
 @keyframes fadein {
   from {
     opacity: 0;
