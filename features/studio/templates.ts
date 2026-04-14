@@ -10,8 +10,10 @@ export interface Template {
   description: string;
   toneId: string;
   pages: string[];
-  /** Two hex colors for the card gradient background */
+  /** Two hex colors for the card gradient background (fallback) */
   gradient: [string, string];
+  /** Path to pre-generated screenshot in /public — shown as card bg */
+  previewUrl?: string;
 }
 
 export const TEMPLATES: Template[] = [
@@ -26,6 +28,7 @@ export const TEMPLATES: Template[] = [
     toneId: 'minimal',
     pages: ['features', 'pricing', 'faq', 'testimonials'],
     gradient: ['#0f172a', '#1e40af'],
+    previewUrl: '/templates/saas-landing.jpg',
   },
   {
     id: 'creative-agency',
@@ -38,6 +41,7 @@ export const TEMPLATES: Template[] = [
     toneId: 'editorial',
     pages: ['about', 'case-studies', 'team', 'contact'],
     gradient: ['#1a1a2e', '#e94560'],
+    previewUrl: '/templates/creative-agency.jpg',
   },
   {
     id: 'app-landing',
@@ -50,6 +54,7 @@ export const TEMPLATES: Template[] = [
     toneId: 'playful',
     pages: ['features', 'pricing', 'faq'],
     gradient: ['#0d1117', '#58a6ff'],
+    previewUrl: '/templates/app-landing.jpg',
   },
   {
     id: 'ecommerce-brand',
@@ -62,6 +67,7 @@ export const TEMPLATES: Template[] = [
     toneId: 'luxurious',
     pages: ['about', 'features', 'testimonials'],
     gradient: ['#1b1b18', '#c9a96e'],
+    previewUrl: '/templates/ecommerce-brand.jpg',
   },
   {
     id: 'restaurant',
@@ -74,6 +80,7 @@ export const TEMPLATES: Template[] = [
     toneId: 'luxurious',
     pages: ['about', 'contact'],
     gradient: ['#1a0f0a', '#8b6f47'],
+    previewUrl: '/templates/restaurant.jpg',
   },
   {
     id: 'portfolio',
@@ -86,6 +93,7 @@ export const TEMPLATES: Template[] = [
     toneId: 'editorial',
     pages: ['about', 'case-studies', 'contact'],
     gradient: ['#0a0a0a', '#fafafa'],
+    previewUrl: '/templates/portfolio.jpg',
   },
   {
     id: 'startup-launch',
@@ -98,6 +106,7 @@ export const TEMPLATES: Template[] = [
     toneId: 'bold',
     pages: ['features', 'team'],
     gradient: ['#0f0f23', '#7c3aed'],
+    previewUrl: '/templates/startup-launch.jpg',
   },
   {
     id: 'nonprofit',
@@ -110,5 +119,6 @@ export const TEMPLATES: Template[] = [
     toneId: 'playful',
     pages: ['about', 'team', 'contact', 'testimonials'],
     gradient: ['#042f2e', '#2dd4bf'],
+    previewUrl: '/templates/nonprofit.jpg',
   },
 ];

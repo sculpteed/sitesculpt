@@ -146,7 +146,7 @@ export function Homepage() {
           </FadeIn>
 
           <StaggerGroup
-            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
             stagger={0.06}
           >
             {TEMPLATES.map((t) => (
@@ -272,35 +272,52 @@ function TemplateCard({
   onClick: () => void;
 }) {
   return (
-    <ScaleOnHover scale={1.03}>
-      <button
-        type="button"
-        onClick={onClick}
-        className="group relative flex h-[180px] w-full flex-col justify-end overflow-hidden rounded-xl border border-[rgba(243,234,217,0.08)] p-5 text-left transition-all hover:border-[rgba(243,234,217,0.2)]"
-        style={{
-          background: `linear-gradient(135deg, ${template.gradient[0]}, ${template.gradient[1]})`,
-        }}
-      >
-        {/* Subtle noise overlay */}
-        <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\' opacity=\'0.5\'/%3E%3C/svg%3E")' }} />
+    <ScaleOnHover scale={1.02}>
+      <div className="group flex flex-col overflow-hidden rounded-xl border border-[rgba(243,234,217,0.08)] transition-all hover:border-[rgba(243,234,217,0.2)]">
+        {/* Preview image area */}
+        <button
+          type="button"
+          onClick={onClick}
+          className="relative h-[200px] w-full overflow-hidden"
+          style={{
+            background: `linear-gradient(135deg, ${template.gradient[0]}, ${template.gradient[1]})`,
+          }}
+        >
+          {template.previewUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={template.previewUrl}
+              alt={template.title}
+              className="absolute inset-0 h-full w-full object-cover object-top transition group-hover:scale-[1.04]"
+              style={{ transformOrigin: 'top center' }}
+            />
+          )}
+          {/* Category badge */}
+          <div className="absolute left-3 top-3 z-10">
+            <span className="rounded-sm bg-[rgba(243,234,217,0.12)] px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.15em] text-white/80 backdrop-blur-sm">
+              {template.category}
+            </span>
+          </div>
+        </button>
 
-        {/* Category badge */}
-        <div className="absolute right-3 top-3">
-          <span className="rounded-full border border-white/10 bg-black/30 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.15em] text-white/60 backdrop-blur-sm">
-            {template.category}
-          </span>
-        </div>
-
-        {/* Text */}
-        <div className="relative">
-          <div className="font-serif text-[20px] leading-tight tracking-[-0.01em] text-white">
+        {/* Info area below the image */}
+        <div className="flex flex-col gap-3 bg-[rgba(243,234,217,0.02)] p-4">
+          <div className="text-[14px] font-medium text-warm">
             {template.title}
+            <span className="ml-1.5 text-warm-muted"> — </span>
+            <span className="text-warm-muted">{template.subtitle}</span>
           </div>
-          <div className="mt-1 text-[11px] leading-relaxed text-white/50 transition group-hover:text-white/70">
-            {template.subtitle}
-          </div>
+
+          <button
+            type="button"
+            onClick={onClick}
+            className="flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-[13px] font-medium text-[#0d0a08] transition hover:opacity-90"
+            style={{ backgroundColor: '#e8b874' }}
+          >
+            Use This &rarr;
+          </button>
         </div>
-      </button>
+      </div>
     </ScaleOnHover>
   );
 }
