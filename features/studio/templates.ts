@@ -20,6 +20,58 @@ export interface Template {
 
 export const TEMPLATES: Template[] = [
   {
+    id: 'ai-platform',
+    title: 'Aura',
+    subtitle: 'AI Enterprise Platform',
+    category: '3D Cinematic',
+    brandName: 'Aura',
+    description:
+      'A futuristic AI platform unifying fragmented data streams to deliver autonomous predictive insights in real-time for modern enterprise teams.',
+    toneId: 'bold',
+    pages: ['features', 'pricing', 'testimonials'],
+    gradient: ['#1a2f4a', '#5b9cde'],
+    previewUrl: '/templates/ai-platform.jpg',
+  },
+  {
+    id: 'space-research',
+    title: 'UNVRS Labs',
+    subtitle: 'Space Research',
+    category: '3D Cinematic',
+    brandName: 'UNVRS Labs',
+    description:
+      'An advanced deep-space research platform for cosmic explorers, astronomers, and theoretical physicists charting the unknown.',
+    toneId: 'technical',
+    pages: ['about', 'features', 'team'],
+    gradient: ['#0a0420', '#7c3aed'],
+    previewUrl: '/templates/space-research.jpg',
+  },
+  {
+    id: 'architecture',
+    title: 'Meridian',
+    subtitle: 'Architecture Studio',
+    category: '3D Cinematic',
+    brandName: 'Meridian',
+    description:
+      'A contemporary architecture practice designing residences, cultural institutions, and urban landmarks across North America and Europe.',
+    toneId: 'editorial',
+    pages: ['about', 'case-studies', 'team', 'contact'],
+    gradient: ['#d4b88a', '#3d342c'],
+    previewUrl: '/templates/architecture.jpg',
+  },
+  {
+    id: 'creative-3d',
+    title: 'Prism',
+    subtitle: 'Creative Studio',
+    category: '3D Cinematic',
+    brandName: 'Prism',
+    description:
+      'A creative studio crafting brand worlds, immersive digital experiences, and cinematic interactive identity systems for ambitious brands.',
+    toneId: 'bold',
+    pages: ['case-studies', 'team', 'contact'],
+    gradient: ['#1a0a2e', '#ff6ec7'],
+    previewUrl: '/templates/creative-3d.jpg',
+  },
+  {
     id: 'saas-landing',
     title: 'StackForge',
     subtitle: 'Dev Platform',
