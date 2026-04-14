@@ -14,6 +14,8 @@ export interface Template {
   gradient: [string, string];
   /** Path to pre-generated screenshot in /public — shown as card bg */
   previewUrl?: string;
+  /** Pre-generated project ID for the live preview page (opens in new tab) */
+  livePreviewId?: string;
 }
 
 export const TEMPLATES: Template[] = [
@@ -29,6 +31,7 @@ export const TEMPLATES: Template[] = [
     pages: ['features', 'pricing', 'faq', 'testimonials'],
     gradient: ['#0f172a', '#1e40af'],
     previewUrl: '/templates/saas-landing.jpg',
+    livePreviewId: 'aba626bcf260a89f',
   },
   {
     id: 'creative-agency',
@@ -42,6 +45,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'case-studies', 'team', 'contact'],
     gradient: ['#1a1a2e', '#e94560'],
     previewUrl: '/templates/creative-agency.jpg',
+    livePreviewId: '2b156f2560f7a324',
   },
   {
     id: 'app-landing',
@@ -55,6 +59,7 @@ export const TEMPLATES: Template[] = [
     pages: ['features', 'pricing', 'faq'],
     gradient: ['#0d1117', '#58a6ff'],
     previewUrl: '/templates/app-landing.jpg',
+    livePreviewId: '324e52eb6fb864af',
   },
   {
     id: 'ecommerce-brand',
@@ -68,6 +73,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'features', 'testimonials'],
     gradient: ['#1b1b18', '#c9a96e'],
     previewUrl: '/templates/ecommerce-brand.jpg',
+    livePreviewId: '82ebfcbc7b0d1943',
   },
   {
     id: 'restaurant',
@@ -81,6 +87,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'contact'],
     gradient: ['#1a0f0a', '#8b6f47'],
     previewUrl: '/templates/restaurant.jpg',
+    livePreviewId: '82cabc99a9c8467c',
   },
   {
     id: 'portfolio',
@@ -94,6 +101,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'case-studies', 'contact'],
     gradient: ['#0a0a0a', '#fafafa'],
     previewUrl: '/templates/portfolio.jpg',
+    livePreviewId: '4cd841523814c52e',
   },
   {
     id: 'startup-launch',
@@ -107,6 +115,7 @@ export const TEMPLATES: Template[] = [
     pages: ['features', 'team'],
     gradient: ['#0f0f23', '#7c3aed'],
     previewUrl: '/templates/startup-launch.jpg',
+    livePreviewId: '6368ae1dacfbb647',
   },
   {
     id: 'nonprofit',
@@ -120,5 +129,6 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'team', 'contact', 'testimonials'],
     gradient: ['#042f2e', '#2dd4bf'],
     previewUrl: '/templates/nonprofit.jpg',
+    livePreviewId: '31d8a7a3138f2438',
   },
 ];

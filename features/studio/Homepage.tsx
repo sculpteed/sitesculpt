@@ -283,35 +283,35 @@ function TemplateCard({
               className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.04]"
             />
           )}
-          {/* Dark gradient for text legibility */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
-          {/* Category badge */}
-          <div className="absolute left-4 top-4 z-10">
-            <span className="rounded-sm bg-white/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.15em] text-white/80 backdrop-blur-sm">
-              {template.category}
-            </span>
-          </div>
-          {/* Overlaid headline — real HTML text, always crisp */}
-          <div className="absolute inset-x-0 bottom-0 z-10 p-5">
-            <div className="font-serif text-[22px] leading-tight tracking-[-0.01em] text-white">
-              {template.title}
-            </div>
-            <div className="mt-1 text-[11px] text-white/60">
-              {template.subtitle}
-            </div>
-          </div>
         </button>
 
-        {/* Use This button */}
-        <div className="bg-[rgba(243,234,217,0.02)] p-3">
-          <button
-            type="button"
-            onClick={onClick}
-            className="flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-[13px] font-medium text-[#0d0a08] transition hover:opacity-90"
-            style={{ backgroundColor: '#e8b874' }}
-          >
-            Use This &rarr;
-          </button>
+        {/* Label row with Preview + Use This buttons */}
+        <div className="flex items-center justify-between gap-3 bg-[rgba(243,234,217,0.02)] px-4 py-3">
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-[13px] font-medium text-warm">{template.title}</div>
+            <div className="text-[10px] uppercase tracking-wider text-warm-subtle">{template.category}</div>
+          </div>
+          <div className="flex items-center gap-2">
+            {template.livePreviewId && (
+              <a
+                href={`/preview/${template.livePreviewId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="rounded-md border border-[var(--color-border-strong)] px-2.5 py-1.5 text-[11px] text-warm-muted transition hover:border-[var(--color-accent)] hover:text-warm"
+              >
+                Preview ↗
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={onClick}
+              className="rounded-md px-3 py-1.5 text-[11px] font-medium text-[#0d0a08] transition hover:opacity-90"
+              style={{ backgroundColor: '#e8b874' }}
+            >
+              Use This
+            </button>
+          </div>
         </div>
       </div>
     </ScaleOnHover>
