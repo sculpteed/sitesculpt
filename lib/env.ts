@@ -27,6 +27,9 @@ const schema = z.object({
     .url()
     .default('http://localhost:3003'),
 
+  // fal.ai — Flux image generation (better quality than GPT Image)
+  FAL_API_KEY: z.string().optional(),
+
   // Vercel Blob — optional for local dev, required in production.
   // Get from: Vercel Dashboard → Storage → Create Blob Store → Tokens
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
