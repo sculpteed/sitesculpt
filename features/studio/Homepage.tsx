@@ -32,7 +32,7 @@ export function Homepage() {
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#0d0a08]">
         <video
           className="bg-video"
-          src="/homepage-bg.mp4"
+          src="https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/homepage-bg.mp4"
           autoPlay
           loop
           muted
