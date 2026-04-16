@@ -44,3 +44,14 @@ export function getToneById(id: string | null): TonePreset | undefined {
   if (!id) return undefined;
   return TONE_PRESETS.find((t) => t.id === id);
 }
+
+/**
+ * Reverse lookup: resolve a tone id from the human-readable label that was
+ * persisted into the compiled brief. Used server-side (art-direction) so
+ * relabelling a tone only requires editing TONE_PRESETS above.
+ */
+export function getToneIdByLabel(label: string | null | undefined): string | null {
+  if (!label) return null;
+  const trimmed = label.trim();
+  return TONE_PRESETS.find((t) => t.label === trimmed)?.id ?? null;
+}

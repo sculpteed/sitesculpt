@@ -19,6 +19,3 @@ export const PAGE_PRESETS: PagePreset[] = [
   { id: 'case-studies', label: 'Case studies', hint: 'Real outcomes from real customers.' },
 ];
 
-export function getPresetById(id: string): PagePreset | undefined {
-  return PAGE_PRESETS.find((p) => p.id === id);
-}

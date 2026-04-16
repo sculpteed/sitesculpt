@@ -13,14 +13,10 @@ interface PageProps {
 /**
  * /template-render/[id]
  *
- * Renders the template's HTML overlay (floating nav pill + headline +
- * CTAs) on top of the AI-generated background. Screenshotted by
- * Playwright at 1376x768 to produce the final template JPEG.
- *
- * This matches Draftly's actual pipeline:
- * 1. AI generates background-only (no text/UI)
- * 2. HTML renders crisp UI on top
- * 3. Screenshot the composite = pixel-perfect thumbnail
+ * Renders the template's HTML overlay (nav + headline + CTAs) on top of
+ * the AI-generated background. Playwright screenshots this at 1376x768
+ * to produce the final template JPEG. The AI generates background-only
+ * so the overlay text stays crisp.
  */
 export default async function TemplateRenderPage({ params, searchParams }: PageProps) {
   const { id } = await params;

@@ -2,43 +2,20 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useStudioStore } from './store';
+import { useStudioStore, type PaletteOption, type ConceptOption } from './store';
 import { GuidedForm } from './GuidedForm';
 import { ArtDirection } from './ArtDirection';
 import { KeyframeApproval } from './KeyframeApproval';
-import { StructureReview } from './StructureReview';
-import { PipelinePanel } from './PipelinePanel';
 import { ScrollFlipbook } from './ScrollFlipbook';
 import { ExportButton } from './ExportButton';
 import { savePersistedProject, debounce } from './persistence';
 import { compilePrompt } from './compilePrompt';
-import { SmoothScroll, PageTransition } from '@/components/motion';
 import { FunnelNav } from './FunnelNav';
 import { SidebarTabs } from './SidebarTabs';
+import { errorMessage } from './api-helpers';
 import type { Aspect, Scene, SiteStructure } from '@/features/pipeline/types';
 import type { ProjectStatus } from '@/lib/cache';
 
-/**
- * Studio — single project workspace.
- *
- * Layout (desktop ≥ lg):
- *   ┌─ Top bar ──────────────────────────────────────────┐
- *   │ sitesculpt · project status            [Export]    │
- *   ├─ Preview (left, 2/3) ──┬─ Context rail (right) ──┤
- *   │                        │ Pipeline                 │
- *   │   Flipbook / keyframe  │ Site structure           │
- *   │   Hero copy overlay    │ Scene + palette          │
- *   │                        │ Project info             │
- *   └────────────────────────┴─────────────────────────┘
- *
- * On mobile: preview stacks above a single scrollable rail.
- *
- * Design goals (contra Draftly):
- * - One primary action per screen, not three overlapping entry points.
- * - No paywall banner. No vanity chips. No fake tech stack picker.
- * - Pipeline shows REAL progress, not a static diagram.
- * - Preview grows richer as steps complete (gradient → keyframe → flipbook).
- */
 export function Studio() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -83,7 +60,6 @@ export function Studio() {
   const [funnelBusy, setFunnelBusy] = useState(false);
 
   const esRef = useRef<EventSource | null>(null);
-  const autoStartRef = useRef(false);
 
   // Listen for inline edits from the preview iframe
   useEffect(() => {
@@ -115,10 +91,8 @@ export function Studio() {
     return () => window.removeEventListener('message', handler);
   }, [setBrandOverride, setHeroOverride, setSectionOverride]);
 
-  // Resume an existing project from the URL: /studio?project=<id>
-  // On mount, if ?project= is present, open an SSE subscription to that
-  // project id. The /api/jobs/[id] endpoint now sends a snapshot on
-  // connect, so finished projects will immediately rehydrate state.
+  // Resume an existing project from ?project=<id> — jobs/[id] sends a
+  // snapshot on connect so finished projects rehydrate immediately.
   const resumedRef = useRef(false);
   useEffect(() => {
     if (resumedRef.current) return;
@@ -130,8 +104,7 @@ export function Studio() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  // When a NEW generation starts, push the project id into the URL so a
-  // reload or share restores exactly where we were.
+  // Push project id into URL so reload/share restores state.
   useEffect(() => {
     if (!projectId) return;
     const current = searchParams?.get('project');
@@ -172,15 +145,11 @@ export function Studio() {
         body: JSON.stringify({ brief: compiledPrompt }),
       });
       if (!res.ok) {
-        const { error } = (await res.json().catch(() => ({ error: 'Failed' }))) as { error?: string };
-        alert(`Art direction failed: ${error ?? res.statusText}`);
+        alert(`Art direction failed: ${await errorMessage(res, 'Failed')}`);
         return;
       }
       const { options } = (await res.json()) as {
-        options: Array<{
-          palette: { name: string; background: string; foreground: string; accent: string };
-          concept: { title: string; description: string; visualPrompt: string; motionPrompt: string };
-        }>;
+        options: Array<{ palette: PaletteOption; concept: ConceptOption }>;
       };
       setPaletteOptions(options.map((o) => o.palette));
       setConceptOptions(options.map((o) => o.concept));
@@ -201,7 +170,6 @@ export function Studio() {
     setFunnelBusy(true);
     setFunnelStep('keyframe');
     try {
-      // Generate the keyframe via the existing image endpoint
       const res = await fetch('/api/generate-keyframe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -221,11 +189,10 @@ export function Studio() {
       const { projectId: pid } = (await res.json()) as { projectId: string };
       startGeneration(pid);
 
-      // Also set the scene in the store so downstream steps can use it
       setScene({
         visualPrompt: concept.visualPrompt,
         motionPrompt: concept.motionPrompt,
-        palette: { background: palette.background, foreground: palette.foreground, accent: palette.accent },
+        palette,
         concept: concept.title,
       });
     } finally {
@@ -239,25 +206,21 @@ export function Studio() {
     setFunnelBusy(true);
     setFunnelStep('copy-review');
     try {
-      // Compile the brief with the chosen palette baked in
       const chosenPalette = selectedPaletteIdx !== null ? paletteOptions?.[selectedPaletteIdx] : null;
       const compiled = compilePrompt({
         brandName,
         description,
         toneId,
         paletteMode: chosenPalette ? 'custom' : paletteMode,
-        customPalette: chosenPalette
-          ? { background: chosenPalette.background, foreground: chosenPalette.foreground, accent: chosenPalette.accent }
-          : customPalette,
+        customPalette: chosenPalette ?? customPalette,
         includedPages,
         userData,
         hasAttachedImage: attachedMedia?.kind === 'image',
         hasAttachedVideo: attachedMedia?.kind === 'video',
       });
 
-      // Kick off motion generation in parallel — it takes 2-4 minutes
-      // but shouldn't block the copy + site structure from returning.
-      // The preview picks up frames via SSE once they're ready.
+      // Motion runs 2-4min; don't block copy/structure. Preview picks up
+      // frames via SSE when ready.
       const motionPromise = fetch('/api/generate-motion', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -267,11 +230,10 @@ export function Studio() {
         const { frameCount } = (await r.json()) as { frameCount: number };
         setFrameCount(frameCount);
       }).catch(() => {
-        // Motion failed — preview still works with Ken Burns fallback
+        // Motion failed — preview falls back to Ken Burns on keyframe
       });
 
-      // Call composeSite — this returns fast (~30s) so user sees copy
-      // while motion generation continues in the background
+      // composeSite returns in ~30s so copy lands before motion finishes.
       const res = await fetch('/api/compose-site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -285,8 +247,7 @@ export function Studio() {
       const { site: siteData } = (await res.json()) as { site: SiteStructure };
       setSite(siteData);
 
-      // Don't await motionPromise here — it runs in background.
-      // Preview will update when frames land.
+      // motionPromise runs in background; preview updates when frames land.
       void motionPromise;
     } finally {
       setFunnelBusy(false);
@@ -295,7 +256,6 @@ export function Studio() {
 
   /** Step 3: regenerate keyframe with same concept */
   const handleKeyframeRegenerate = async (): Promise<void> => {
-    // Same as handleArtDirectionContinue but forces a new variation
     await handleArtDirectionContinue();
   };
 
@@ -303,47 +263,7 @@ export function Studio() {
   const handleStructureApprove = (): void => {
     if (!projectId) return;
     setFunnelStep('preview');
-    // The preview is already at /preview/[projectId] — just navigate
-    // or render inline. For now, open in a new tab.
     window.open(`/preview/${projectId}`, '_blank');
-  };
-
-  const handleSubmit = async (p: string, a: Aspect): Promise<void> => {
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: p, aspect: a }),
-    });
-    if (res.status === 402) {
-      const body = (await res.json().catch(() => ({ error: 'subscription_required' }))) as {
-        error?: string;
-        message?: string;
-        used?: number;
-        limit?: number;
-        tier?: string;
-      };
-      if (body.error === 'quota_exceeded') {
-        // Starter cap hit — offer upgrade to Pro instead of a bare pricing bounce
-        alert(
-          `${body.message ?? 'Monthly quota reached.'}\n\nUpgrade to Pro for unlimited generations.`,
-        );
-        router.push('/pricing?from=studio&quota=1');
-        return;
-      }
-      // Subscription required — redirect to pricing
-      router.push('/pricing?from=studio');
-      return;
-    }
-    if (!res.ok) {
-      const { error } = (await res.json().catch(() => ({ error: 'Request failed' }))) as {
-        error?: string;
-      };
-      alert(`Generation failed: ${error ?? res.statusText}`);
-      return;
-    }
-    const { projectId: id } = (await res.json()) as { projectId: string };
-    startGeneration(id);
-    subscribe(id);
   };
 
   const subscribe = (id: string): void => {
@@ -468,10 +388,7 @@ export function Studio() {
         </div>
       </header>
 
-      {/* ─── Step breadcrumb — shows progress + clickable back navigation ─── */}
       <FunnelNav />
-
-      {/* ─── Body — funnel step router ────────────────────────────────── */}
 
       {/* Steps 4+5: Full-width preview with floating editor panel */}
       {(funnelStep === 'copy-review' || funnelStep === 'preview') && (
@@ -507,10 +424,8 @@ export function Studio() {
 
       {funnelStep !== 'copy-review' && funnelStep !== 'preview' ? (
         <div className="grid grid-cols-1 gap-5 p-5 sm:gap-6 sm:p-6 lg:grid-cols-[1fr_340px]">
-        {/* ── Left: Main content area ── */}
         <section className="relative flex min-h-[72vh] flex-col overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.012)]">
           {funnelStep === 'brief' ? (
-            // ─── Step 1: Brief (GuidedForm) ───
             <div className="flex flex-1 flex-col items-center gap-6 overflow-y-auto p-6 sm:gap-8 sm:p-10">
               <div className="mt-2 flex max-w-md flex-col items-center text-center">
                 <h2 className="mb-3 font-serif text-3xl leading-[1] tracking-[-0.02em] text-warm sm:text-4xl">
@@ -537,14 +452,12 @@ export function Studio() {
             </div>
 
           ) : funnelStep === 'art-direction' ? (
-            // ─── Step 2: Art Direction picker ───
             <ArtDirection
               onContinue={handleArtDirectionContinue}
               busy={funnelBusy}
             />
 
           ) : funnelStep === 'keyframe' ? (
-            // ─── Step 3: Keyframe approval ───
             <KeyframeApproval
               onApprove={handleKeyframeApprove}
               onRegenerate={handleKeyframeRegenerate}
@@ -552,7 +465,6 @@ export function Studio() {
             />
 
           ) : (
-            // ─── Fallback ───
             <div className="relative flex-1 overflow-hidden">
               {hasFrames && projectId ? (
                 <ScrollFlipbook
@@ -661,125 +573,6 @@ function PreviewPlaceholder() {
           'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,184,116,0.08) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 50% 100%, rgba(232,184,116,0.04) 0%, transparent 60%), #0d0a08',
       }}
     />
-  );
-}
-
-function SiteStructureCard({
-  site,
-  overrides,
-  onEdit,
-}: {
-  site: SiteStructure;
-  overrides: Record<number, Partial<SiteStructure['sections'][number]>>;
-  onEdit: (index: number, patch: Partial<SiteStructure['sections'][number]>) => void;
-}) {
-  const editedCount = Object.keys(overrides).length;
-  return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.012)] p-4">
-      <div className="mb-1 flex items-center justify-between">
-        <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-warm-subtle">
-          Sections
-        </span>
-        <span className="font-mono text-[10px] text-warm-subtle">
-          {editedCount > 0 ? `${editedCount} edited · ` : ''}
-          {site.sections.length} total
-        </span>
-      </div>
-      <p className="mb-3 text-[10px] text-warm-subtle">
-        Click any title or paragraph to edit — changes ship with the export.
-      </p>
-      <ul className="space-y-3">
-        {site.sections.map((s, i) => {
-          const ov = overrides[i] ?? {};
-          const title = ov.title ?? s.title;
-          const body = ov.body ?? s.body;
-          const itemCount = s.items?.length ?? 0;
-          return (
-            <li
-              key={i}
-              className="group rounded-md border border-transparent pl-3 transition hover:border-[var(--color-border)] hover:bg-[rgba(243,234,217,0.02)]"
-              style={{ borderLeftColor: 'var(--color-border-strong)', borderLeftWidth: '2px' }}
-            >
-              <div className="py-2">
-                <div className="mb-1 flex items-center gap-1.5">
-                  <span
-                    className="rounded-sm px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-wider"
-                    style={{
-                      backgroundColor: 'var(--color-accent-soft)',
-                      color: 'var(--color-accent)',
-                    }}
-                  >
-                    {s.layout}
-                  </span>
-                  {itemCount > 0 ? (
-                    <span className="font-mono text-[9px] text-warm-subtle">{itemCount} items</span>
-                  ) : null}
-                </div>
-                <div
-                  contentEditable
-                  suppressContentEditableWarning
-                  onBlur={(e) => {
-                    const next = (e.currentTarget.textContent ?? '').trim();
-                    onEdit(i, { title: next || s.title });
-                  }}
-                  className="text-[13px] font-medium text-warm outline-none focus:text-[var(--color-accent)]"
-                >
-                  {title}
-                </div>
-                <div
-                  contentEditable
-                  suppressContentEditableWarning
-                  onBlur={(e) => {
-                    const next = (e.currentTarget.textContent ?? '').trim();
-                    onEdit(i, { body: next || s.body });
-                  }}
-                  className="mt-0.5 text-[11px] leading-relaxed text-warm-muted outline-none focus:text-warm"
-                >
-                  {body}
-                </div>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-
-function SceneCard({ scene }: { scene: Scene }) {
-  return (
-    <div className="rounded-xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.012)] p-4">
-      <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-warm-subtle">
-        Scene
-      </div>
-      <div className="mb-3 text-[12px] italic text-warm-muted">&ldquo;{scene.concept}&rdquo;</div>
-      <div className="flex gap-1.5">
-        {[scene.palette.background, scene.palette.foreground, scene.palette.accent].map(
-          (color, i) => (
-            <div
-              key={i}
-              className="h-8 flex-1 rounded-md border border-[var(--color-border)]"
-              style={{ backgroundColor: color }}
-              title={color}
-            />
-          ),
-        )}
-      </div>
-    </div>
-  );
-}
-
-function TipCard() {
-  return (
-    <div className="rounded-xl border border-[var(--color-accent)] bg-[var(--color-accent-soft)] p-4">
-      <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--color-accent)]">
-        While you wait
-      </div>
-      <p className="text-[12px] leading-relaxed text-warm-muted">
-        Your copy lands in seconds — click the headline or subheadline to edit them inline. Your
-        changes save automatically and ship with the exported project.
-      </p>
-    </div>
   );
 }
 

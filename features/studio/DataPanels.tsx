@@ -4,13 +4,9 @@ import { Plus, X } from 'lucide-react';
 import { useStudioStore } from './store';
 import type { UserData } from './userData';
 
-/**
- * Progressive data-collection panels — reveal when the user toggles the
- * matching page preset on. Each panel collects the RAW DATA for that
- * section type, which then gets injected into the Claude brief via
- * compilePrompt. This is the architectural fix that stops fabrication —
- * Claude formats your data instead of inventing specifics.
- */
+/** Progressive data-collection panels — reveal when the matching page
+ *  preset is toggled on. Collected data is injected into the brief via
+ *  compilePrompt so Claude formats real data instead of inventing. */
 export function DataPanels() {
   const includedPages = useStudioStore((s) => s.includedPages);
   const userData = useStudioStore((s) => s.userData);
@@ -94,8 +90,6 @@ function AntiFabricationHint() {
     </p>
   );
 }
-
-// ─── Section header (collapsible visual) ────────────────────────────────────
 
 function Section({
   label,

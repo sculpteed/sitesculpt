@@ -7,6 +7,36 @@ interface Props {
   bgUrl: string | null;
 }
 
+// ─── Sub-component prop types ────────────────────────────────────────────────
+
+interface FloatingPillNavProps {
+  config: TemplateConfig;
+  textColor: string;
+  mutedColor: string;
+  bg: string;
+  border: string;
+  shadow: string;
+}
+
+interface BaseNavProps {
+  config: TemplateConfig;
+  textColor: string;
+  mutedColor: string;
+}
+
+interface HeroContentProps {
+  config: TemplateConfig;
+  style: NonNullable<TemplateConfig['siteStyle']>;
+  textColor: string;
+  mutedColor: string;
+  subtleColor: string;
+  isDark: boolean;
+  headlineFontFamily: string;
+  renderHeadline: () => React.ReactNode;
+}
+
+type TemplateStat = NonNullable<TemplateConfig['stats']>[number];
+
 /**
  * Renders the hero overlay on top of the background image at 1376x768.
  * Supports distinct siteStyle variants so every template feels different.
@@ -158,7 +188,7 @@ export function TemplateRender({ config, bgUrl }: Props) {
 
 // ─── Nav variants ────────────────────────────────────────────────────────────
 
-function FloatingPillNav({ config, textColor, mutedColor, bg, border, shadow }: any) {
+function FloatingPillNav({ config, textColor, mutedColor, bg, border, shadow }: FloatingPillNavProps) {
   return (
     <div
       style={{
@@ -207,7 +237,7 @@ function FloatingPillNav({ config, textColor, mutedColor, bg, border, shadow }: 
   );
 }
 
-function EditorialSplitNav({ config, textColor, mutedColor }: any) {
+function EditorialSplitNav({ config, textColor, mutedColor }: BaseNavProps) {
   return (
     <div
       style={{
@@ -266,7 +296,7 @@ function EditorialSplitNav({ config, textColor, mutedColor }: any) {
   );
 }
 
-function MinimalTopBarNav({ config, textColor, mutedColor }: any) {
+function MinimalTopBarNav({ config, textColor, mutedColor }: BaseNavProps) {
   return (
     <div
       style={{
@@ -312,7 +342,7 @@ function MinimalTopBarNav({ config, textColor, mutedColor }: any) {
   );
 }
 
-function CenteredSplitNav({ config, textColor, mutedColor }: any) {
+function CenteredSplitNav({ config, textColor, mutedColor }: BaseNavProps) {
   const leftNav = config.nav.slice(0, Math.ceil(config.nav.length / 2));
   const rightNav = config.nav.slice(Math.ceil(config.nav.length / 2));
   return (
@@ -393,7 +423,7 @@ function CenteredSplitNav({ config, textColor, mutedColor }: any) {
   );
 }
 
-function BoutiqueCornerNav({ config, textColor, mutedColor }: any) {
+function BoutiqueCornerNav({ config, textColor, mutedColor }: BaseNavProps) {
   return (
     <div
       style={{
@@ -466,10 +496,8 @@ function HeroContent({
   isDark,
   headlineFontFamily,
   renderHeadline,
-}: any) {
+}: HeroContentProps) {
   const isSplitLeft = config.layout === 'split-left';
-
-  // Large Apple-style centered for minimal-top-bar
   const isMinimalStyle = style === 'minimal-top-bar';
   const isBoutique = style === 'boutique-corner';
   const isSplitNav = style === 'centered-split-nav';
@@ -581,7 +609,7 @@ function HeroContent({
             justifyContent: isSplitLeft || isBoutique ? 'flex-start' : 'center',
           }}
         >
-          {config.stats.map((s: any) => (
+          {config.stats.map((s: TemplateStat) => (
             <div
               key={s.label}
               style={{ textAlign: isSplitLeft || isBoutique ? 'left' : 'center' }}

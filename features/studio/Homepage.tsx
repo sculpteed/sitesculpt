@@ -28,7 +28,6 @@ export function Homepage() {
   return (
     <PageTransition>
     <main className="relative min-h-screen overflow-hidden">
-      {/* Background */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#0d0a08]">
         <video
           className="bg-video"
@@ -40,7 +39,6 @@ export function Homepage() {
           preload="auto"
           aria-hidden="true"
         />
-        {/* Darken overlay for text legibility */}
         <div
           className="absolute inset-0"
           style={{
@@ -51,7 +49,6 @@ export function Homepage() {
         <div className="grain absolute inset-0 opacity-[0.06]" />
       </div>
 
-      {/* Nav */}
       <nav className="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:px-8 sm:py-6">
         <div className="flex items-center gap-2.5">
           <div className="h-4 w-4 rounded-[3px]" style={{ backgroundColor: '#f3ead9' }} />
@@ -73,7 +70,6 @@ export function Homepage() {
         </div>
       </nav>
 
-      {/* Hero — no FadeIn wrappers, renders immediately */}
       <section className="relative z-20 mx-auto flex min-h-[72vh] max-w-4xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
         <h1 className="mb-6 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] text-warm sm:mb-8 sm:text-[88px] sm:leading-[0.92] md:text-[128px]">
           Start{' '}
@@ -107,7 +103,6 @@ export function Homepage() {
         </div>
       </section>
 
-      {/* Reading surface */}
       <div className="relative z-10 bg-warm">
         <div
           aria-hidden="true"
@@ -253,8 +248,6 @@ export function Homepage() {
     </PageTransition>
   );
 }
-
-// ─── Template Card ──────────────────────────────────────────────────────────
 
 function TemplateCard({
   template,

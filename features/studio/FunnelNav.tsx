@@ -17,11 +17,7 @@ function stepIndex(step: FunnelStep): number {
   return STEP_ORDER.indexOf(step);
 }
 
-/**
- * Funnel breadcrumb — shows all steps, highlights current, completed steps
- * are clickable to go back. Makes it obvious that revision is possible at
- * any stage.
- */
+/** Funnel breadcrumb — completed steps are clickable to navigate back. */
 export function FunnelNav() {
   const funnelStep = useStudioStore((s) => s.funnelStep);
   const setFunnelStep = useStudioStore((s) => s.setFunnelStep);
@@ -32,7 +28,7 @@ export function FunnelNav() {
       {STEPS.map((step, i) => {
         const done = i < currentIdx;
         const active = i === currentIdx;
-        const canClick = done; // can only go back to completed steps
+        const canClick = done;
 
         return (
           <div key={step.id} className="flex items-center gap-1 sm:gap-2">

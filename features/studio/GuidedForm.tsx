@@ -19,18 +19,7 @@ interface GuidedFormProps {
   busy?: boolean;
 }
 
-/**
- * Guided site brief — replaces the old single freeform prompt textarea.
- * Structured fields give Claude stronger anchors so users type less and
- * get better output.
- *
- * Fields (all optional except description):
- *   - Brand name
- *   - Describe it (1-2 sentences, required)
- *   - Tone (single-select chips)
- *   - Pages to include (multi-select chips)
- *   - Reference image/video attachment
- */
+/** Structured site brief. `description` is required; everything else optional. */
 export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
   const brandName = useStudioStore((s) => s.brandName);
   const description = useStudioStore((s) => s.description);
@@ -95,7 +84,6 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
       onSubmit={handleSubmit}
       className="w-full max-w-2xl space-y-5 rounded-2xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.015)] p-5 backdrop-blur-md sm:p-6"
     >
-      {/* Quick-fill from template */}
       {!description && (
         <div>
           <div className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-warm-subtle">
@@ -116,7 +104,6 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
         </div>
       )}
 
-      {/* Brand + describe */}
       <div className="space-y-4">
         <Field label="Brand name" optional>
           <input
@@ -156,7 +143,6 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
         </Field>
       </div>
 
-      {/* Tone */}
       <Field label="Tone" optional helper="Pick one. Leave blank and we'll infer.">
         <div className="flex flex-wrap gap-1.5">
           {TONE_PRESETS.map((t) => {
@@ -180,10 +166,8 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
         </div>
       </Field>
 
-      {/* Palette */}
       <Field label="Color palette" optional helper="Let us derive it from your brand + tone, or lock in your own.">
         <div className="grid gap-2 sm:grid-cols-2">
-          {/* AI decide */}
           <button
             type="button"
             onClick={() => setPaletteMode('ai')}
@@ -217,7 +201,6 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
             </div>
           </button>
 
-          {/* Custom */}
           <button
             type="button"
             onClick={() => setPaletteMode('custom')}
@@ -271,7 +254,6 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
       {/* Progressive data-collection panels — reveal when pages are toggled */}
       <DataPanels />
 
-      {/* Pages */}
       <Field label="Pages to include" optional helper="Toggle the sections you want. We'll still add essentials like hero automatically.">
         <div className="flex flex-wrap gap-1.5">
           {PAGE_PRESETS.map((p) => {
@@ -295,7 +277,6 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
         </div>
       </Field>
 
-      {/* Attached media preview */}
       {attachedMedia ? (
         <div className="flex items-center gap-3 rounded-md border border-[var(--color-border)] bg-[rgba(243,234,217,0.02)] px-3 py-2">
           <MediaThumb media={attachedMedia} />
@@ -323,7 +304,6 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
         </div>
       ) : null}
 
-      {/* Action row */}
       <div className="flex items-center justify-between gap-3 border-t border-[var(--color-border)] pt-4">
         <div className="flex items-center gap-1">
           <button
@@ -444,11 +424,7 @@ function ColorPicker({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="h-6 w-6 cursor-pointer rounded border-none bg-transparent p-0"
-          style={{
-            // Strip default chrome on the native picker swatch
-            appearance: 'none',
-            WebkitAppearance: 'none',
-          }}
+          style={{ appearance: 'none', WebkitAppearance: 'none' }}
           title="Drag-select a color"
         />
         <input

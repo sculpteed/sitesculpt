@@ -3,12 +3,7 @@
 import { useEffect, type ReactNode } from 'react';
 import Lenis from 'lenis';
 
-/**
- * Lenis smooth scroll — wraps the preview route so scrolling feels like a
- * premium site. Lenis hijacks native scroll with a rAF-driven interpolation,
- * giving that Linear/Vercel/Framer buttery feel instead of the browser's
- * hard discrete scroll.
- */
+/** Lenis-powered smooth scroll wrapper for the preview route. */
 export function SmoothScroll({ children }: { children: ReactNode }) {
   useEffect(() => {
     const lenis = new Lenis({

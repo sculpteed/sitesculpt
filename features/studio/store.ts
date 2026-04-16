@@ -3,6 +3,7 @@
 import { create } from 'zustand';
 import type {
   Aspect,
+  Palette,
   Scene,
   SiteSection,
   SiteStructure,
@@ -11,18 +12,14 @@ import type {
 } from '@/features/pipeline/types';
 import { emptyUserData, type UserData } from './userData';
 import type { Template } from './templates';
+import { makeInitialSteps } from './pipeline-steps';
 
 export type PipelineState = 'idle' | 'running' | 'done' | 'error';
 
-/** Multi-step funnel: user makes creative decisions at checkpoints
- *  instead of hoping one-shot Claude nails everything. */
 export type FunnelStep = 'brief' | 'art-direction' | 'keyframe' | 'copy-review' | 'preview';
 
-export interface PaletteOption {
+export interface PaletteOption extends Palette {
   name: string;
-  background: string;
-  foreground: string;
-  accent: string;
 }
 
 export interface ConceptOption {
@@ -49,28 +46,19 @@ export interface StudioState {
   selectedPaletteIdx: number | null;
   selectedConceptIdx: number | null;
 
-  // Step 3: Keyframe approval
-  keyframeApproved: boolean;
-
-  // Step 4: Copy/structure approval
-  structureApproved: boolean;
-
   // ─── Guided input (Step 1) ─────────────────────────────────────────────
   brandName: string;
-  description: string; // replaces the old `prompt` freeform textarea
-  toneId: string | null; // single-select tone id from TONE_PRESETS
-  /** 'ai' = Claude picks palette from all other form inputs; 'custom' = user-picked */
+  description: string;
+  toneId: string | null;
+  /** 'ai' = Claude picks palette from other form inputs; 'custom' = user-picked */
   paletteMode: 'ai' | 'custom';
-  customPalette: { background: string; foreground: string; accent: string };
-  includedPages: string[]; // preset ids the user explicitly selected
+  customPalette: Palette;
+  includedPages: string[];
 
-  /** Structured real-world data provided by the user, per section. This is
-   *  what stops fabrication — if the user provides real team members, Claude
-   *  never has to invent them. Unused fields are empty arrays. */
+  /** User-provided real data injected into the brief so Claude formats
+   *  rather than invents. Unused fields are empty arrays. */
   userData: UserData;
 
-  // Legacy: a compiled final prompt passed to the pipeline
-  prompt: string;
   aspect: Aspect;
   attachedMedia: AttachedMedia | null;
 
@@ -96,8 +84,6 @@ export interface StudioState {
   setConceptOptions: (options: ConceptOption[]) => void;
   setSelectedPaletteIdx: (idx: number) => void;
   setSelectedConceptIdx: (idx: number) => void;
-  setKeyframeApproved: (v: boolean) => void;
-  setStructureApproved: (v: boolean) => void;
 
   // Actions — form
   setBrandName: (v: string) => void;
@@ -106,11 +92,8 @@ export interface StudioState {
   setPaletteMode: (v: 'ai' | 'custom') => void;
   setCustomPalette: (p: Partial<StudioState['customPalette']>) => void;
   setUserData: (updater: (prev: UserData) => UserData) => void;
-  setPrompt: (v: string) => void;
-  setAspect: (v: Aspect) => void;
   setAttachedMedia: (v: AttachedMedia | null) => void;
   togglePage: (id: string) => void;
-  setIncludedPages: (ids: string[]) => void;
   startGeneration: (projectId: string) => void;
   applyStatus: (status: {
     steps: Record<StepName, Progress>;
@@ -123,17 +106,8 @@ export interface StudioState {
   setBrandOverride: (value: string | null) => void;
   setSectionOverride: (index: number, patch: Partial<SiteSection>) => void;
   applyTemplate: (t: Template) => void;
-  clearEdits: () => void;
   reset: () => void;
 }
-
-const initialSteps: Record<StepName, Progress> = {
-  expandPrompt: { state: 'pending' },
-  composeSite: { state: 'pending' },
-  generateImage: { state: 'pending' },
-  generateVideo: { state: 'pending' },
-  extractFrames: { state: 'pending' },
-};
 
 export const useStudioStore = create<StudioState>((set) => ({
   funnelStep: 'brief',
@@ -141,8 +115,6 @@ export const useStudioStore = create<StudioState>((set) => ({
   conceptOptions: null,
   selectedPaletteIdx: null,
   selectedConceptIdx: null,
-  keyframeApproved: false,
-  structureApproved: false,
   brandName: '',
   description: '',
   toneId: null,
@@ -150,12 +122,11 @@ export const useStudioStore = create<StudioState>((set) => ({
   customPalette: { background: '#0d0a08', foreground: '#f3ead9', accent: '#e8b874' },
   includedPages: [],
   userData: emptyUserData(),
-  prompt: '',
   aspect: '16:9',
   attachedMedia: null,
   projectId: null,
   state: 'idle',
-  steps: { ...initialSteps },
+  steps: makeInitialSteps(),
   error: null,
   scene: null,
   site: null,
@@ -168,8 +139,6 @@ export const useStudioStore = create<StudioState>((set) => ({
   setConceptOptions: (options) => set({ conceptOptions: options }),
   setSelectedPaletteIdx: (idx) => set({ selectedPaletteIdx: idx }),
   setSelectedConceptIdx: (idx) => set({ selectedConceptIdx: idx }),
-  setKeyframeApproved: (v) => set({ keyframeApproved: v }),
-  setStructureApproved: (v) => set({ structureApproved: v }),
   setBrandName: (v) => set({ brandName: v }),
   setDescription: (v) => set({ description: v }),
   setToneId: (v) => set({ toneId: v }),
@@ -177,8 +146,6 @@ export const useStudioStore = create<StudioState>((set) => ({
   setCustomPalette: (p) =>
     set((prev) => ({ customPalette: { ...prev.customPalette, ...p } })),
   setUserData: (updater) => set((prev) => ({ userData: updater(prev.userData) })),
-  setPrompt: (v) => set({ prompt: v }),
-  setAspect: (v) => set({ aspect: v }),
   setAttachedMedia: (v) => set({ attachedMedia: v }),
   togglePage: (id) =>
     set((prev) => ({
@@ -186,12 +153,11 @@ export const useStudioStore = create<StudioState>((set) => ({
         ? prev.includedPages.filter((x) => x !== id)
         : [...prev.includedPages, id],
     })),
-  setIncludedPages: (ids) => set({ includedPages: ids }),
   startGeneration: (projectId) =>
     set({
       projectId,
       state: 'running',
-      steps: { ...initialSteps },
+      steps: makeInitialSteps(),
       error: null,
       scene: null,
       site: null,
@@ -231,17 +197,11 @@ export const useStudioStore = create<StudioState>((set) => ({
       paletteMode: 'ai',
       funnelStep: 'brief',
     }),
-  clearEdits: () =>
-    set({
-      heroOverride: {},
-      brandOverride: null,
-      sectionOverrides: {},
-    }),
   reset: () =>
     set({
       projectId: null,
       state: 'idle',
-      steps: { ...initialSteps },
+      steps: makeInitialSteps(),
       error: null,
       scene: null,
       site: null,

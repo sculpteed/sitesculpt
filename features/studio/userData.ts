@@ -1,9 +1,6 @@
-// User-provided structured data that gets injected into the Claude brief.
-// These are the building blocks that STOP fabrication — if the user gives
-// us real team members, Claude never has to invent Dr. Elena Vasquez.
-//
-// Each type maps 1:1 to a page preset id. The GuidedForm reveals the
-// matching editor panel when the user toggles the page on.
+// User-provided structured data injected verbatim into the brief.
+// Each type maps 1:1 to a page preset id — GuidedForm reveals the matching
+// editor panel when the user toggles the page on.
 
 export interface TeamMemberInput {
   name: string;

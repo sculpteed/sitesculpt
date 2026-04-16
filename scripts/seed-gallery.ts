@@ -28,14 +28,10 @@ const SEEDS: Seed[] = [
 
 async function seedOne(seed: Seed): Promise<void> {
   const outDir = path.resolve(process.cwd(), 'public', 'gallery', seed.slug);
-  try {
-    const existing = await fs.readdir(path.join(outDir, 'frames')).catch(() => []);
-    if (existing.length > 50) {
-      console.log(`[seed] ${seed.slug}: already has ${existing.length} frames, skipping`);
-      return;
-    }
-  } catch {
-    // fresh
+  const existing = await fs.readdir(path.join(outDir, 'frames')).catch(() => [] as string[]);
+  if (existing.length > 50) {
+    console.log(`[seed] ${seed.slug}: already has ${existing.length} frames, skipping`);
+    return;
   }
 
   console.log(`[seed] ${seed.slug}: running pipeline…`);

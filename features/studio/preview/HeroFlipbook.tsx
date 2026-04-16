@@ -10,11 +10,8 @@ interface HeroFlipbookProps {
   children?: React.ReactNode;
 }
 
-/**
- * Full-bleed scroll flipbook for the /preview/[id] page. Same approach as
- * the Studio ScrollFlipbook — canvas + rAF easing + frame prefetch — but
- * reads frames from the live API rather than exported public/ assets.
- */
+/** Full-bleed scroll flipbook for /preview/[id]. Reads frames from the
+ *  live API; mirrors the Studio ScrollFlipbook canvas + rAF approach. */
 export function HeroFlipbook({
   projectId,
   frameCount,

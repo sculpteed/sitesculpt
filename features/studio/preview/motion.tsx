@@ -11,10 +11,7 @@ import {
   type UseInViewOptions,
 } from 'motion/react';
 
-// ─── Reveal ─────────────────────────────────────────────────────────────────
-// Scroll-triggered fade-in + slide-up. Every section gets wrapped in this so
-// content feels like it's arriving rather than sitting there.
-
+// Scroll-triggered fade-in + slide-up.
 interface RevealProps {
   children: ReactNode;
   delay?: number;
@@ -45,10 +42,7 @@ export function Reveal({
   );
 }
 
-// ─── StaggerChildren ────────────────────────────────────────────────────────
-// Wrap a grid/list to have each child fade in with a delay. The child must
-// use <StaggerItem> to opt in.
-
+// Parent that staggers children's entrance; children must use <StaggerItem>.
 interface StaggerProps {
   children: ReactNode;
   stagger?: number;
@@ -104,11 +98,8 @@ export function StaggerItem({
   );
 }
 
-// ─── CountUp ────────────────────────────────────────────────────────────────
-// Animated number counter for stat-grid values. Parses a numeric value out of
-// a string (e.g. "97%" → 97, "<2 min" → 2, "140K+" → 140) and counts up from 0
-// when the element enters the viewport, preserving the surrounding formatting.
-
+// Animated number counter for stat-grid values. Parses a number out of the
+// string (e.g. "97%" → 97, "<2 min" → 2) and counts up from 0 on view.
 interface CountUpProps {
   value: string;
   duration?: number;
@@ -145,7 +136,7 @@ export function CountUp({ value, duration = 1.5, className }: CountUpProps) {
     return () => controls.stop();
   }, [inView, target, duration, count]);
 
-  // If target is 0, just render the value statically (e.g. "0 bytes sent")
+  // Static render when the target is 0 (e.g. "0 bytes sent").
   if (target === 0) {
     return <span ref={ref} className={className}>{value}</span>;
   }
@@ -159,10 +150,7 @@ export function CountUp({ value, duration = 1.5, className }: CountUpProps) {
   );
 }
 
-// ─── Marquee ────────────────────────────────────────────────────────────────
-// Infinite horizontal scroll for logo strips. Duplicates the children and
-// animates the container's x-position for a seamless loop.
-
+// Infinite horizontal scroll for logo strips — duplicates children for loop.
 export function Marquee({
   children,
   speed = 40,
@@ -188,10 +176,7 @@ export function Marquee({
   );
 }
 
-// ─── HeroParallax ───────────────────────────────────────────────────────────
-// Wraps hero text in a container that moves slower than scroll — classic
-// parallax effect that makes the hero feel like it has depth.
-
+// Parallax wrapper — hero text moves slower than scroll for depth.
 export function HeroParallax({
   children,
   className,
@@ -211,10 +196,7 @@ export function HeroParallax({
   );
 }
 
-// ─── HoverLift ──────────────────────────────────────────────────────────────
-// Subtle hover scale+shadow for interactive cards (pricing tiers, team
-// members, feature grids).
-
+// Subtle hover lift for cards (pricing, team, feature grids).
 export function HoverLift({
   children,
   className,

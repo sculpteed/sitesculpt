@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Download, Loader2 } from 'lucide-react';
 import { useStudioStore } from './store';
+import { errorMessage } from './api-helpers';
 
 export function ExportButton() {
   const projectId = useStudioStore((s) => s.projectId);
@@ -17,10 +18,7 @@ export function ExportButton() {
     try {
       const res = await fetch(`/api/export/${projectId}`);
       if (!res.ok) {
-        const { error } = (await res.json().catch(() => ({ error: 'Export failed' }))) as {
-          error?: string;
-        };
-        alert(`Export failed: ${error ?? res.statusText}`);
+        alert(`Export failed: ${await errorMessage(res, 'Export failed')}`);
         return;
       }
       const blob = await res.blob();

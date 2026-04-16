@@ -2,6 +2,7 @@
 
 import { useStudioStore } from './store';
 import type { StepName } from '@/features/pipeline/types';
+import { STEP_ORDER } from './pipeline-steps';
 import { Check, Loader2, Circle, AlertCircle } from 'lucide-react';
 
 const LABELS: Record<StepName, { title: string; hint: string }> = {
@@ -11,14 +12,6 @@ const LABELS: Record<StepName, { title: string; hint: string }> = {
   generateVideo: { title: 'Motion', hint: 'Synthesising the motion loop' },
   extractFrames: { title: 'Frames', hint: 'Extracting frames for scroll playback' },
 };
-
-const ORDER: StepName[] = [
-  'expandPrompt',
-  'composeSite',
-  'generateImage',
-  'generateVideo',
-  'extractFrames',
-];
 
 export function PipelinePanel() {
   const steps = useStudioStore((s) => s.steps);
@@ -54,7 +47,7 @@ export function PipelinePanel() {
         </span>
       </div>
       <ol className="space-y-2">
-        {ORDER.map((step, i) => {
+        {STEP_ORDER.map((step, i) => {
           const p = steps[step];
           const label = LABELS[step];
           return (

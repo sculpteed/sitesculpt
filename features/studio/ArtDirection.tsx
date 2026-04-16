@@ -1,6 +1,6 @@
 'use client';
 
-import { useStudioStore, type PaletteOption, type ConceptOption } from './store';
+import { useStudioStore } from './store';
 import { FadeIn, StaggerGroup, StaggerChild, ScaleOnHover } from '@/components/motion';
 import { Check } from 'lucide-react';
 
@@ -9,16 +9,8 @@ interface ArtDirectionProps {
   busy?: boolean;
 }
 
-/**
- * Step 2 of the funnel — Art Direction picker.
- *
- * Shows 3 distinct visual directions (palette + hero concept) from Claude.
- * User picks one of each (or the same paired option). This is where the user
- * exercises creative control BEFORE any expensive generation happens.
- *
- * Cost: ~$0.001 (one Claude call produced these options)
- * Impact: DRAMATIC — prevents "I hate the palette/image Claude picked" entirely
- */
+/** Step 2 — Art Direction picker. User picks one palette + hero concept
+ *  pair before any image generation runs. */
 export function ArtDirection({ onContinue, busy = false }: ArtDirectionProps) {
   const paletteOptions = useStudioStore((s) => s.paletteOptions);
   const conceptOptions = useStudioStore((s) => s.conceptOptions);
@@ -81,7 +73,6 @@ export function ArtDirection({ onContinue, busy = false }: ArtDirectionProps) {
                         <Check className="h-4 w-4 text-[var(--color-accent)]" />
                       </div>
                     ) : null}
-                    {/* Color swatches */}
                     <div className="mb-3 flex gap-1.5">
                       <div
                         className="h-10 flex-1 rounded-lg"
@@ -139,7 +130,6 @@ export function ArtDirection({ onContinue, busy = false }: ArtDirectionProps) {
                         <Check className="h-4 w-4 text-[var(--color-accent)]" />
                       </div>
                     ) : null}
-                    {/* Visual preview — gradient tint from the paired palette */}
                     <div
                       className="mb-3 h-24 rounded-lg"
                       style={{

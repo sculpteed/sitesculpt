@@ -21,11 +21,7 @@ interface SidebarTabsProps {
   funnelBusy: boolean;
 }
 
-/**
- * Tabbed sidebar — "Sections" (structure editor) and "AI Editor" (chat).
- * The AI chat is always visible as a tab, not hidden behind a floating button.
- * This makes it obvious that natural-language editing is a first-class feature.
- */
+/** Tabbed sidebar — "Sections" structure editor + "AI Editor" chat. */
 export function SidebarTabs({
   funnelStep,
   site,
@@ -43,7 +39,6 @@ export function SidebarTabs({
 
   return (
     <aside className="flex flex-col overflow-hidden">
-      {/* Tab bar */}
       <div className="flex border-b border-[var(--color-border)]">
         <TabButton
           active={activeTab === 'sections'}
@@ -60,7 +55,6 @@ export function SidebarTabs({
         />
       </div>
 
-      {/* Tab content */}
       <div className="flex-1 overflow-y-auto">
         {activeTab === 'sections' ? (
           showStructureReview ? (
@@ -110,16 +104,14 @@ function TabButton({
   );
 }
 
-// Inline version of ChatPanel — renders directly in the sidebar, not floating
 function ChatPanelInline() {
   return (
     <div className="flex h-full flex-col">
-      <ChatPanel inline />
+      <ChatPanel />
     </div>
   );
 }
 
-// Scene card (moved from Studio.tsx subcomponents)
 function SceneCard({ scene }: { scene: Scene }) {
   return (
     <div className="rounded-xl border border-[var(--color-border)] bg-[rgba(243,234,217,0.012)] p-4">

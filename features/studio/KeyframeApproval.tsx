@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useStudioStore } from './store';
 import { FadeIn, ScaleOnHover } from '@/components/motion';
 import { Shimmer, PulsingDots, LoadingRing } from '@/components/LoadingStates';
-import { RefreshCw, Check, MessageSquare, X } from 'lucide-react';
+import { RefreshCw, Check, X } from 'lucide-react';
 
 interface KeyframeApprovalProps {
   onApprove: () => void;
@@ -21,14 +21,7 @@ const QUICK_FEEDBACK = [
   'More realistic / photographic',
 ];
 
-/**
- * Step 3 of the funnel — Keyframe Approval.
- *
- * Now includes:
- * - Shimmer loading state while generating (not just blank/text)
- * - Regeneration feedback: asks WHAT to change before retrying
- * - PulsingDots on busy state so it's unmistakably loading
- */
+/** Step 3 — Keyframe Approval. */
 export function KeyframeApproval({ onApprove, onRegenerate, busy }: KeyframeApprovalProps) {
   const projectId = useStudioStore((s) => s.projectId);
   const paletteOptions = useStudioStore((s) => s.paletteOptions);
@@ -51,10 +44,8 @@ export function KeyframeApproval({ onApprove, onRegenerate, busy }: KeyframeAppr
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      {/* Keyframe preview area */}
       <div className="relative flex-1 overflow-hidden">
         {busy ? (
-          // ─── Loading state: shimmer + pulsing indicator ───
           <div className="relative flex h-full flex-col items-center justify-center">
             <Shimmer className="absolute inset-0" />
             <div className="relative z-10 flex flex-col items-center gap-4">
@@ -74,7 +65,6 @@ export function KeyframeApproval({ onApprove, onRegenerate, busy }: KeyframeAppr
             </div>
           </div>
         ) : projectId ? (
-          // ─── Keyframe rendered ───
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -165,7 +155,6 @@ export function KeyframeApproval({ onApprove, onRegenerate, busy }: KeyframeAppr
                   </ScaleOnHover>
                 </div>
 
-                {/* ── Regeneration feedback panel ── */}
                 {showFeedback ? (
                   <FadeIn y={10} duration={0.3}>
                     <div className="mt-2 rounded-xl border border-[rgba(255,255,255,0.15)] bg-[rgba(0,0,0,0.5)] p-4 backdrop-blur-lg">

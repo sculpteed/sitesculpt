@@ -1,6 +1,5 @@
-// Template compositor config — drives the HTML overlay rendered at
-// /template-render/[id]. Each entry specifies the background prompt
-// (AI-generated) AND the HTML overlay content (nav + headline + CTAs).
+// Template compositor config — drives /template-render/[id].
+// Each entry has the AI background prompt + HTML overlay (nav/hero/CTAs).
 
 export interface TemplateConfig {
   id: string;
@@ -19,10 +18,7 @@ export interface TemplateConfig {
   accentColor: string; // hex
   headlineFont: 'sans' | 'serif' | 'display';
   layout: 'centered' | 'split-left' | 'split-right';
-  /**
-   * Overall site design variant. Each template picks a distinct layout
-   * so the gallery doesn't feel repetitive.
-   */
+  /** Overall site design variant so the gallery reads as varied. */
   siteStyle?:
     | 'floating-pill'        // SaaS/modern — nav pill top center
     | 'editorial-split'      // editorial — minimal wordmark top-left, headline left

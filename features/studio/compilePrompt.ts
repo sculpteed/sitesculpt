@@ -1,27 +1,23 @@
 import { PAGE_PRESETS } from './pages';
 import { getToneById } from './tones';
 import type { UserData } from './userData';
+import type { Palette } from '@/features/pipeline/types';
 
 export interface GuidedInput {
   brandName: string;
   description: string;
   toneId: string | null;
   paletteMode: 'ai' | 'custom';
-  customPalette: { background: string; foreground: string; accent: string };
+  customPalette: Palette;
   includedPages: string[];
   userData: UserData;
   hasAttachedImage?: boolean;
   hasAttachedVideo?: boolean;
 }
 
-/**
- * Compile a structured guided input into the rich prompt string we feed
- * into the pipeline.
- *
- * CRITICAL: when the user provides structured data (team, pricing,
- * testimonials, etc.), we inject it verbatim into the brief so Claude
- * FORMATS it rather than INVENTING it. This is how we stop fabrication.
- */
+/** Compile structured guided input into the brief text. User-provided data
+ *  (team, pricing, testimonials) is injected verbatim so Claude formats it
+ *  rather than inventing. */
 export function compilePrompt(input: GuidedInput): string {
   const parts: string[] = [];
 

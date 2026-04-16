@@ -1,5 +1,4 @@
-// Pre-built templates that skip the blank-page problem. Each template
-// pre-fills the GuidedForm fields so the user can generate in one click.
+// Pre-built templates — each one pre-fills the GuidedForm fields.
 
 export interface Template {
   id: string;

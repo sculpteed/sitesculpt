@@ -17,15 +17,8 @@ export interface ScrollFlipbookProps {
 }
 
 /**
- * Canvas-based scroll flipbook with critical-damped rAF easing and a sliding
- * prefetch window. This is what gives us smoother motion than Draftly's naive
- * Math.floor(progress * n) snap.
- *
- * Design notes:
- * - Frames are preloaded into an HTMLImageElement[] keyed by index.
- * - We prefetch a sliding window [current-1, current+3] around the scroll target.
- * - A rAF loop eases `currentFrameFloat` toward `targetFrameFloat` and redraws.
- * - Drawing is a single drawImage call with object-fit: cover math.
+ * Canvas scroll flipbook: rAF-eased frame index + sliding prefetch window
+ * ([current-1, current+3]) + single drawImage with object-fit: cover math.
  */
 export function ScrollFlipbook({
   frameUrl,
@@ -41,7 +34,7 @@ export function ScrollFlipbook({
   const currentRef = useRef(0);
   const rafRef = useRef<number>(0);
 
-  // Preload the first frame eagerly so we have something to draw immediately
+  // Seed first 8 frames so the canvas has something to draw immediately.
   useEffect(() => {
     if (frameCount === 0) return;
     const map = framesRef.current;
@@ -52,11 +45,10 @@ export function ScrollFlipbook({
       img.decoding = 'async';
       map.set(idx, img);
     };
-    // Seed first 8 frames upfront
     for (let i = 1; i <= Math.min(8, frameCount); i += 1) seed(i);
   }, [frameCount, frameUrl]);
 
-  // Resize canvas to match device pixel ratio
+  // Match canvas size to device pixel ratio.
   useEffect(() => {
     const canvas = canvasRef.current;
     const wrapper = wrapperRef.current;
@@ -76,7 +68,7 @@ export function ScrollFlipbook({
     return () => ro.disconnect();
   }, []);
 
-  // Scroll listener: update targetFrame based on wrapper position in viewport
+  // Update targetFrame from wrapper position in viewport.
   useEffect(() => {
     const wrapper = wrapperRef.current;
     if (!wrapper || frameCount === 0) return;
@@ -84,7 +76,7 @@ export function ScrollFlipbook({
     const onScroll = (): void => {
       const rect = wrapper.getBoundingClientRect();
       const vh = window.innerHeight || 1;
-      // progress: 0 when wrapper top hits viewport top, 1 when wrapper bottom leaves viewport top
+      // progress: 0 at top of wrapper, 1 at bottom.
       const total = rect.height - vh;
       const scrolled = -rect.top;
       const progress = total > 0 ? Math.min(1, Math.max(0, scrolled / total)) : 0;
@@ -99,7 +91,6 @@ export function ScrollFlipbook({
     };
   }, [frameCount]);
 
-  // rAF ease loop + draw + sliding prefetch
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || frameCount === 0) return;
@@ -119,7 +110,7 @@ export function ScrollFlipbook({
 
     const drawFrame = (idx: number): void => {
       const clamped = Math.max(1, Math.min(frameCount, idx));
-      // Find closest loaded frame so we always draw something
+      // Fall back to the nearest loaded neighbor so we always draw something.
       let img = map.get(clamped);
       if (!img || !img.complete || img.naturalWidth === 0) {
         for (let delta = 1; delta <= 8; delta += 1) {
@@ -149,7 +140,7 @@ export function ScrollFlipbook({
       ctx.drawImage(img, dx, dy, dw, dh);
     };
 
-    // Critical-damped spring: smooth & fast without overshoot
+    // Critical-damped spring — smooth without overshoot.
     const stiffness = 0.2;
     let lastTargetIdx = -1;
 
@@ -159,7 +150,6 @@ export function ScrollFlipbook({
       currentRef.current += delta * stiffness;
       const idx = Math.round(currentRef.current) + 1; // 1-indexed
 
-      // Prefetch sliding window
       if (idx !== lastTargetIdx) {
         lastTargetIdx = idx;
         for (let d = -1; d <= 3; d += 1) ensureLoaded(idx + d);

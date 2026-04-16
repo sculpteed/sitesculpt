@@ -10,12 +10,7 @@ interface StructureReviewProps {
   busy?: boolean;
 }
 
-/**
- * Step 4 — Copy + Structure Review.
- *
- * EVERY text field is editable: brand name, headline, subheadline,
- * CTA buttons, section labels, titles, bodies, and CTAs.
- */
+/** Step 4 — Copy + Structure Review. Every text field is editable. */
 export function StructureReview({ onApprove, busy = false }: StructureReviewProps) {
   const site = useStudioStore((s) => s.site);
   const paletteOptions = useStudioStore((s) => s.paletteOptions);
@@ -38,7 +33,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
   const ctaSecondary = heroOverride.ctaSecondary ?? site.hero.ctaSecondary;
   const brandName = brandOverride ?? site.brandName;
 
-  // Section reorder
   const moveSection = (from: number, to: number): void => {
     if (to < 0 || to >= site.sections.length) return;
     const next = [...site.sections];
@@ -47,7 +41,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
     setSite({ ...site, sections: next });
   };
 
-  // Section delete
   const deleteSection = (idx: number): void => {
     const next = site.sections.filter((_, i) => i !== idx);
     setSite({ ...site, sections: next });
@@ -55,7 +48,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
 
   return (
     <div className="flex flex-1 flex-col gap-6 overflow-y-auto p-6 sm:p-10">
-      {/* Header */}
       <FadeIn>
         <div className="flex max-w-2xl flex-col gap-3">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-warm-subtle">
@@ -71,7 +63,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
         </div>
       </FadeIn>
 
-      {/* Edit mode banner */}
       <FadeIn delay={0.1}>
         <div className="flex items-center gap-3 rounded-lg border border-[var(--color-accent)] bg-[var(--color-accent-soft)] px-4 py-3">
           <Pencil className="h-4 w-4 shrink-0 text-[var(--color-accent)]" />
@@ -86,7 +77,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
         </div>
       </FadeIn>
 
-      {/* Hero card */}
       <FadeIn delay={0.15}>
         <div
           className="rounded-xl border border-[var(--color-border)] p-5"
@@ -100,7 +90,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
             Hero section
           </div>
 
-          {/* Brand name */}
           <EditableField
             value={brandName}
             onSave={(v) => setBrandOverride(v !== site.brandName ? v : null)}
@@ -108,7 +97,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
             placeholder="Brand name"
           />
 
-          {/* Headline */}
           <EditableField
             value={headline}
             onSave={(v) => setHeroOverride({ headline: v })}
@@ -116,7 +104,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
             placeholder="Hero headline"
           />
 
-          {/* Subheadline */}
           <EditableField
             value={subheadline}
             onSave={(v) => setHeroOverride({ subheadline: v })}
@@ -124,7 +111,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
             placeholder="Subheadline"
           />
 
-          {/* CTA buttons — editable */}
           <div className="mt-3 flex flex-wrap gap-3">
             <EditableField
               value={ctaPrimary}
@@ -146,7 +132,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
         </div>
       </FadeIn>
 
-      {/* Section list */}
       <StaggerGroup className="space-y-2" stagger={0.04}>
         {site.sections.map((s, i) => {
           const ov = sectionOverrides[i] ?? {};
@@ -183,7 +168,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                   </button>
                 </div>
 
-                {/* Delete button — top right on hover */}
                 <button
                   type="button"
                   onClick={() => deleteSection(i)}
@@ -194,7 +178,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                 </button>
 
                 <div className="p-4 pr-10">
-                  {/* Layout badge + metadata */}
                   <div className="mb-2 flex flex-wrap items-center gap-1.5">
                     <span className="font-mono text-[9px] text-warm-subtle">
                       {String(i + 1).padStart(2, '0')}
@@ -215,7 +198,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                     ) : null}
                   </div>
 
-                  {/* Editable label (eyebrow) */}
                   {(label || s.layout) && (
                     <EditableField
                       value={label}
@@ -225,7 +207,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                     />
                   )}
 
-                  {/* Editable title */}
                   <EditableField
                     value={title}
                     onSave={(v) => setSectionOverride(i, { title: v || s.title })}
@@ -233,7 +214,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                     placeholder="Section title"
                   />
 
-                  {/* Editable body */}
                   <EditableField
                     value={body}
                     onSave={(v) => setSectionOverride(i, { body: v || s.body })}
@@ -242,7 +222,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                     multiline
                   />
 
-                  {/* Editable CTA (if present or layout typically has one) */}
                   {(cta || ['split-image', 'cta', 'contact-block'].includes(s.layout)) && (
                     <EditableField
                       value={cta}
@@ -252,7 +231,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
                     />
                   )}
 
-                  {/* Mobile reorder controls */}
                   <div className="mt-2 flex gap-1 sm:hidden">
                     <button
                       type="button"
@@ -278,7 +256,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
         })}
       </StaggerGroup>
 
-      {/* Approve + render */}
       <FadeIn delay={0.2}>
         <div className="flex flex-wrap items-center gap-4 pb-6">
           <ScaleOnHover>
@@ -301,10 +278,6 @@ export function StructureReview({ onApprove, busy = false }: StructureReviewProp
     </div>
   );
 }
-
-// ─── EditableField ──────────────────────────────────────────────────────────
-// Click-to-edit: shows static text with a pencil icon. Clicking opens
-// a real input/textarea.
 
 function EditableField({
   value,

@@ -44,8 +44,7 @@ export function EditableText({
 
   return (
     <Tag
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ref={ref as any}
+      ref={ref as React.RefObject<HTMLElement & HTMLHeadingElement & HTMLParagraphElement & HTMLDivElement & HTMLQuoteElement & HTMLSpanElement>}
       contentEditable
       suppressContentEditableWarning
       onBlur={handleBlur}

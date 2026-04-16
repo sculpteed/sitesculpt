@@ -1,14 +1,11 @@
 /**
  * Generate the homepage background video via gpt-image-1 + sora-2.
  *
- * Run: `npx tsx --env-file=.env.local scripts/gen-hero-video.ts`
- * Cost: ~$0.15 image + ~$0.80 sora = ~$0.95 per run.
- * Time: ~5 minutes (dominated by sora polling).
+ * Run:   `npx tsx --env-file=.env.local scripts/gen-hero-video.ts`
+ * Cost:  ~$0.95 per run ($0.15 image + $0.80 sora), ~5 min wall clock.
+ * Out:   public/homepage-bg.mp4
  *
- * Output: public/homepage-bg.mp4 (replaces the current one)
- *
- * Prompts below are hand-written for this specific vision — NOT expanded by
- * Claude, so the user's intent stays intact.
+ * Prompts below are hand-written; do NOT pipe them through expandPrompt.
  */
 import { promises as fs } from 'node:fs';
 import path from 'node:path';

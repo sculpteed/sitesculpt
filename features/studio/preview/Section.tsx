@@ -1,6 +1,5 @@
-// Section dispatcher — renders block-library-quality layouts using shadcn/ui
-// primitives + real Tailwind classes. Now supports inline editing via
-// EditableText when `editable` is true (postMessage to parent Studio).
+// Section dispatcher — shadcn/ui + Tailwind layouts. When `editable` is
+// true, EditableText wraps each field and postMessages changes to Studio.
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -9,42 +8,11 @@ import { Separator } from '@/components/ui/separator';
 import { ArrowRight, Check } from 'lucide-react';
 import { CountUp, HoverLift, Marquee, Reveal, Stagger, StaggerItem } from './motion';
 import { EditableText } from './EditableText';
+import type { SectionLayout, SectionItem, SiteSection } from '@/features/pipeline/types';
 
-export type SectionLayout =
-  | 'intro'
-  | 'feature-grid'
-  | 'split-image'
-  | 'stat-grid'
-  | 'quote'
-  | 'numbered-steps'
-  | 'faq-accordion'
-  | 'logo-strip'
-  | 'pricing-tiers'
-  | 'team-grid'
-  | 'testimonial-wall'
-  | 'contact-block'
-  | 'cta';
+export type { SectionLayout, SectionItem };
 
-export interface SectionItem {
-  name: string;
-  description?: string;
-  value?: string;
-  role?: string;
-  bio?: string;
-  quote?: string;
-  avatarUrl?: string;
-  features?: string[];
-  cta?: string;
-  highlighted?: boolean;
-}
-
-export interface SectionProps {
-  layout: SectionLayout;
-  label?: string;
-  title: string;
-  body: string;
-  cta?: string;
-  items?: SectionItem[];
+export interface SectionProps extends SiteSection {
   editable?: boolean;
   sectionIndex?: number;
 }
@@ -95,7 +63,6 @@ function getLabel(props: SectionProps): string {
   return props.label ?? DEFAULT_LABELS[props.layout] ?? '';
 }
 
-// Editable label component
 function ELabel({ props }: { props: SectionProps }) {
   const label = getLabel(props);
   if (props.editable && props.sectionIndex !== undefined) {
@@ -113,7 +80,6 @@ function ELabel({ props }: { props: SectionProps }) {
   return <SectionEyebrow>{label}</SectionEyebrow>;
 }
 
-// Editable display heading
 function EHeading({ title, props }: { title: string; props: SectionProps }) {
   if (props.editable && props.sectionIndex !== undefined) {
     return (
@@ -133,7 +99,6 @@ function EHeading({ title, props }: { title: string; props: SectionProps }) {
   );
 }
 
-// Editable body/lede
 function EBody({ body, props, className }: { body: string; props: SectionProps; className?: string }) {
   const cls = className ?? 'mt-6 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg';
   if (props.editable && props.sectionIndex !== undefined) {
@@ -150,7 +115,6 @@ function EBody({ body, props, className }: { body: string; props: SectionProps; 
   return <p className={cls}>{body}</p>;
 }
 
-// Editable CTA button
 function ECta({ cta, props }: { cta: string; props: SectionProps }) {
   if (props.editable && props.sectionIndex !== undefined) {
     return (

@@ -1,5 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+import { getToneIdByLabel } from '@/features/studio/tones';
+import type { PaletteOption, ConceptOption } from '@/features/studio/store';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -9,12 +11,16 @@ const bodySchema = z.object({
   brief: z.string().min(10).max(8000),
 });
 
-interface ConceptOption {
-  palette: { name: string; background: string; foreground: string; accent: string };
-  concept: { title: string; description: string; visualPrompt: string; motionPrompt: string };
+/** Wire format returned by POST /api/art-direction — a palette + concept pair. */
+interface ArtDirectionOption {
+  palette: PaletteOption;
+  concept: ConceptOption;
 }
 
-interface Scene {
+/** Scene-library entry — distinct from the pipeline's Scene (visualPrompt,
+ *  motionPrompt, palette). This is the background/style/motion metadata used
+ *  to build the visualPrompt for one concept option. */
+interface SceneTemplate {
   title: string;
   description: string;
   background: string;
@@ -23,7 +29,7 @@ interface Scene {
 }
 
 // ─── Scene library — 25 cinematic 3D scenes across industries ──────────────
-const SCENES: Record<string, Scene> = {
+const SCENES: Record<string, SceneTemplate> = {
   // Tech / SaaS / AI scenes
   cosmicPurple: {
     title: 'Cosmic Depth',
@@ -275,7 +281,7 @@ function detectIndustryScenes(brief: string, toneId: string | null): string[] {
 }
 
 // ─── Palette library per tone (3-4 variants each) ─────────────────────────
-const PALETTES: Record<string, Array<ConceptOption['palette']>> = {
+const PALETTES: Record<string, PaletteOption[]> = {
   bold: [
     { name: 'Cosmic Violet', background: '#0a0420', foreground: '#F4EFE6', accent: '#a78bfa' },
     { name: 'Electric Sunset', background: '#1a0a2e', foreground: '#F4EFE6', accent: '#ff6ec7' },
@@ -356,22 +362,15 @@ function extractFields(brief: string): { brandName: string; description: string;
   const descMatch = brief.match(/What it is:\s*([^\n]+)/);
   const description = descMatch?.[1]?.trim() ?? '';
   const toneMatch = brief.match(/Tone:\s*([^.]+)\./);
-  const toneLabel = toneMatch?.[1]?.trim() ?? null;
-  const toneId =
-    toneLabel === 'Minimal & confident' ? 'minimal' :
-    toneLabel === 'Editorial & elegant' ? 'editorial' :
-    toneLabel === 'Playful & warm' ? 'playful' :
-    toneLabel === 'Technical & precise' ? 'technical' :
-    toneLabel === 'Luxurious' ? 'luxurious' :
-    toneLabel === 'Bold & loud' ? 'bold' : null;
+  const toneId = getToneIdByLabel(toneMatch?.[1]);
   return { brandName, description, toneId };
 }
 
 function buildVisualPrompt(args: {
   brandName: string;
   description: string;
-  scene: Scene;
-  palette: ConceptOption['palette'];
+  scene: SceneTemplate;
+  palette: PaletteOption;
 }): string {
   const { scene, palette } = args;
   const composition = pickRandom(COMPOSITION_VARIATIONS);
@@ -389,37 +388,29 @@ export async function POST(req: NextRequest): Promise<Response> {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  try {
-    const { brandName, description, toneId } = extractFields(parsed.data.brief);
+  const { brandName, description, toneId } = extractFields(parsed.data.brief);
 
-    // Get candidate scenes for this industry/tone (5-6 options)
-    const sceneCandidates = detectIndustryScenes(parsed.data.brief, toneId);
-    // Randomly pick 3 unique scenes
-    const chosenScenes = shuffle(sceneCandidates).slice(0, 3);
+  // Get candidate scenes for this industry/tone (5-6 options)
+  const sceneCandidates = detectIndustryScenes(parsed.data.brief, toneId);
+  // Randomly pick 3 unique scenes
+  const chosenScenes = shuffle(sceneCandidates).slice(0, 3);
 
-    // Shuffle palettes so each generation pairs differently
-    const palettePool = shuffle(PALETTES[toneId ?? 'minimal'] ?? PALETTES.minimal!);
+  // Shuffle palettes so each generation pairs differently
+  const palettePool = shuffle(PALETTES[toneId ?? 'minimal'] ?? PALETTES.minimal!);
 
-    const options: ConceptOption[] = chosenScenes.map((sceneKey, idx) => {
-      const scene = SCENES[sceneKey]!;
-      const palette = palettePool[idx % palettePool.length]!;
-      return {
-        palette,
-        concept: {
-          title: scene.title,
-          description: scene.description,
-          visualPrompt: buildVisualPrompt({ brandName, description, scene, palette }),
-          motionPrompt: scene.motion,
-        },
-      };
-    });
+  const options: ArtDirectionOption[] = chosenScenes.map((sceneKey, idx) => {
+    const scene = SCENES[sceneKey]!;
+    const palette = palettePool[idx % palettePool.length]!;
+    return {
+      palette,
+      concept: {
+        title: scene.title,
+        description: scene.description,
+        visualPrompt: buildVisualPrompt({ brandName, description, scene, palette }),
+        motionPrompt: scene.motion,
+      },
+    };
+  });
 
-    return Response.json({ options });
-  } catch (err) {
-    console.error('[art-direction] failed', err);
-    return Response.json(
-      { error: err instanceof Error ? err.message : 'Art direction failed' },
-      { status: 500 },
-    );
-  }
+  return Response.json({ options });
 }
