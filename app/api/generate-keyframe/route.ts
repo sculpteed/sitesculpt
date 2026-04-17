@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { envStatus } from '@/lib/env';
 import { hashInput, ensureProjectDir, writeJson, writeFileBytes } from '@/lib/cache';
 import { generateFluxImage } from '@/lib/providers/fal-image';
+import { requirePaidUser } from '@/lib/auth';
 import type { Aspect } from '@/features/pipeline/types';
 
 export const runtime = 'nodejs';
@@ -31,6 +32,9 @@ const bodySchema = z.object({
  * Cost: ~$0.04 (gpt-image-1 medium quality)
  */
 export async function POST(req: NextRequest): Promise<Response> {
+  const gate = await requirePaidUser();
+  if (gate) return gate;
+
   const envCheck = envStatus();
   if (!envCheck.ok) {
     return Response.json({ error: envCheck.error }, { status: 500 });

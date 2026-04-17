@@ -4,6 +4,7 @@ import { envStatus } from '@/lib/env';
 import { writeJson, readJson } from '@/lib/cache';
 import { composeSite } from '@/features/pipeline/steps/composeSite';
 import { parseDataUrl } from '@/lib/providers/anthropic';
+import { requirePaidUser } from '@/lib/auth';
 import { auth } from '@clerk/nextjs/server';
 
 export const runtime = 'nodejs';
@@ -27,6 +28,9 @@ const bodySchema = z.object({
  * Cost: ~$0.001 (one Claude call)
  */
 export async function POST(req: NextRequest): Promise<Response> {
+  const gate = await requirePaidUser();
+  if (gate) return gate;
+
   const envCheck = envStatus();
   if (!envCheck.ok) {
     return Response.json({ error: envCheck.error }, { status: 500 });

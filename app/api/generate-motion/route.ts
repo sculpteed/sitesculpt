@@ -4,6 +4,7 @@ import { envStatus } from '@/lib/env';
 import { readJson } from '@/lib/cache';
 import { generateVideo } from '@/features/pipeline/steps/generateVideo';
 import { extractFrames } from '@/features/pipeline/steps/extractFrames';
+import { requirePaidUser } from '@/lib/auth';
 import type { Scene } from '@/features/pipeline/types';
 
 export const runtime = 'nodejs';
@@ -26,6 +27,9 @@ const bodySchema = z.object({
  * This is the core Draftly mechanism — Canvas 2D frame scrubbing.
  */
 export async function POST(req: NextRequest): Promise<Response> {
+  const gate = await requirePaidUser();
+  if (gate) return gate;
+
   const envCheck = envStatus();
   if (!envCheck.ok) {
     return Response.json({ error: envCheck.error }, { status: 500 });

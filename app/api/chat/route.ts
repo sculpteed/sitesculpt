@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { envStatus } from '@/lib/env';
 import { claudeJson } from '@/lib/providers/anthropic';
+import { requirePaidUser } from '@/lib/auth';
 import type { SiteStructure } from '@/features/pipeline/types';
 
 export const runtime = 'nodejs';
@@ -52,6 +53,9 @@ interface ChatResponse {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
+  const gate = await requirePaidUser();
+  if (gate) return gate;
+
   const envCheck = envStatus();
   if (!envCheck.ok) {
     return Response.json({ error: envCheck.error }, { status: 500 });

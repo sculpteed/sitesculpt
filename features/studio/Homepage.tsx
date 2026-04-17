@@ -9,7 +9,6 @@ import {
   StaggerChild,
   ScaleOnHover,
   PageTransition,
-  GlowPulse,
 } from '@/components/motion';
 
 export function Homepage() {
@@ -22,15 +21,19 @@ export function Homepage() {
   };
 
   const handleGetStarted = (): void => {
-    router.push('/studio');
+    router.push('/pricing?from=hero');
   };
+
+  const featuredTemplates = TEMPLATES.slice(0, 3);
+  const restTemplates = TEMPLATES.slice(3);
 
   return (
     <PageTransition>
-    <main className="relative min-h-screen overflow-hidden">
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden bg-[#0d0a08]">
+    <main className="relative min-h-screen overflow-hidden bg-[#0a0a14] text-[#F4EFE6]">
+      {/* ─── Atmospheric background ──────────────────────────────────────── */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <video
-          className="bg-video"
+          className="absolute inset-0 h-full w-full object-cover opacity-[0.35]"
           src="https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/homepage-bg.mp4"
           autoPlay
           loop
@@ -39,231 +42,348 @@ export function Homepage() {
           preload="auto"
           aria-hidden="true"
         />
+        {/* Draftly-style radial fogs */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(to bottom, rgba(13,10,8,0.08) 0%, rgba(13,10,8,0.18) 55%, rgba(13,10,8,0.32) 100%)',
+              'radial-gradient(ellipse 120% 80% at 50% -40%, rgba(52,211,153,0.14), transparent), radial-gradient(ellipse 70% 50% at 100% 0, rgba(139,92,246,0.16), transparent), radial-gradient(ellipse 50% 40% at 0 100%, rgba(34,211,238,0.10), transparent), linear-gradient(to bottom, rgba(10,10,20,0.4) 0%, rgba(10,10,20,0.75) 60%, #0a0a14 100%)',
           }}
         />
         <div className="grain absolute inset-0 opacity-[0.06]" />
       </div>
 
-      <nav className="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:px-8 sm:py-6">
+      {/* ─── Nav ─────────────────────────────────────────────────────────── */}
+      <nav className="relative z-30 mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:px-8 sm:py-6">
         <div className="flex items-center gap-2.5">
-          <div className="h-4 w-4 rounded-[3px]" style={{ backgroundColor: '#f3ead9' }} />
-          <span className="text-sm font-medium tracking-tight text-warm">sitesculpt</span>
+          <div className="h-4 w-4 rounded-[3px] bg-[#F4EFE6]" />
+          <span className="text-sm font-medium tracking-tight">sitesculpt</span>
         </div>
-        <div className="flex items-center gap-4 text-[12px] text-warm-muted sm:gap-7 sm:text-[13px]">
-          <a href="#templates" className="hidden transition hover:text-warm sm:inline">
+        <div className="flex items-center gap-5 text-[12px] text-white/60 sm:gap-8 sm:text-[13px]">
+          <a href="#templates" className="hidden transition hover:text-white sm:inline">
             Templates
           </a>
-          <a href="#pipeline" className="hidden transition hover:text-warm sm:inline">
-            Pipeline
+          <a href="#features" className="hidden transition hover:text-white sm:inline">
+            Features
+          </a>
+          <a href="/pricing" className="hidden transition hover:text-white sm:inline">
+            Pricing
+          </a>
+          <a href="/sign-in" className="transition hover:text-white">
+            Sign in
           </a>
           <a
-            href="/get-started"
-            className="rounded-full border border-[rgba(243,234,217,0.2)] px-3.5 py-1.5 text-warm transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)] sm:px-4"
+            href="/pricing?from=nav"
+            className="rounded-full bg-[#F4EFE6] px-3.5 py-1.5 text-[12px] font-medium text-[#0a0a14] transition hover:opacity-90 sm:px-4"
           >
             Get started
           </a>
         </div>
       </nav>
 
-      <section className="relative z-20 mx-auto flex min-h-[72vh] max-w-4xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
-        <h1 className="mb-6 font-serif text-[56px] leading-[0.95] tracking-[-0.02em] text-warm sm:mb-8 sm:text-[88px] sm:leading-[0.92] md:text-[128px]">
-          Start{' '}
-          <em className="italic" style={{ color: '#f5d9a8' }}>
-            sculpting.
-          </em>
-        </h1>
+      {/* ─── Hero ────────────────────────────────────────────────────────── */}
+      <section className="relative z-20 mx-auto flex min-h-[78vh] max-w-5xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
+        <FadeIn>
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-white/70 backdrop-blur-sm">
+            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
+            <span>Powered by Claude Opus 4.7</span>
+          </div>
+        </FadeIn>
+        <FadeIn delay={0.05}>
+          <h1 className="mb-8 font-serif text-[56px] leading-[0.94] tracking-[-0.025em] sm:text-[88px] md:text-[110px]">
+            Cinematic sites,{' '}
+            <em className="italic" style={{ color: '#f5d9a8' }}>
+              from a prompt.
+            </em>
+          </h1>
+        </FadeIn>
+        <FadeIn delay={0.12}>
+          <p className="mx-auto mb-10 max-w-xl text-[15px] leading-relaxed text-white/70 sm:text-[16px]">
+            Describe your business. Sitesculpt generates a 3D scroll-driven website with AI copy,
+            cinematic motion, and production-ready Next.js code — in about five minutes.
+          </p>
+        </FadeIn>
 
-        <p className="mb-8 max-w-md text-[14px] leading-relaxed text-warm-muted sm:text-[15px]">
-          Describe your business. Get a cinematic, production-ready website in minutes.
-        </p>
-
-        <div className="flex flex-col items-center gap-4">
-          <GlowPulse color="#e8b874">
+        <FadeIn delay={0.2}>
+          <div className="flex flex-wrap items-center justify-center gap-3">
             <ScaleOnHover>
               <button
                 onClick={handleGetStarted}
-                className="rounded-full px-7 py-3.5 text-[14px] font-medium text-[#0d0a08] transition"
-                style={{ backgroundColor: '#e8b874' }}
+                className="rounded-full bg-[#F4EFE6] px-7 py-3.5 text-[14px] font-semibold text-[#0a0a14] shadow-[0_20px_60px_-20px_rgba(244,239,230,0.4)] transition hover:opacity-90"
               >
-                Start from scratch
+                Start Building &rarr;
               </button>
             </ScaleOnHover>
-          </GlowPulse>
-          <a
-            href="#templates"
-            className="text-[12px] text-warm-subtle transition hover:text-warm"
-          >
-            or pick a template below
-          </a>
-        </div>
+            <a
+              href="#templates"
+              className="rounded-full border border-white/15 bg-white/[0.03] px-6 py-3.5 text-[14px] font-medium text-white/80 backdrop-blur-sm transition hover:border-white/30 hover:text-white"
+            >
+              Explore Templates
+            </a>
+          </div>
+        </FadeIn>
+
+        {/* Stat row */}
+        <FadeIn delay={0.3}>
+          <div className="mt-16 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-left">
+            {[
+              { v: '12', l: 'Templates' },
+              { v: '5 min', l: 'Prompt to deploy' },
+              { v: 'Next.js', l: 'Real code export' },
+              { v: 'Opus 4.7', l: 'AI model' },
+            ].map((s) => (
+              <div key={s.l} className="border-l border-white/10 pl-4">
+                <div className="font-serif text-xl leading-none tracking-tight">{s.v}</div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-white/50">
+                  {s.l}
+                </div>
+              </div>
+            ))}
+          </div>
+        </FadeIn>
       </section>
 
-      <div className="relative z-10 bg-warm">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 -top-80 h-80"
-          style={{
-            background:
-              'linear-gradient(to bottom, transparent 0%, rgba(13,10,8,0.1) 25%, rgba(13,10,8,0.3) 50%, rgba(13,10,8,0.65) 75%, rgba(13,10,8,0.92) 92%, #0d0a08 100%)',
-          }}
-        />
-
-        {/* Templates */}
-        <section id="templates" className="relative z-20 mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
-          <FadeIn>
-            <div className="mb-12 flex flex-col items-start gap-3 sm:mb-16">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-warm-subtle sm:text-[11px]">
-                <span className="inline-block h-px w-5 bg-[var(--color-border-strong)] sm:w-6" />
-                <span>Start here</span>
-              </div>
-              <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] text-warm sm:text-5xl md:text-6xl">
-                Pick a{' '}
+      {/* ─── Featured templates showcase ─────────────────────────────────── */}
+      <section
+        id="templates"
+        className="relative z-20 mx-auto max-w-6xl px-6 py-24 sm:px-8 sm:py-32"
+      >
+        <FadeIn>
+          <div className="mb-12 flex flex-col items-start gap-3">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50 sm:text-[11px]">
+              <span className="inline-block h-px w-6 bg-white/20" />
+              <span>Best previews</span>
+            </div>
+            <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] sm:text-5xl md:text-6xl">
+                Pick a starter.{' '}
                 <em className="italic" style={{ color: '#f5d9a8' }}>
-                  template.
+                  Ship today.
                 </em>
               </h2>
-              <p className="mt-2 max-w-lg text-[14px] leading-relaxed text-warm-muted">
-                Each template pre-fills the brief with smart defaults. You can customize everything before generating.
+              <p className="max-w-sm text-[14px] leading-relaxed text-white/65">
+                Each template is a live deployed site. Click preview to open it full-screen, or
+                use it as the starting point for yours.
               </p>
             </div>
-          </FadeIn>
-
-          <StaggerGroup
-            className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-            stagger={0.06}
-          >
-            {TEMPLATES.map((t) => (
-              <StaggerChild key={t.id}>
-                <TemplateCard template={t} onClick={() => handleTemplateClick(t)} />
-              </StaggerChild>
-            ))}
-          </StaggerGroup>
-
-          <FadeIn delay={0.4}>
-            <div className="mt-10 text-center">
-              <button
-                onClick={handleGetStarted}
-                className="text-[13px] text-warm-muted transition hover:text-warm"
-              >
-                Or describe your own from scratch &rarr;
-              </button>
-            </div>
-          </FadeIn>
-        </section>
-
-        {/* Pipeline */}
-        <section id="pipeline" className="relative z-20 mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
-          <FadeIn>
-            <div className="mb-12 flex flex-col items-start gap-3 sm:mb-16">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-warm-subtle sm:text-[11px]">
-                <span className="inline-block h-px w-5 bg-[var(--color-border-strong)] sm:w-6" />
-                <span>The pipeline</span>
-              </div>
-              <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] text-warm sm:text-5xl md:text-6xl">
-                From prompt to{' '}
-                <em className="italic" style={{ color: '#f5d9a8' }}>
-                  production.
-                </em>
-              </h2>
-            </div>
-          </FadeIn>
-          <StaggerGroup className="grid grid-cols-1 divide-y divide-[var(--color-border)] border-y border-[var(--color-border)] md:grid-cols-5 md:divide-x md:divide-y-0" stagger={0.08}>
-            {[
-              { n: '01', t: 'Describe', d: 'Your subject, your mood, your tone.' },
-              { n: '02', t: 'Generate', d: 'A high-resolution keyframe lands in seconds.' },
-              { n: '03', t: 'Compose', d: 'Hero copy + sections, editable on arrival.' },
-              { n: '04', t: 'Animate', d: 'Motion synthesised from the keyframe.' },
-              { n: '05', t: 'Export', d: 'A real Next.js project. Free, on any plan.' },
-            ].map((s) => (
-              <StaggerChild key={s.n}>
-                <ScaleOnHover scale={1.01} className="group px-6 py-8 transition hover:bg-[rgba(243,234,217,0.015)]">
-                  <div className="mb-10 font-mono text-[11px] tracking-wider text-warm-subtle">
-                    {s.n}
-                  </div>
-                  <div className="mb-2 text-base font-medium text-warm">{s.t}</div>
-                  <div className="text-[13px] leading-relaxed text-warm-muted">{s.d}</div>
-                </ScaleOnHover>
-              </StaggerChild>
-            ))}
-          </StaggerGroup>
-        </section>
-
-        {/* Principles */}
-        <section id="principles" className="relative z-20 mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28">
-          <FadeIn>
-            <div className="mb-12 flex flex-col items-start gap-3 sm:mb-16">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.22em] text-warm-subtle sm:text-[11px]">
-                <span className="inline-block h-px w-5 bg-[var(--color-border-strong)] sm:w-6" />
-                <span>Principles</span>
-              </div>
-              <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] text-warm sm:text-5xl md:text-6xl">
-                No friction.{' '}
-                <em className="italic" style={{ color: '#f5d9a8' }}>
-                  Ever.
-                </em>
-              </h2>
-            </div>
-          </FadeIn>
-          <StaggerGroup className="grid gap-px bg-[var(--color-border)] md:grid-cols-3" stagger={0.1}>
-            {[
-              {
-                t: 'No paywall to try',
-                d: 'Others gate the builder behind $25/mo. We give you a free generation. No signup required.',
-              },
-              {
-                t: 'Free code export',
-                d: 'A real Next.js project on any plan. Not locked behind a premium tier.',
-              },
-              {
-                t: 'Work never lost',
-                d: 'Auto-save from the first keystroke. Close the tab, come back, pick up where you left off.',
-              },
-            ].map((x) => (
-              <StaggerChild key={x.t}>
-                <ScaleOnHover scale={1.01} className="h-full bg-warm p-8 transition-colors hover:bg-[rgba(243,234,217,0.02)] sm:p-10">
-                  <div className="mb-3 font-serif text-xl italic text-warm sm:text-2xl">{x.t}</div>
-                  <div className="text-[13px] leading-relaxed text-warm-muted sm:text-[14px]">
-                    {x.d}
-                  </div>
-                </ScaleOnHover>
-              </StaggerChild>
-            ))}
-          </StaggerGroup>
-        </section>
-
-        <FadeIn>
-          <footer className="relative z-20 mx-auto max-w-6xl px-6 py-14 sm:px-8 sm:py-16">
-            <div className="border-t border-[var(--color-border)] pt-8 text-center text-[11px] uppercase tracking-[0.22em] text-warm-subtle">
-              sitesculpt
-            </div>
-          </footer>
+          </div>
         </FadeIn>
-      </div>
+
+        {/* Featured 3 (full-width cards) */}
+        <StaggerGroup
+          className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-3"
+          stagger={0.08}
+        >
+          {featuredTemplates.map((t) => (
+            <StaggerChild key={t.id}>
+              <TemplateCard
+                template={t}
+                onClick={() => handleTemplateClick(t)}
+                variant="featured"
+              />
+            </StaggerChild>
+          ))}
+        </StaggerGroup>
+
+        {/* Remaining 9 in a tighter grid */}
+        <StaggerGroup
+          className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          stagger={0.05}
+        >
+          {restTemplates.map((t) => (
+            <StaggerChild key={t.id}>
+              <TemplateCard template={t} onClick={() => handleTemplateClick(t)} />
+            </StaggerChild>
+          ))}
+        </StaggerGroup>
+      </section>
+
+      {/* ─── Features grid ───────────────────────────────────────────────── */}
+      <section
+        id="features"
+        className="relative z-20 mx-auto max-w-6xl px-6 py-24 sm:px-8 sm:py-32"
+      >
+        <FadeIn>
+          <div className="mb-14 flex flex-col items-start gap-3 sm:mb-20">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50 sm:text-[11px]">
+              <span className="inline-block h-px w-6 bg-white/20" />
+              <span>What&rsquo;s inside</span>
+            </div>
+            <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] sm:text-5xl md:text-6xl">
+              Built for shipping,{' '}
+              <em className="italic" style={{ color: '#f5d9a8' }}>
+                not demoing.
+              </em>
+            </h2>
+          </div>
+        </FadeIn>
+        <StaggerGroup
+          className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-white/10 bg-white/5 sm:grid-cols-2 lg:grid-cols-3"
+          stagger={0.06}
+        >
+          {[
+            {
+              t: 'Cinematic scroll motion',
+              d: 'Canvas 2D frame flipbook driven by scroll — same mechanism Draftly uses, inlined in your export.',
+            },
+            {
+              t: 'Claude Opus 4.7 + vision',
+              d: 'Anthropic\u2019s newest design-aware model writes copy + structure. Drop a reference image and it reads palette + mood.',
+            },
+            {
+              t: 'Multi-step AI funnel',
+              d: 'Art direction, keyframe approval, copy review. You steer the creative direction at every checkpoint.',
+            },
+            {
+              t: 'Live inline editing',
+              d: 'Click any headline, button, or label on the preview. It rewrites in place and syncs to the export.',
+            },
+            {
+              t: 'Real Next.js export',
+              d: 'Ship a real repo: Tailwind, motion primitives, scroll frames, deploy-ready. No vendor lock-in.',
+            },
+            {
+              t: 'Auto-save projects',
+              d: 'Close the tab mid-generation, come back later. Every project lives in your dashboard.',
+            },
+          ].map((x) => (
+            <StaggerChild key={x.t}>
+              <div className="h-full bg-[#0a0a14] p-7 transition hover:bg-[#0d0d18] sm:p-8">
+                <div className="mb-3 text-[15px] font-semibold tracking-tight text-white">
+                  {x.t}
+                </div>
+                <div className="text-[13px] leading-relaxed text-white/60">
+                  {x.d}
+                </div>
+              </div>
+            </StaggerChild>
+          ))}
+        </StaggerGroup>
+      </section>
+
+      {/* ─── Pipeline ────────────────────────────────────────────────────── */}
+      <section
+        id="pipeline"
+        className="relative z-20 mx-auto max-w-6xl px-6 py-20 sm:px-8 sm:py-28"
+      >
+        <FadeIn>
+          <div className="mb-12 flex flex-col items-start gap-3 sm:mb-16">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50 sm:text-[11px]">
+              <span className="inline-block h-px w-6 bg-white/20" />
+              <span>The pipeline</span>
+            </div>
+            <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] sm:text-5xl md:text-6xl">
+              Prompt to production.{' '}
+              <em className="italic" style={{ color: '#f5d9a8' }}>
+                In five steps.
+              </em>
+            </h2>
+          </div>
+        </FadeIn>
+        <StaggerGroup
+          className="grid grid-cols-1 divide-y divide-white/10 border-y border-white/10 md:grid-cols-5 md:divide-x md:divide-y-0"
+          stagger={0.08}
+        >
+          {[
+            { n: '01', t: 'Describe', d: 'Brand, audience, tone, attached references.' },
+            { n: '02', t: 'Generate', d: 'AI picks 3 cinematic directions. You pick one.' },
+            { n: '03', t: 'Compose', d: 'Claude writes copy + structure. Editable on arrival.' },
+            { n: '04', t: 'Animate', d: 'Sora turns the keyframe into a scroll flipbook.' },
+            { n: '05', t: 'Export', d: 'Download a real Next.js repo or deploy direct.' },
+          ].map((s) => (
+            <StaggerChild key={s.n}>
+              <div className="group px-6 py-8 transition hover:bg-white/[0.015]">
+                <div className="mb-10 font-mono text-[11px] tracking-wider text-white/40">
+                  {s.n}
+                </div>
+                <div className="mb-2 text-[15px] font-semibold text-white">{s.t}</div>
+                <div className="text-[13px] leading-relaxed text-white/60">{s.d}</div>
+              </div>
+            </StaggerChild>
+          ))}
+        </StaggerGroup>
+      </section>
+
+      {/* ─── Closing CTA / pricing preview ───────────────────────────────── */}
+      <section className="relative z-20 mx-auto max-w-6xl px-6 pb-24 pt-20 sm:px-8 sm:pb-32 sm:pt-28">
+        <FadeIn>
+          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0f0f23] via-[#0a0a14] to-[#0a0a14] p-10 sm:p-16">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 opacity-60"
+              style={{
+                background:
+                  'radial-gradient(ellipse 60% 80% at 20% 100%, rgba(139,92,246,0.25), transparent), radial-gradient(ellipse 40% 60% at 100% 0%, rgba(34,211,238,0.15), transparent)',
+              }}
+            />
+            <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-xl">
+                <h3 className="font-serif text-3xl leading-[1] tracking-[-0.02em] sm:text-5xl">
+                  Ship a cinematic site.{' '}
+                  <em className="italic" style={{ color: '#f5d9a8' }}>
+                    Today.
+                  </em>
+                </h3>
+                <p className="mt-4 text-[14px] leading-relaxed text-white/65 sm:text-[15px]">
+                  Plans start at $19/month. Cancel any time. Every tier includes full Next.js
+                  export and the cinematic scroll flipbook.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <ScaleOnHover>
+                  <button
+                    onClick={handleGetStarted}
+                    className="rounded-full bg-[#F4EFE6] px-6 py-3 text-[13px] font-semibold text-[#0a0a14] transition hover:opacity-90"
+                  >
+                    View plans &rarr;
+                  </button>
+                </ScaleOnHover>
+                <a
+                  href="/sign-in"
+                  className="text-[12px] text-white/60 transition hover:text-white"
+                >
+                  Already have an account? Sign in
+                </a>
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+      </section>
+
+      <footer className="relative z-20 mx-auto max-w-6xl px-6 pb-14 sm:px-8 sm:pb-16">
+        <div className="flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-8 text-[11px] uppercase tracking-[0.22em] text-white/40 sm:flex-row sm:items-center">
+          <div>sitesculpt</div>
+          <div className="flex gap-6">
+            <a href="/pricing" className="transition hover:text-white/80">Pricing</a>
+            <a href="#features" className="transition hover:text-white/80">Features</a>
+            <a href="/sign-in" className="transition hover:text-white/80">Sign in</a>
+          </div>
+        </div>
+      </footer>
     </main>
     </PageTransition>
   );
 }
 
+// ─── Template card ───────────────────────────────────────────────────────────
+
 function TemplateCard({
   template,
   onClick,
+  variant = 'default',
 }: {
   template: Template;
   onClick: () => void;
+  variant?: 'default' | 'featured';
 }) {
+  const imageHeight = variant === 'featured' ? 'h-[260px]' : 'h-[220px]';
   return (
-    <ScaleOnHover scale={1.02}>
-      <div className="group flex flex-col overflow-hidden rounded-xl border border-[rgba(243,234,217,0.08)] transition-all hover:border-[rgba(243,234,217,0.2)]">
-        {/* Preview image with overlaid text */}
+    <ScaleOnHover scale={1.015}>
+      <div className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition hover:border-white/20">
         <button
           type="button"
           onClick={onClick}
-          className="relative h-[220px] w-full overflow-hidden"
+          className={`relative w-full overflow-hidden ${imageHeight}`}
           style={{
             background: `linear-gradient(135deg, ${template.gradient[0]}, ${template.gradient[1]})`,
           }}
@@ -277,12 +397,12 @@ function TemplateCard({
             />
           )}
         </button>
-
-        {/* Label row with Preview + Use This buttons */}
-        <div className="flex items-center justify-between gap-3 bg-[rgba(243,234,217,0.02)] px-4 py-3">
+        <div className="flex items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0 flex-1">
-            <div className="truncate text-[13px] font-medium text-warm">{template.title}</div>
-            <div className="text-[10px] uppercase tracking-wider text-warm-subtle">{template.category}</div>
+            <div className="truncate text-[13px] font-medium text-white">{template.title}</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/40">
+              {template.category}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {template.livePreviewId && (
@@ -291,16 +411,15 @@ function TemplateCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="rounded-md border border-[var(--color-border-strong)] px-2.5 py-1.5 text-[11px] text-warm-muted transition hover:border-[var(--color-accent)] hover:text-warm"
+                className="rounded-md border border-white/15 px-2.5 py-1.5 text-[11px] text-white/60 transition hover:border-white/30 hover:text-white"
               >
-                Preview ↗
+                Preview &nearr;
               </a>
             )}
             <button
               type="button"
               onClick={onClick}
-              className="rounded-md px-3 py-1.5 text-[11px] font-medium text-[#0d0a08] transition hover:opacity-90"
-              style={{ backgroundColor: '#e8b874' }}
+              className="rounded-md bg-[#F4EFE6] px-3 py-1.5 text-[11px] font-medium text-[#0a0a14] transition hover:opacity-90"
             >
               Use This
             </button>

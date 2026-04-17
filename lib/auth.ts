@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from 'node:crypto';
 import { cookies } from 'next/headers';
+import { auth as clerkAuth } from '@clerk/nextjs/server';
 import { env } from '@/lib/env';
 import { getSubscriptionStatus, type SubscriptionStatus } from '@/lib/stripe';
 
@@ -56,6 +57,29 @@ export async function getCustomerIdFromCookie(): Promise<string | null> {
   const raw = store.get(COOKIE_NAME)?.value;
   if (!raw) return null;
   return decode(raw);
+}
+
+/**
+ * Guard for generation API routes. Returns a Response for early-return when
+ * the user isn't signed in (401) or has no active subscription (402), else
+ * null so the handler can proceed.
+ */
+export async function requirePaidUser(): Promise<Response | null> {
+  const { userId } = await clerkAuth();
+  if (!userId) {
+    return Response.json(
+      { error: 'sign_in_required', message: 'Sign in to generate.' },
+      { status: 401 },
+    );
+  }
+  const sub = await requireActiveSubscription();
+  if (!sub) {
+    return Response.json(
+      { error: 'subscription_required', message: 'Active subscription required.' },
+      { status: 402 },
+    );
+  }
+  return null;
 }
 
 /**

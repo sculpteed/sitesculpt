@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 import { getToneIdByLabel } from '@/features/studio/tones';
+import { requirePaidUser } from '@/lib/auth';
 import type { PaletteOption, ConceptOption } from '@/features/studio/store';
 
 export const runtime = 'nodejs';
@@ -383,6 +384,9 @@ function buildVisualPrompt(args: {
 }
 
 export async function POST(req: NextRequest): Promise<Response> {
+  const gate = await requirePaidUser();
+  if (gate) return gate;
+
   const parsed = bodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 });
