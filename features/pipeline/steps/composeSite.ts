@@ -1,4 +1,4 @@
-import { claudeJson } from '@/lib/providers/anthropic';
+import { claudeJson, type ImageInput } from '@/lib/providers/anthropic';
 import type { SiteStructure, SiteSection } from '@/features/pipeline/types';
 import { LAYOUT_LIST } from '@/features/studio/layouts';
 
@@ -210,10 +210,14 @@ function checkBriefAdherence(
 
 // ─── Main export ────────────────────────────────────────────────────────────
 
-export async function composeSite(userPrompt: string): Promise<SiteStructure> {
+export async function composeSite(userPrompt: string, image?: ImageInput): Promise<SiteStructure> {
+  const briefText = image
+    ? `Brief:\n${userPrompt}\n\nThe user attached the image above as visual reference. Match its mood, palette, and composition energy in the site copy and section ordering.`
+    : `Brief:\n${userPrompt}`;
   const raw = await claudeJson<SiteStructure>({
     system: SYSTEM,
-    user: `Brief:\n${userPrompt}`,
+    user: briefText,
+    image,
     toolName: 'emit_site',
     toolDescription:
       'Emit the SiteStructure JSON — brand, hero, and varied sections with explicit layouts',

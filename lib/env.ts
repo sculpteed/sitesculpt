@@ -5,7 +5,7 @@ const schema = z.object({
   ANTHROPIC_API_KEY: z.string().min(1, 'ANTHROPIC_API_KEY missing — set it in .env.local'),
   OPENAI_IMAGE_MODEL: z.string().default('gpt-image-1.5'),
   OPENAI_VIDEO_MODEL: z.string().default('sora-2'),
-  ANTHROPIC_MODEL: z.string().default('claude-sonnet-4-6'),
+  ANTHROPIC_MODEL: z.string().default('claude-opus-4-7'),
 
   // Stripe — required for subscription flow. Server-side keys only.
   STRIPE_SECRET_KEY: z.string().min(1, 'STRIPE_SECRET_KEY missing — set it in .env.local'),

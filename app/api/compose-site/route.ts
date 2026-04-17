@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { envStatus } from '@/lib/env';
 import { writeJson, readJson } from '@/lib/cache';
 import { composeSite } from '@/features/pipeline/steps/composeSite';
+import { parseDataUrl } from '@/lib/providers/anthropic';
 import { auth } from '@clerk/nextjs/server';
 
 export const runtime = 'nodejs';
@@ -12,6 +13,8 @@ export const maxDuration = 60;
 const bodySchema = z.object({
   brief: z.string().min(10).max(8000),
   projectId: z.string().min(1),
+  /** Optional reference image as a data URL. Claude Opus 4.7 reads it for palette/mood. */
+  imageDataUrl: z.string().max(7_500_000).optional(),
 });
 
 /**
@@ -34,10 +37,11 @@ export async function POST(req: NextRequest): Promise<Response> {
     return Response.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { brief, projectId } = parsed.data;
+  const { brief, projectId, imageDataUrl } = parsed.data;
+  const image = imageDataUrl ? parseDataUrl(imageDataUrl) ?? undefined : undefined;
 
   try {
-    const site = await composeSite(brief);
+    const site = await composeSite(brief, image);
 
     // Persist to cache so /preview/[id] can read it
     await writeJson(projectId, 'site.json', site);

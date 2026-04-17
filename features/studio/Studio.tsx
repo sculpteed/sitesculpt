@@ -234,10 +234,14 @@ export function Studio() {
       });
 
       // composeSite returns in ~30s so copy lands before motion finishes.
+      // Pass the reference image (if any) so Opus 4.7's vision model reads
+      // palette/mood alongside the text brief.
+      const imageDataUrl =
+        attachedMedia?.kind === 'image' ? attachedMedia.dataUrl : undefined;
       const res = await fetch('/api/compose-site', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ brief: compiled, projectId }),
+        body: JSON.stringify({ brief: compiled, projectId, imageDataUrl }),
       });
       if (!res.ok) {
         alert('Copy generation failed');
