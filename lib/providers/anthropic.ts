@@ -28,8 +28,10 @@ export function parseDataUrl(dataUrl: string): ImageInput | null {
 
 /**
  * Call Claude with a tool-use schema and return the parsed JSON tool input.
- * Optionally accepts a vision image so Opus 4.7 can read a reference image
- * alongside the text brief.
+ * Optionally accepts a vision image + adaptive thinking for harder tasks.
+ *
+ * `thinking` enables Opus 4.7's adaptive extended thinking — the model auto-
+ * adjusts depth based on task complexity (no budget tuning needed).
  */
 export async function claudeJson<T>(args: {
   system: string;
@@ -38,6 +40,8 @@ export async function claudeJson<T>(args: {
   toolDescription: string;
   schema: Record<string, unknown>;
   image?: ImageInput;
+  thinking?: boolean;
+  maxTokens?: number;
 }): Promise<T> {
   const c = getClient();
   const userContent = args.image
@@ -54,9 +58,9 @@ export async function claudeJson<T>(args: {
       ])
     : args.user;
 
-  const response = await c.messages.create({
+  const request: Anthropic.MessageCreateParamsNonStreaming = {
     model: env().ANTHROPIC_MODEL,
-    max_tokens: 4096,
+    max_tokens: args.maxTokens ?? 4096,
     system: args.system,
     tools: [
       {
@@ -67,7 +71,17 @@ export async function claudeJson<T>(args: {
     ],
     tool_choice: { type: 'tool', name: args.toolName },
     messages: [{ role: 'user', content: userContent }],
-  });
+  };
+
+  if (args.thinking) {
+    // Adaptive thinking — Opus 4.7 picks depth per turn. Compatible with
+    // tool_choice: 'tool' on 4.7+.
+    (request as Anthropic.MessageCreateParamsNonStreaming & {
+      thinking?: { type: 'enabled' };
+    }).thinking = { type: 'enabled' };
+  }
+
+  const response = await c.messages.create(request);
 
   const toolUse = response.content.find((block) => block.type === 'tool_use');
   if (!toolUse || toolUse.type !== 'tool_use') {

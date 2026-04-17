@@ -218,6 +218,9 @@ export async function composeSite(userPrompt: string, image?: ImageInput): Promi
     system: SYSTEM,
     user: briefText,
     image,
+    // Opus 4.7 adaptive thinking — deeper reasoning on complex briefs,
+    // negligible latency on simple ones
+    thinking: true,
     toolName: 'emit_site',
     toolDescription:
       'Emit the SiteStructure JSON — brand, hero, and varied sections with explicit layouts',
