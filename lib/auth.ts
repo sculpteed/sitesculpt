@@ -51,11 +51,6 @@ export async function setSessionCookie(customerId: string): Promise<void> {
   });
 }
 
-export async function clearSessionCookie(): Promise<void> {
-  const store = await cookies();
-  store.delete(COOKIE_NAME);
-}
-
 export async function getCustomerIdFromCookie(): Promise<string | null> {
   const store = await cookies();
   const raw = store.get(COOKIE_NAME)?.value;

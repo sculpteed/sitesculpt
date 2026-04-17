@@ -130,13 +130,6 @@ export interface SiteStructure {
   sections: SiteSection[];
 }
 
-// ─── PipelineInput / PipelineResult ──────────────────────────────────────────
-
-export interface PipelineInput {
-  prompt: string;
-  aspect: Aspect;
-}
-
 export interface PipelineResult {
   projectId: string;
   scene: Scene;

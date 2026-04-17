@@ -10,7 +10,7 @@ export const maxDuration = 60;
 
 const bodySchema = z.object({
   message: z.string().min(1).max(2000),
-  site: z.any().optional(),
+  site: z.unknown().optional(),
   palette: z
     .object({
       background: z.string(),

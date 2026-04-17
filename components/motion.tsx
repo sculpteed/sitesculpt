@@ -4,9 +4,6 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import {
   motion,
   useInView,
-  useScroll,
-  useTransform,
-  AnimatePresence,
   type UseInViewOptions,
 } from 'motion/react';
 import Lenis from 'lenis';
@@ -166,68 +163,6 @@ export function PageTransition({
     >
       {children}
     </motion.div>
-  );
-}
-
-// ─── ParallaxScroll ─────────────────────────────────────────────────────────
-// Moves children at a different rate than scroll — creates depth.
-
-export function ParallaxScroll({
-  children,
-  speed = 0.3,
-  className,
-}: {
-  children: ReactNode;
-  speed?: number;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ['start end', 'end start'],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [0, speed * -100]);
-  return (
-    <motion.div ref={ref} style={{ y }} className={className}>
-      {children}
-    </motion.div>
-  );
-}
-
-// ─── TextReveal ─────────────────────────────────────────────────────────────
-// Split text into lines that reveal sequentially with stagger.
-
-export function TextReveal({
-  text,
-  className,
-  delay = 0,
-}: {
-  text: string;
-  className?: string;
-  delay?: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, amount: 0.5 });
-  const words = text.split(' ');
-
-  return (
-    <span ref={ref} className={className}>
-      {words.map((word, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 10 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-          transition={{
-            duration: 0.4,
-            delay: delay + i * 0.04,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          style={{ display: 'inline-block', marginRight: '0.25em' }}
-        >
-          {word}
-        </motion.span>
-      ))}
-    </span>
   );
 }
 
