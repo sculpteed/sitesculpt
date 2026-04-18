@@ -34,6 +34,7 @@ export const TEMPLATES: Template[] = [
     pages: ['features', 'pricing', 'testimonials'],
     gradient: ['#1a2f4a', '#5b9cde'],
     previewUrl: '/templates/ai-platform.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/ai-platform.mp4',
   },
   {
     id: 'architecture',
@@ -47,6 +48,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'case-studies', 'team', 'contact'],
     gradient: ['#d4b88a', '#3d342c'],
     previewUrl: '/templates/architecture.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/architecture.mp4',
   },
   {
     id: 'creative-3d',
@@ -60,6 +62,7 @@ export const TEMPLATES: Template[] = [
     pages: ['case-studies', 'team', 'contact'],
     gradient: ['#1a0a2e', '#ff6ec7'],
     previewUrl: '/templates/creative-3d.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/creative-3d.mp4',
   },
 
   // ─── SaaS / Software ─────────────────────────────────────────────────────
@@ -91,6 +94,7 @@ export const TEMPLATES: Template[] = [
     pages: ['features', 'pricing', 'faq'],
     gradient: ['#87CEEB', '#3b82f6'],
     previewUrl: '/templates/app-landing.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/app-landing.mp4',
     livePreviewId: '324e52eb6fb864af',
   },
 
@@ -123,6 +127,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'features', 'testimonials'],
     gradient: ['#F4EFE6', '#c9a96e'],
     previewUrl: '/templates/ecommerce-brand.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/ecommerce-brand.mp4',
     livePreviewId: '82ebfcbc7b0d1943',
   },
 
@@ -139,6 +144,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'contact'],
     gradient: ['#1a0f0a', '#d4a574'],
     previewUrl: '/templates/restaurant.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/restaurant.mp4',
     livePreviewId: '82cabc99a9c8467c',
   },
 
@@ -155,6 +161,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'case-studies', 'contact'],
     gradient: ['#F4EFE6', '#5a7db8'],
     previewUrl: '/templates/portfolio.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/portfolio.mp4',
     livePreviewId: '4cd841523814c52e',
   },
 
@@ -171,6 +178,7 @@ export const TEMPLATES: Template[] = [
     pages: ['features', 'team'],
     gradient: ['#0f0f23', '#a78bfa'],
     previewUrl: '/templates/startup-launch.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/startup-launch.mp4',
     livePreviewId: '6368ae1dacfbb647',
   },
 
@@ -203,5 +211,6 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'features', 'team'],
     gradient: ['#0a0420', '#a78bfa'],
     previewUrl: '/templates/space-research.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/space-research.mp4',
   },
 ];
