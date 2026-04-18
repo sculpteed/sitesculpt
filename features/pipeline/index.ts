@@ -86,9 +86,9 @@ export async function runPipeline(
     const [site] = await Promise.all([composeSitePromise, generateImagePromise]);
 
     // ─── Step 4 + 5: generateVideo + extractFrames (OPTIONAL) ──────────────
-    // Sora video is 720p which looks blurry when stretched to full viewport.
+    // the video model video is 720p which looks blurry when stretched to full viewport.
     // The keyframe (1536×1024) + CSS Ken Burns looks sharper and is the
-    // default hero treatment. Sora is skipped by default (saves $0.40 + 2min).
+    // default hero treatment. the video model is skipped by default (saves $0.40 + 2min).
     // When a user explicitly opts into video (premium toggle), set
     // input.enableVideo = true to run these steps.
     let frameCount = 0;

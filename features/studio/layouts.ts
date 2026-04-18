@@ -22,8 +22,8 @@ export type LayoutType =
 export interface LayoutMeta {
   id: LayoutType;
   label: string;
-  purpose: string; // explanation given to Claude so it picks the right layout
-  sampleFields: string; // fields Claude should populate for this layout
+  purpose: string; // explanation given to the model so it picks the right layout
+  sampleFields: string; // fields the model should populate for this layout
 }
 
 export const LAYOUTS: Record<LayoutType, LayoutMeta> = {

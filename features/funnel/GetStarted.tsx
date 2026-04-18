@@ -149,7 +149,7 @@ const PLANS: Record<PlanKey, Plan> = {
     tagline: 'For anyone curious — no signup, no paywall.',
     features: [
       '1 generation per session',
-      '720p Sora 2 video',
+      '720p cinematic motion',
       'Next.js code export',
       '30fps frame extraction',
       'Local auto-save',
@@ -176,7 +176,7 @@ const PLANS: Record<PlanKey, Plan> = {
     tagline: 'For pros who want cinematic quality.',
     features: [
       '250 generations / month',
-      'Sora 2 Pro quality (4K)',
+      '4K cinematic motion',
       'Multi-shot video chaining',
       'Custom aspect ratios',
       'Team sharing (up to 5 seats)',

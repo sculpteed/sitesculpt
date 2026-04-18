@@ -135,7 +135,7 @@ export function Studio() {
 
   // ─── Funnel step handlers ─────────────────────────────────────────────
 
-  /** Step 1 → 2: submit brief, get art direction options from Claude */
+  /** Step 1 → 2: submit brief, get art direction options from the model */
   const handleBriefSubmit = async (compiledPrompt: string, a: Aspect): Promise<void> => {
     setFunnelBusy(true);
     try {
@@ -234,7 +234,7 @@ export function Studio() {
       });
 
       // composeSite returns in ~30s so copy lands before motion finishes.
-      // Pass the reference image (if any) so Opus 4.7's vision model reads
+      // Pass the reference image (if any) so the model's vision model reads
       // palette/mood alongside the text brief.
       const imageDataUrl =
         attachedMedia?.kind === 'image' ? attachedMedia.dataUrl : undefined;

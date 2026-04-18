@@ -6,7 +6,7 @@ import type { UserData } from './userData';
 
 /** Progressive data-collection panels — reveal when the matching page
  *  preset is toggled on. Collected data is injected into the brief via
- *  compilePrompt so Claude formats real data instead of inventing. */
+ *  compilePrompt so the model  real data instead of inventing. */
 export function DataPanels() {
   const includedPages = useStudioStore((s) => s.includedPages);
   const userData = useStudioStore((s) => s.userData);

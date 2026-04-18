@@ -1,10 +1,10 @@
 // Curated tone presets — single-select in the guided form. Picked to give
-// Claude strong stylistic anchors without overwhelming users with choices.
+// the model strong stylistic anchors without overwhelming users with choices.
 
 export interface TonePreset {
   id: string;
   label: string;
-  hint: string; // passed to Claude verbatim
+  hint: string; // passed to the model verbatim
 }
 
 export const TONE_PRESETS: TonePreset[] = [

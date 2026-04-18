@@ -1,5 +1,5 @@
 /**
- * Generate the homepage background keyframe via gpt-image-1.5.
+ * Generate the homepage background keyframe via the image model.5.
  *
  * Run once: `npx tsx --env-file=.env.local scripts/gen-homepage-bg.ts`
  *
@@ -16,7 +16,7 @@ import { generateKeyframeImage } from '@/lib/providers/openai-image';
 const PROMPT = `A vast deep-space nebula in rich violet and indigo, distant stars scattered across the black void, soft luminous gas clouds drifting in silence, subtle magenta highlights at the edges. Hubble-quality astrophotography, ultra sharp, cinematic grade, editorial composition with dark negative space on the left for text overlay.`;
 
 async function main(): Promise<void> {
-  console.log('[homepage-bg] generating keyframe via gpt-image-1.5…');
+  console.log('[homepage-bg] generating keyframe via the image model.5…');
   console.log(`[homepage-bg] prompt: ${PROMPT.slice(0, 80)}…`);
   const startedAt = Date.now();
 

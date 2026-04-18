@@ -16,7 +16,7 @@ export interface GuidedInput {
 }
 
 /** Compile structured guided input into the brief text. User-provided data
- *  (team, pricing, testimonials) is injected verbatim so Claude formats it
+ *  (team, pricing, testimonials) is injected verbatim so the model  it
  *  rather than inventing. */
 export function compilePrompt(input: GuidedInput): string {
   const parts: string[] = [];

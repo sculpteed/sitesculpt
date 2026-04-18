@@ -5,7 +5,7 @@
  * Usage: npx tsx scripts/seed-templates.ts
  *
  * Requires: OPENAI_API_KEY, ANTHROPIC_API_KEY in .env.local
- * Cost: ~$0.35 total (8 Claude calls + 8 OpenAI image calls)
+ * Cost: ~$0.35 total (8 model calls + 8 image provider image calls)
  */
 
 import { compilePrompt } from '../features/studio/compilePrompt';
@@ -114,13 +114,13 @@ async function main() {
     try {
       await ensureProjectDir(projectId);
 
-      // 1. Compose site (Claude)
+      // 1. Compose site (the model)
       console.log('  composing site...');
       const site = await composeSite(brief);
       await writeJson(projectId, 'site.json', site);
       console.log(`  ✓ site: ${site.hero.headline.slice(0, 40)}...`);
 
-      // 2. Generate keyframe (OpenAI) — device mockups + product shots, NO people
+      // 2. Generate keyframe (image provider) — device mockups + product shots, NO people
       console.log('  generating keyframe...');
       const VISUAL_PROMPTS: Record<string, string> = {
         'saas-landing': 'Modern SaaS landing page hero. Navigation: Logo Vertex, Menu items: Features, Pricing, Docs, Button: Get Started. Centered layout. Headline: Automation That Thinks Ahead. Subtext: AI-powered workflows so your team can focus on what actually matters. CTA button: Request Access. Hero background: dark navy with glowing cyan wireframe grid, floating 3D geometric nodes connected by light trails, subtle particle effects. Design style: clean developer-focused interface. Fonts: Inter / Geist. Colors: dark navy background, white text, cyan accent highlights.',

@@ -11,7 +11,7 @@ export interface GenerateVideoProgress {
 }
 
 /**
- * Run Sora image-to-video, poll until done, and persist the mp4 bytes.
+ * Run the video model image-to-video, poll until done, and persist the mp4 bytes.
  * Calls onProgress with best-effort percentage during polling.
  */
 export async function generateVideo(args: {
@@ -41,7 +41,7 @@ export async function generateVideo(args: {
       return { videoPath: 'video.mp4' };
     }
     if (status.status === 'failed') {
-      throw new Error(`Sora job failed: ${status.error}`);
+      throw new Error(`the video model job failed: ${status.error}`);
     }
     args.onProgress?.({
       pct: status.progress ?? Math.min(0.95, attempt * 0.05),
@@ -49,7 +49,7 @@ export async function generateVideo(args: {
     });
     await sleep(POLL_INTERVAL_MS);
   }
-  throw new Error(`Sora job timed out after ${MAX_WAIT_MS / 1000}s`);
+  throw new Error(`the video model job timed out after ${MAX_WAIT_MS / 1000}s`);
 }
 
 function sleep(ms: number): Promise<void> {

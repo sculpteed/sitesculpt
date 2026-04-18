@@ -21,7 +21,7 @@ interface SoraJob {
 }
 
 /**
- * OpenAI Sora 2 video provider — raw HTTP implementation because the openai
+ * OpenAI the video model video provider — raw HTTP implementation because the openai
  * SDK v4.73 we depend on does NOT yet expose a `videos` namespace. When a
  * future SDK version adds proper support, this file can be swapped for the
  * SDK-based version (preserving the VideoProvider interface).
@@ -33,7 +33,7 @@ interface SoraJob {
  */
 export const openaiSoraProvider: VideoProvider = {
   async generate({ imageBytes, prompt, durationSec }) {
-    // Sora requires input_reference dimensions to exactly match the requested
+    // the video model requires input_reference dimensions to exactly match the requested
     // video size. Resize with sharp (cover fit, no letterboxing).
     const resizedBytes = await sharp(imageBytes)
       .resize(SORA_W, SORA_H, { fit: 'cover', position: 'center' })
@@ -90,7 +90,7 @@ export const openaiSoraProvider: VideoProvider = {
       return { status: 'done', videoBytes: Buffer.from(arrayBuffer) };
     }
     // in_progress / queued / etc
-    // Sora returns progress in 0-100 (percentage), we normalize to 0-1 so
+    // the video model returns progress in 0-100 (percentage), we normalize to 0-1 so
     // the rest of the pipeline + UI can treat it as a unit fraction.
     const rawProgress = typeof job.progress === 'number' ? job.progress : undefined;
     const normalized =

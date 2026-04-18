@@ -2,7 +2,7 @@
  * Draftly-style template compositor.
  *
  * For each template:
- * 1. Generate CLEAN background via Seedream v4.5 (no text/UI)
+ * 1. Generate CLEAN background via the image model (no text/UI)
  * 2. Save to public/templates/bg-{id}.jpg
  * 3. Playwright navigates to /template-render/{id}?bg=/templates/bg-{id}.jpg
  * 4. Screenshot the composite at 1376x768
@@ -54,7 +54,7 @@ async function generateBg(id, prompt, skipIfExists = false) {
       return `/templates/bg/${id}.jpg`;
     } catch {}
   }
-  console.log(`  ↻ generating background (Seedream v4.5)...`);
+  console.log(`  ↻ generating background (the image model)...`);
   const r = await fal.subscribe('fal-ai/bytedance/seedream/v4.5/text-to-image', {
     input: {
       prompt,

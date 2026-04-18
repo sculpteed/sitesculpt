@@ -14,7 +14,7 @@ export const maxDuration = 60;
 const bodySchema = z.object({
   brief: z.string().min(10).max(8000),
   projectId: z.string().min(1),
-  /** Optional reference image as a data URL. Claude Opus 4.7 reads it for palette/mood. */
+  /** Optional reference image as a data URL. the model reads it for palette/mood. */
   imageDataUrl: z.string().max(7_500_000).optional(),
 });
 
@@ -25,7 +25,7 @@ const bodySchema = z.object({
  * from the compiled brief. Returns the full SiteStructure JSON for the
  * user to review before rendering the final preview.
  *
- * Cost: ~$0.001 (one Claude call)
+ * Cost: ~$0.001 (one the model )
  */
 export async function POST(req: NextRequest): Promise<Response> {
   const gate = await requirePaidUser();

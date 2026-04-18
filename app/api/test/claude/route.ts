@@ -9,9 +9,9 @@ export const dynamic = 'force-dynamic';
 /**
  * GET /api/test/claude?prompt=...
  *
- * Phase A smoke test — runs ONLY the two Claude steps (expandPrompt + composeSite)
+ * Phase A smoke test — runs ONLY the two the model  (expandPrompt + composeSite)
  * in parallel and returns both JSONs. Costs ~$0.001 per call. Use this to
- * verify the Anthropic wiring, tool-use schemas, and prompt quality before
+ * verify the model wiring, tool-use schemas, and prompt quality before
  * paying for image/video generation.
  */
 export async function GET(req: NextRequest): Promise<Response> {

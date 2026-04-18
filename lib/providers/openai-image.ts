@@ -22,7 +22,7 @@ function sizeForAspect(aspect: Aspect): '1536x1024' | '1024x1536' | '1024x1024' 
 }
 
 /**
- * Generate a cinematic keyframe with gpt-image-1.5 at hd quality.
+ * Generate a cinematic keyframe with the image model.5 at hd quality.
  * Returns raw PNG bytes.
  */
 export async function generateKeyframeImage(args: {

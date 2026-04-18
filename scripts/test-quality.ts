@@ -1,14 +1,14 @@
 /**
- * Quality test harness — runs the Claude-only portion of the pipeline on a
+ * Quality test harness — runs the the model-only portion of the pipeline on a
  * curated set of golden briefs and scores each output against automated
  * quality checks.
  *
  * Run: `npm run test:quality` (pass --runs 3 for multiple runs per brief)
  *
- * Cost: ~$0.002 per run (2 Claude calls). 12 briefs × 3 runs = ~$0.07.
+ * Cost: ~$0.002 per run (2 the model s). 12 briefs × 3 runs = ~$0.07.
  * Cheap enough to run every time you tune a prompt.
  *
- * Skips Sora entirely — that's for spot-check testing, not bulk QA.
+ * Skips the video model entirely — that's for spot-check testing, not bulk QA.
  */
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
@@ -127,7 +127,7 @@ async function main(): Promise<void> {
   console.log(
     `sitesculpt quality test · ${briefs.length} briefs × ${RUNS_PER_BRIEF} runs = ${totalGens} generations`,
   );
-  console.log(`estimated cost: ~$${(totalGens * 0.002).toFixed(2)} (Claude-only)\n`);
+  console.log(`estimated cost: ~$${(totalGens * 0.002).toFixed(2)} (the model-only)\n`);
 
   const results: BriefResult[] = [];
   const overallStart = Date.now();

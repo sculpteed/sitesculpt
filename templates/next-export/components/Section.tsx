@@ -49,7 +49,7 @@ export interface SectionItem {
 
 export interface SectionProps {
   layout: SectionLayout;
-  /** Brand-specific eyebrow label from Claude. Falls back to layout default. */
+  /** Brand-specific eyebrow label from the model. Falls back to layout default. */
   label?: string;
   title: string;
   body: string;
@@ -84,7 +84,7 @@ function SectionEyebrow({ children }: { children: React.ReactNode }) {
   );
 }
 
-/** Fallback eyebrow labels per layout — only used if Claude didn't provide one. */
+/** Fallback eyebrow labels per layout — only used if the model  provide one. */
 const DEFAULT_LABELS: Partial<Record<SectionLayout, string>> = {
   intro: 'Introduction',
   'feature-grid': 'Capabilities',
@@ -124,7 +124,7 @@ function Lede({ children }: { children: React.ReactNode }) {
 // ─── Dispatcher ─────────────────────────────────────────────────────────────
 
 export function Section(props: SectionProps) {
-  // Resolve the eyebrow label — Claude provides brand-specific labels,
+  // Resolve the eyebrow label — the model  brand-specific labels,
   // fallback to layout defaults if not present.
   const resolved = {
     ...props,

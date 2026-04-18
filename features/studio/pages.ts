@@ -1,11 +1,11 @@
 // Curated list of optional section/page presets surfaced in the prompt form.
 // When the user toggles any of these on, they're passed to composeSite so
-// Claude explicitly writes a section for each.
+// the model explicitly writes a section for each.
 
 export interface PagePreset {
-  id: string; // slug used in URL + Claude instructions
+  id: string; // slug used in URL + the model 
   label: string; // UI chip text
-  hint: string; // one-line intent passed to Claude
+  hint: string; // one-line intent passed to the model
 }
 
 export const PAGE_PRESETS: PagePreset[] = [

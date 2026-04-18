@@ -1,5 +1,5 @@
 /**
- * Generate the homepage background video via gpt-image-1 + sora-2.
+ * Generate the homepage background video via the image model + sora-2.
  *
  * Run:   `npx tsx --env-file=.env.local scripts/gen-hero-video.ts`
  * Cost:  ~$0.95 per run ($0.15 image + $0.80 sora), ~5 min wall clock.
@@ -35,7 +35,7 @@ async function main(): Promise<void> {
       `[hero] 1/3 reusing cached keyframe: ${(keyframeBytes.length / 1024).toFixed(0)} KB (saved \$0.15)`,
     );
   } catch {
-    console.log('[hero] 1/3 generating keyframe via gpt-image-1…');
+    console.log('[hero] 1/3 generating keyframe via the image model…');
     keyframeBytes = await generateKeyframeImage({
       prompt: IMAGE_PROMPT,
       aspect: '16:9',
@@ -46,7 +46,7 @@ async function main(): Promise<void> {
     );
   }
 
-  // ── Step 2: Sora image-to-video ────────────────────────────────────────
+  // ── Step 2: the video model image-to-video ────────────────────────────────────────
   console.log('[hero] 2/3 kicking off sora-2 image-to-video (8s)…');
   const { jobId } = await openaiSoraProvider.generate({
     imageBytes: keyframeBytes,

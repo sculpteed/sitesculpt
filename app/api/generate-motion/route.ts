@@ -9,7 +9,7 @@ import type { Scene } from '@/features/pipeline/types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
-export const maxDuration = 600; // 10 minutes — Sora can take up to 5min
+export const maxDuration = 600; // 10 minutes — the video model can take up to 5min
 
 const bodySchema = z.object({
   projectId: z.string().min(8),
@@ -19,7 +19,7 @@ const bodySchema = z.object({
  * POST /api/generate-motion
  *
  * After keyframe approval, generate the 3D scroll motion:
- * 1. Sora image-to-video (4s loop from keyframe)
+ * 1. the video model image-to-video (4s loop from keyframe)
  * 2. ffmpeg extracts ~120 frames at 30fps
  * 3. sharp sharpens + optimizes each to JPEG
  *
@@ -49,8 +49,8 @@ export async function POST(req: NextRequest): Promise<Response> {
       return Response.json({ error: 'Scene not found — run generate-keyframe first' }, { status: 404 });
     }
 
-    // 1. Generate video via Sora
-    console.log(`[motion] ${projectId} — starting Sora video...`);
+    // 1. Generate video via the video model
+    console.log(`[motion] ${projectId} — starting the video model video...`);
     await generateVideo({
       projectId,
       scene,

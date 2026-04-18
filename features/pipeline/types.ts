@@ -14,7 +14,7 @@ export interface Progress {
   state: 'pending' | 'running' | 'done' | 'error';
   /** Optional 0..1 progress for long-running steps (generateVideo) */
   pct?: number;
-  /** Human-readable message, e.g. "Polling Sora (attempt 14)" */
+  /** Human-readable message, e.g. "Polling the video model (attempt 14)" */
   message?: string;
   error?: string;
 }
@@ -28,7 +28,7 @@ export interface Palette {
 }
 
 /** Style tokens that control how the renderer varies its visual approach per
- *  generation. Claude picks these in expandPrompt based on the brief's tone
+ *  generation. the model  these in expandPrompt based on the brief's tone
  *  and brand archetype. The renderer reads them to produce visually distinct
  *  output — same layout types, different visual expression. */
 export interface DesignStyle {
@@ -43,7 +43,7 @@ export interface DesignStyle {
 }
 
 export interface Scene {
-  /** Cinematic prompt for gpt-image-1.5 */
+  /** Cinematic prompt for the image model.5 */
   visualPrompt: string;
   /** Motion description for sora-2 image-to-video */
   motionPrompt: string;
@@ -108,7 +108,7 @@ export interface SectionItem {
 export interface SiteSection {
   /** The layout template this section uses */
   layout: SectionLayout;
-  /** Short eyebrow label that appears above the heading — Claude picks this
+  /** Short eyebrow label that appears above the heading — the model  this
    *  per brand instead of the renderer hardcoding "Capabilities" every time. */
   label?: string;
   title: string;

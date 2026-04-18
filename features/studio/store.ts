@@ -40,7 +40,7 @@ export interface StudioState {
   // ─── Funnel state ──────────────────────────────────────────────────────
   funnelStep: FunnelStep;
 
-  // Step 2: Art direction options from Claude
+  // Step 2: Art direction options from the model
   paletteOptions: PaletteOption[] | null;
   conceptOptions: ConceptOption[] | null;
   selectedPaletteIdx: number | null;
@@ -50,12 +50,12 @@ export interface StudioState {
   brandName: string;
   description: string;
   toneId: string | null;
-  /** 'ai' = Claude picks palette from other form inputs; 'custom' = user-picked */
+  /** 'ai' = the model  palette from other form inputs; 'custom' = user-picked */
   paletteMode: 'ai' | 'custom';
   customPalette: Palette;
   includedPages: string[];
 
-  /** User-provided real data injected into the brief so Claude formats
+  /** User-provided real data injected into the brief so the model 
    *  rather than invents. Unused fields are empty arrays. */
   userData: UserData;
 

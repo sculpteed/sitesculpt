@@ -64,7 +64,7 @@ async function seedOne(seed: Seed): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log('[seed] starting gallery seed — this will call OpenAI + Anthropic APIs');
+  console.log('[seed] starting gallery seed — this will call image provider + model');
   for (const seed of SEEDS) {
     try {
       await seedOne(seed);

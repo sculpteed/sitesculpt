@@ -1,9 +1,9 @@
 /**
  * Full-pipeline test harness. Builds a realistic brief with placeholder
  * data across every DataPanels field, compiles it through compilePrompt,
- * and runs the full pipeline (Claude + image + Sora + frames) end-to-end.
+ * and runs the full pipeline (the model + image + the video model + frames) end-to-end.
  *
- * Cost: ~$0.44 per run (4s Sora + medium image + 2 Claude calls)
+ * Cost: ~$0.44 per run (4s the video model + medium image + 2 the model s)
  * Time: ~3 minutes wall clock
  *
  * Run: `npm run test:full` or manually:
@@ -40,7 +40,7 @@ userData.team = [
   },
 ];
 
-// 2 pricing tiers — verbatim data, Claude must use these
+// 2 pricing tiers — verbatim data, the model must use these
 userData.pricing = [
   {
     name: 'Free',
@@ -101,7 +101,7 @@ userData.faqs = [
   },
 ];
 
-// 4 features — verbatim, Claude should use these in feature-grid
+// 4 features — verbatim, the model should use these in feature-grid
 userData.features = [
   {
     name: 'On-device everything',
@@ -157,7 +157,7 @@ async function main(): Promise<void> {
   console.log('─── Compiled brief ───────────────────────────────');
   console.log(compiled);
   console.log('─────────────────────────────────────────────────\n');
-  console.log('Starting full pipeline (Claude + image + Sora + frames)...\n');
+  console.log('Starting full pipeline (the model + image + the video model + frames)...\n');
 
   const onProgress = (step: StepName, p: Progress): void => {
     const pct = p.pct !== undefined ? ` ${Math.round(p.pct * 100)}%` : '';

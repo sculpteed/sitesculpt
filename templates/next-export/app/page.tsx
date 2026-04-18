@@ -52,7 +52,7 @@ export default function Page() {
         </nav>
 
         {/* Hero — keyframe with Ken Burns (sharp 1536×1024) by default.
-             If frames exist (Sora video was enabled), use the flipbook instead. */}
+             If frames exist (the video model video was enabled), use the flipbook instead. */}
         {FRAME_COUNT > 0 ? (
           <HeroFlipbook
             frameCount={FRAME_COUNT}

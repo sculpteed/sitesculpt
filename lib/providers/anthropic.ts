@@ -27,10 +27,10 @@ export function parseDataUrl(dataUrl: string): ImageInput | null {
 }
 
 /**
- * Call Claude with a tool-use schema and return the parsed JSON tool input.
+ * Call the model with a tool-use schema and return the parsed JSON tool input.
  * Optionally accepts a vision image + adaptive thinking for harder tasks.
  *
- * `thinking` enables Opus 4.7's adaptive extended thinking — the model auto-
+ * `thinking` enables the model's adaptive extended thinking — the model auto-
  * adjusts depth based on task complexity (no budget tuning needed).
  */
 export async function claudeJson<T>(args: {
@@ -74,7 +74,7 @@ export async function claudeJson<T>(args: {
   };
 
   if (args.thinking) {
-    // Adaptive thinking — Opus 4.7 picks depth per turn. Compatible with
+    // Adaptive thinking — the model picks depth per turn. Compatible with
     // tool_choice: 'tool' on 4.7+.
     (request as Anthropic.MessageCreateParamsNonStreaming & {
       thinking?: { type: 'enabled' };
@@ -85,7 +85,7 @@ export async function claudeJson<T>(args: {
 
   const toolUse = response.content.find((block) => block.type === 'tool_use');
   if (!toolUse || toolUse.type !== 'tool_use') {
-    throw new Error(`Claude did not return a ${args.toolName} tool_use block`);
+    throw new Error(`the model  return a ${args.toolName} tool_use block`);
   }
   return toolUse.input as T;
 }

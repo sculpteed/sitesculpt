@@ -29,7 +29,7 @@ const bodySchema = z.object({
  * concept + palette. Returns the projectId so the client can show the image
  * via /api/preview/{id}/keyframe.
  *
- * Cost: ~$0.04 (gpt-image-1 medium quality)
+ * Cost: ~$0.04 (the image model medium quality)
  */
 export async function POST(req: NextRequest): Promise<Response> {
   const gate = await requirePaidUser();
@@ -65,7 +65,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       concept: concept || '',
     });
 
-    // Generate the keyframe via Ideogram v3 (best-in-class text rendering)
+    // Generate the keyframe via the image model (best-in-class text rendering)
     const bytes = await generateFluxImage({
       prompt: visualPrompt,
       aspect: aspect as Aspect,

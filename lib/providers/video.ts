@@ -1,4 +1,4 @@
-// Video provider interface — isolate Sora behind this so the Sept 2026 sunset
+// Video provider interface — isolate the video model behind this so the Sept 2026 sunset
 // means swapping one file (openai-video.ts → veo-video.ts / runway-video.ts / etc).
 
 export type VideoJobStatus =

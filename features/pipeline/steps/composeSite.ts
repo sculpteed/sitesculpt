@@ -3,7 +3,7 @@ import type { SiteStructure, SiteSection } from '@/features/pipeline/types';
 import { LAYOUT_LIST } from '@/features/studio/layouts';
 
 // ─── Deterministic guardrails ────────────────────────────────────────────────
-// Claude's tool-use treats JSON schema string lengths as guidelines, not
+// the model's tool-use treats JSON schema string lengths as guidelines, not
 // enforcement. We clamp every user-facing field after the API returns so
 // downstream code and exports are always in range.
 
@@ -218,7 +218,7 @@ export async function composeSite(userPrompt: string, image?: ImageInput): Promi
     system: SYSTEM,
     user: briefText,
     image,
-    // Opus 4.7 adaptive thinking — deeper reasoning on complex briefs,
+    // the model adaptive thinking — deeper reasoning on complex briefs,
     // negligible latency on simple ones
     thinking: true,
     toolName: 'emit_site',

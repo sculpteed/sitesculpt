@@ -18,8 +18,8 @@ function imageSizeForAspect(aspect: Aspect): 'landscape_16_9' | 'portrait_16_9' 
 }
 
 /**
- * Generate a high-quality image using Ideogram v3 via fal.ai.
- * Ideogram v3 has ~95% text rendering accuracy — dramatically better
+ * Generate a high-quality image using the image model via fal.ai.
+ * the image model has ~95% text rendering accuracy — dramatically better
  * than Flux (~60%) and GPT Image. Best-in-class for website hero
  * images that include nav bars, headlines, and UI text.
  * Returns raw JPEG bytes.
@@ -38,10 +38,10 @@ export async function generateFluxImage(args: {
   });
 
   const imageUrl = (result.data as { images: Array<{ url: string }> }).images?.[0]?.url;
-  if (!imageUrl) throw new Error('Ideogram returned no image URL');
+  if (!imageUrl) throw new Error('the image model returned no image URL');
 
   // Download the image bytes
   const resp = await fetch(imageUrl);
-  if (!resp.ok) throw new Error(`Failed to download Ideogram image: ${resp.status}`);
+  if (!resp.ok) throw new Error(`Failed to download the image model image: ${resp.status}`);
   return Buffer.from(await resp.arrayBuffer());
 }

@@ -77,7 +77,7 @@ export async function bundleExport(args: {
     archive.file(keyframePath, { name: 'public/keyframe.png' });
   }
 
-  // 4. Frames → public/frames/ (only if Sora video was enabled)
+  // 4. Frames → public/frames/ (only if the video model video was enabled)
   for (const frame of frames) {
     archive.file(path.join(projectDir, 'frames', frame), {
       name: `public/frames/${frame}`,
