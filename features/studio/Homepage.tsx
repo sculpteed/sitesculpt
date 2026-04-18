@@ -29,52 +29,60 @@ export function Homepage() {
 
   return (
     <PageTransition>
-    <main className="relative min-h-screen overflow-hidden bg-[#0a0a14] text-[#F4EFE6]">
-      {/* ─── Atmospheric background ──────────────────────────────────────── */}
+    <main className="relative min-h-screen overflow-hidden bg-[#efeae0] text-[#1a1812]">
+      {/* ─── Draftly-style cream background ──────────────────────────────── */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <video
-          className="absolute inset-0 h-full w-full object-cover opacity-[0.35]"
-          src="https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/homepage-bg.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-        />
-        {/* Draftly-style radial fogs */}
+        {/* Base warm cream */}
+        <div className="absolute inset-0 bg-[#efeae0]" />
+        {/* Soft warm radial washes */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'radial-gradient(ellipse 120% 80% at 50% -40%, rgba(52,211,153,0.14), transparent), radial-gradient(ellipse 70% 50% at 100% 0, rgba(139,92,246,0.16), transparent), radial-gradient(ellipse 50% 40% at 0 100%, rgba(34,211,238,0.10), transparent), linear-gradient(to bottom, rgba(10,10,20,0.4) 0%, rgba(10,10,20,0.75) 60%, #0a0a14 100%)',
+              'radial-gradient(ellipse 80% 50% at 50% -10%, rgba(220,188,140,0.28), transparent 70%), radial-gradient(ellipse 60% 40% at 100% 20%, rgba(200,150,100,0.16), transparent 70%), radial-gradient(ellipse 50% 40% at 0% 80%, rgba(160,110,80,0.10), transparent 70%)',
           }}
         />
-        <div className="grain absolute inset-0 opacity-[0.06]" />
+        {/* Paper grain */}
+        <div
+          className="absolute inset-0 opacity-[0.35] mix-blend-multiply"
+          style={{
+            backgroundImage:
+              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08  0 0 0 0 0.07  0 0 0 0 0.05  0 0 0 0.32 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>\")",
+            backgroundSize: '220px 220px',
+          }}
+        />
+        {/* Vignette toward bottom for section separation */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(to bottom, transparent 0%, transparent 55%, rgba(40,30,20,0.06) 100%)',
+          }}
+        />
       </div>
 
       {/* ─── Nav ─────────────────────────────────────────────────────────── */}
       <nav className="relative z-30 mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:px-8 sm:py-6">
         <div className="flex items-center gap-2.5">
-          <div className="h-4 w-4 rounded-[3px] bg-[#F4EFE6]" />
-          <span className="text-sm font-medium tracking-tight">sitesculpt</span>
+          <div className="h-4 w-4 rounded-[3px] bg-[#1a1812]" />
+          <span className="text-sm font-medium tracking-tight text-[#1a1812]">sitesculpt</span>
         </div>
-        <div className="flex items-center gap-5 text-[12px] text-white/60 sm:gap-8 sm:text-[13px]">
-          <a href="#templates" className="hidden transition hover:text-white sm:inline">
+        <div className="flex items-center gap-5 text-[12px] text-[#1a1812]/60 sm:gap-8 sm:text-[13px]">
+          <a href="#templates" className="hidden transition hover:text-[#1a1812] sm:inline">
             Templates
           </a>
-          <a href="#features" className="hidden transition hover:text-white sm:inline">
+          <a href="#features" className="hidden transition hover:text-[#1a1812] sm:inline">
             Features
           </a>
-          <a href="/pricing" className="hidden transition hover:text-white sm:inline">
+          <a href="/pricing" className="hidden transition hover:text-[#1a1812] sm:inline">
             Pricing
           </a>
-          <a href="/sign-in" className="transition hover:text-white">
+          <a href="/sign-in" className="transition hover:text-[#1a1812]">
             Sign in
           </a>
           <a
             href="/pricing?from=nav"
-            className="rounded-full bg-[#F4EFE6] px-3.5 py-1.5 text-[12px] font-medium text-[#0a0a14] transition hover:opacity-90 sm:px-4"
+            className="rounded-full bg-[#1a1812] px-3.5 py-1.5 text-[12px] font-medium text-[#efeae0] transition hover:opacity-85 sm:px-4"
           >
             Get started
           </a>
@@ -82,23 +90,17 @@ export function Homepage() {
       </nav>
 
       {/* ─── Hero ────────────────────────────────────────────────────────── */}
-      <section className="relative z-20 mx-auto flex min-h-[78vh] max-w-5xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
-        <FadeIn>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[10px] font-medium uppercase tracking-[0.2em] text-white/70 backdrop-blur-sm">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#34d399]" />
-            <span>Powered by Claude Opus 4.7</span>
-          </div>
-        </FadeIn>
+      <section className="relative z-20 mx-auto flex min-h-[82vh] max-w-5xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
         <FadeIn delay={0.05}>
-          <h1 className="mb-8 font-serif text-[56px] leading-[0.94] tracking-[-0.025em] sm:text-[88px] md:text-[110px]">
+          <h1 className="mb-8 font-serif text-[56px] leading-[0.94] tracking-[-0.03em] text-[#1a1812] sm:text-[92px] md:text-[118px]">
             Cinematic sites,{' '}
-            <em className="italic" style={{ color: '#f5d9a8' }}>
+            <em className="italic text-[#8a5a2b]">
               from a prompt.
             </em>
           </h1>
         </FadeIn>
         <FadeIn delay={0.12}>
-          <p className="mx-auto mb-10 max-w-xl text-[15px] leading-relaxed text-white/70 sm:text-[16px]">
+          <p className="mx-auto mb-10 max-w-xl text-[15px] leading-relaxed text-[#1a1812]/65 sm:text-[17px]">
             Describe your business. Sitesculpt generates a 3D scroll-driven website with AI copy,
             cinematic motion, and production-ready Next.js code — in about five minutes.
           </p>
@@ -109,14 +111,14 @@ export function Homepage() {
             <ScaleOnHover>
               <button
                 onClick={handleGetStarted}
-                className="rounded-full bg-[#F4EFE6] px-7 py-3.5 text-[14px] font-semibold text-[#0a0a14] shadow-[0_20px_60px_-20px_rgba(244,239,230,0.4)] transition hover:opacity-90"
+                className="rounded-full bg-[#1a1812] px-7 py-3.5 text-[14px] font-semibold text-[#efeae0] shadow-[0_20px_50px_-20px_rgba(26,24,18,0.45)] transition hover:opacity-90"
               >
                 Start Building &rarr;
               </button>
             </ScaleOnHover>
             <a
               href="#templates"
-              className="rounded-full border border-white/15 bg-white/[0.03] px-6 py-3.5 text-[14px] font-medium text-white/80 backdrop-blur-sm transition hover:border-white/30 hover:text-white"
+              className="rounded-full border border-[#1a1812]/15 bg-white/20 px-6 py-3.5 text-[14px] font-medium text-[#1a1812]/80 backdrop-blur-sm transition hover:border-[#1a1812]/30 hover:text-[#1a1812]"
             >
               Explore Templates
             </a>
@@ -130,11 +132,11 @@ export function Homepage() {
               { v: '12', l: 'Templates' },
               { v: '5 min', l: 'Prompt to deploy' },
               { v: 'Next.js', l: 'Real code export' },
-              { v: 'Opus 4.7', l: 'AI model' },
+              { v: 'Cinematic', l: 'Scroll motion' },
             ].map((s) => (
-              <div key={s.l} className="border-l border-white/10 pl-4">
-                <div className="font-serif text-xl leading-none tracking-tight">{s.v}</div>
-                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-white/50">
+              <div key={s.l} className="border-l border-[#1a1812]/15 pl-4">
+                <div className="font-serif text-xl leading-none tracking-tight text-[#1a1812]">{s.v}</div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#1a1812]/50">
                   {s.l}
                 </div>
               </div>
@@ -150,18 +152,18 @@ export function Homepage() {
       >
         <FadeIn>
           <div className="mb-12 flex flex-col items-start gap-3">
-            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50 sm:text-[11px]">
-              <span className="inline-block h-px w-6 bg-white/20" />
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#1a1812]/50 sm:text-[11px]">
+              <span className="inline-block h-px w-6 bg-[#1a1812]/25" />
               <span>Best previews</span>
             </div>
             <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] sm:text-5xl md:text-6xl">
+              <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.025em] text-[#1a1812] sm:text-5xl md:text-6xl">
                 Pick a starter.{' '}
-                <em className="italic" style={{ color: '#f5d9a8' }}>
+                <em className="italic text-[#8a5a2b]">
                   Ship today.
                 </em>
               </h2>
-              <p className="max-w-sm text-[14px] leading-relaxed text-white/65">
+              <p className="max-w-sm text-[14px] leading-relaxed text-[#1a1812]/60">
                 Each template is a live deployed site. Click preview to open it full-screen, or
                 use it as the starting point for yours.
               </p>
@@ -169,7 +171,7 @@ export function Homepage() {
           </div>
         </FadeIn>
 
-        {/* Featured 3 (full-width cards) */}
+        {/* Featured 3 */}
         <StaggerGroup
           className="mb-6 grid grid-cols-1 gap-5 md:grid-cols-3"
           stagger={0.08}
@@ -185,7 +187,7 @@ export function Homepage() {
           ))}
         </StaggerGroup>
 
-        {/* Remaining 9 in a tighter grid */}
+        {/* Remaining templates */}
         <StaggerGroup
           className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
           stagger={0.05}
@@ -205,33 +207,33 @@ export function Homepage() {
       >
         <FadeIn>
           <div className="mb-14 flex flex-col items-start gap-3 sm:mb-20">
-            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50 sm:text-[11px]">
-              <span className="inline-block h-px w-6 bg-white/20" />
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#1a1812]/50 sm:text-[11px]">
+              <span className="inline-block h-px w-6 bg-[#1a1812]/25" />
               <span>What&rsquo;s inside</span>
             </div>
-            <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] sm:text-5xl md:text-6xl">
+            <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.025em] text-[#1a1812] sm:text-5xl md:text-6xl">
               Built for shipping,{' '}
-              <em className="italic" style={{ color: '#f5d9a8' }}>
+              <em className="italic text-[#8a5a2b]">
                 not demoing.
               </em>
             </h2>
           </div>
         </FadeIn>
         <StaggerGroup
-          className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-white/10 bg-white/5 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-[#1a1812]/12 bg-[#1a1812]/10 sm:grid-cols-2 lg:grid-cols-3"
           stagger={0.06}
         >
           {[
             {
               t: 'Cinematic scroll motion',
-              d: 'Canvas 2D frame flipbook driven by scroll — same mechanism Draftly uses, inlined in your export.',
+              d: 'Canvas 2D frame flipbook driven by scroll. Every template includes the same mechanism Draftly uses, inlined in your export.',
             },
             {
-              t: 'Claude Opus 4.7 + vision',
-              d: 'Anthropic\u2019s newest design-aware model writes copy + structure. Drop a reference image and it reads palette + mood.',
+              t: 'Design-aware copy',
+              d: 'The newest vision model writes copy and structure. Drop a reference image and it reads palette and mood.',
             },
             {
-              t: 'Multi-step AI funnel',
+              t: 'Multi-step creative funnel',
               d: 'Art direction, keyframe approval, copy review. You steer the creative direction at every checkpoint.',
             },
             {
@@ -248,11 +250,11 @@ export function Homepage() {
             },
           ].map((x) => (
             <StaggerChild key={x.t}>
-              <div className="h-full bg-[#0a0a14] p-7 transition hover:bg-[#0d0d18] sm:p-8">
-                <div className="mb-3 text-[15px] font-semibold tracking-tight text-white">
+              <div className="h-full bg-[#efeae0] p-7 transition hover:bg-[#e8e2d4] sm:p-8">
+                <div className="mb-3 text-[15px] font-semibold tracking-tight text-[#1a1812]">
                   {x.t}
                 </div>
-                <div className="text-[13px] leading-relaxed text-white/60">
+                <div className="text-[13px] leading-relaxed text-[#1a1812]/60">
                   {x.d}
                 </div>
               </div>
@@ -268,63 +270,61 @@ export function Homepage() {
       >
         <FadeIn>
           <div className="mb-12 flex flex-col items-start gap-3 sm:mb-16">
-            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50 sm:text-[11px]">
-              <span className="inline-block h-px w-6 bg-white/20" />
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#1a1812]/50 sm:text-[11px]">
+              <span className="inline-block h-px w-6 bg-[#1a1812]/25" />
               <span>The pipeline</span>
             </div>
-            <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.02em] sm:text-5xl md:text-6xl">
+            <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.025em] text-[#1a1812] sm:text-5xl md:text-6xl">
               Prompt to production.{' '}
-              <em className="italic" style={{ color: '#f5d9a8' }}>
+              <em className="italic text-[#8a5a2b]">
                 In five steps.
               </em>
             </h2>
           </div>
         </FadeIn>
         <StaggerGroup
-          className="grid grid-cols-1 divide-y divide-white/10 border-y border-white/10 md:grid-cols-5 md:divide-x md:divide-y-0"
+          className="grid grid-cols-1 divide-y divide-[#1a1812]/12 border-y border-[#1a1812]/12 md:grid-cols-5 md:divide-x md:divide-y-0"
           stagger={0.08}
         >
           {[
             { n: '01', t: 'Describe', d: 'Brand, audience, tone, attached references.' },
             { n: '02', t: 'Generate', d: 'AI picks 3 cinematic directions. You pick one.' },
-            { n: '03', t: 'Compose', d: 'Claude writes copy + structure. Editable on arrival.' },
-            { n: '04', t: 'Animate', d: 'Sora turns the keyframe into a scroll flipbook.' },
+            { n: '03', t: 'Compose', d: 'Copy and structure written for you. Editable on arrival.' },
+            { n: '04', t: 'Animate', d: 'Keyframe becomes a scroll-driven flipbook.' },
             { n: '05', t: 'Export', d: 'Download a real Next.js repo or deploy direct.' },
           ].map((s) => (
             <StaggerChild key={s.n}>
-              <div className="group px-6 py-8 transition hover:bg-white/[0.015]">
-                <div className="mb-10 font-mono text-[11px] tracking-wider text-white/40">
+              <div className="group px-6 py-8 transition hover:bg-[#1a1812]/[0.03]">
+                <div className="mb-10 font-mono text-[11px] tracking-wider text-[#1a1812]/40">
                   {s.n}
                 </div>
-                <div className="mb-2 text-[15px] font-semibold text-white">{s.t}</div>
-                <div className="text-[13px] leading-relaxed text-white/60">{s.d}</div>
+                <div className="mb-2 text-[15px] font-semibold text-[#1a1812]">{s.t}</div>
+                <div className="text-[13px] leading-relaxed text-[#1a1812]/60">{s.d}</div>
               </div>
             </StaggerChild>
           ))}
         </StaggerGroup>
       </section>
 
-      {/* ─── Closing CTA / pricing preview ───────────────────────────────── */}
+      {/* ─── Closing CTA ─────────────────────────────────────────────────── */}
       <section className="relative z-20 mx-auto max-w-6xl px-6 pb-24 pt-20 sm:px-8 sm:pb-32 sm:pt-28">
         <FadeIn>
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-[#0f0f23] via-[#0a0a14] to-[#0a0a14] p-10 sm:p-16">
+          <div className="relative overflow-hidden rounded-2xl border border-[#1a1812]/12 bg-[#1a1812] p-10 text-[#efeae0] sm:p-16">
             <div
               aria-hidden="true"
               className="absolute inset-0 opacity-60"
               style={{
                 background:
-                  'radial-gradient(ellipse 60% 80% at 20% 100%, rgba(139,92,246,0.25), transparent), radial-gradient(ellipse 40% 60% at 100% 0%, rgba(34,211,238,0.15), transparent)',
+                  'radial-gradient(ellipse 60% 80% at 20% 100%, rgba(220,180,120,0.18), transparent 60%), radial-gradient(ellipse 40% 60% at 100% 0%, rgba(180,130,80,0.14), transparent 60%)',
               }}
             />
             <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
               <div className="max-w-xl">
-                <h3 className="font-serif text-3xl leading-[1] tracking-[-0.02em] sm:text-5xl">
+                <h3 className="font-serif text-3xl leading-[1] tracking-[-0.025em] sm:text-5xl">
                   Ship a cinematic site.{' '}
-                  <em className="italic" style={{ color: '#f5d9a8' }}>
-                    Today.
-                  </em>
+                  <em className="italic text-[#e8b874]">Today.</em>
                 </h3>
-                <p className="mt-4 text-[14px] leading-relaxed text-white/65 sm:text-[15px]">
+                <p className="mt-4 text-[14px] leading-relaxed text-[#efeae0]/70 sm:text-[15px]">
                   Plans start at $19/month. Cancel any time. Every tier includes full Next.js
                   export and the cinematic scroll flipbook.
                 </p>
@@ -333,14 +333,14 @@ export function Homepage() {
                 <ScaleOnHover>
                   <button
                     onClick={handleGetStarted}
-                    className="rounded-full bg-[#F4EFE6] px-6 py-3 text-[13px] font-semibold text-[#0a0a14] transition hover:opacity-90"
+                    className="rounded-full bg-[#efeae0] px-6 py-3 text-[13px] font-semibold text-[#1a1812] transition hover:opacity-90"
                   >
                     View plans &rarr;
                   </button>
                 </ScaleOnHover>
                 <a
                   href="/sign-in"
-                  className="text-[12px] text-white/60 transition hover:text-white"
+                  className="text-[12px] text-[#efeae0]/65 transition hover:text-[#efeae0]"
                 >
                   Already have an account? Sign in
                 </a>
@@ -351,12 +351,12 @@ export function Homepage() {
       </section>
 
       <footer className="relative z-20 mx-auto max-w-6xl px-6 pb-14 sm:px-8 sm:pb-16">
-        <div className="flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-8 text-[11px] uppercase tracking-[0.22em] text-white/40 sm:flex-row sm:items-center">
+        <div className="flex flex-col items-start justify-between gap-4 border-t border-[#1a1812]/15 pt-8 text-[11px] uppercase tracking-[0.22em] text-[#1a1812]/45 sm:flex-row sm:items-center">
           <div>sitesculpt</div>
           <div className="flex gap-6">
-            <a href="/pricing" className="transition hover:text-white/80">Pricing</a>
-            <a href="#features" className="transition hover:text-white/80">Features</a>
-            <a href="/sign-in" className="transition hover:text-white/80">Sign in</a>
+            <a href="/pricing" className="transition hover:text-[#1a1812]/80">Pricing</a>
+            <a href="#features" className="transition hover:text-[#1a1812]/80">Features</a>
+            <a href="/sign-in" className="transition hover:text-[#1a1812]/80">Sign in</a>
           </div>
         </div>
       </footer>
@@ -379,7 +379,7 @@ function TemplateCard({
   const imageHeight = variant === 'featured' ? 'h-[260px]' : 'h-[220px]';
   return (
     <ScaleOnHover scale={1.015}>
-      <div className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-white/[0.02] transition hover:border-white/20">
+      <div className="group flex flex-col overflow-hidden rounded-xl border border-[#1a1812]/12 bg-white/40 backdrop-blur-sm transition hover:border-[#1a1812]/25 hover:bg-white/60">
         <button
           type="button"
           onClick={onClick}
@@ -399,8 +399,8 @@ function TemplateCard({
         </button>
         <div className="flex items-center justify-between gap-3 px-4 py-3">
           <div className="min-w-0 flex-1">
-            <div className="truncate text-[13px] font-medium text-white">{template.title}</div>
-            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-white/40">
+            <div className="truncate text-[13px] font-medium text-[#1a1812]">{template.title}</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.15em] text-[#1a1812]/45">
               {template.category}
             </div>
           </div>
@@ -411,7 +411,7 @@ function TemplateCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="rounded-md border border-white/15 px-2.5 py-1.5 text-[11px] text-white/60 transition hover:border-white/30 hover:text-white"
+                className="rounded-md border border-[#1a1812]/20 px-2.5 py-1.5 text-[11px] text-[#1a1812]/65 transition hover:border-[#1a1812]/40 hover:text-[#1a1812]"
               >
                 Preview &nearr;
               </a>
@@ -419,7 +419,7 @@ function TemplateCard({
             <button
               type="button"
               onClick={onClick}
-              className="rounded-md bg-[#F4EFE6] px-3 py-1.5 text-[11px] font-medium text-[#0a0a14] transition hover:opacity-90"
+              className="rounded-md bg-[#1a1812] px-3 py-1.5 text-[11px] font-medium text-[#efeae0] transition hover:opacity-85"
             >
               Use This
             </button>
