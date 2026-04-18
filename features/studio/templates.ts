@@ -13,6 +13,9 @@ export interface Template {
   gradient: [string, string];
   /** Path to pre-generated screenshot in /public — shown as card bg */
   previewUrl?: string;
+  /** Vercel Blob URL for a short cinematic loop. When present the card
+   *  autoplays this muted video instead of the static previewUrl. */
+  loopUrl?: string;
   /** Pre-generated project ID for the live preview page (opens in new tab) */
   livePreviewId?: string;
 }

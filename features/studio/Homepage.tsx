@@ -90,7 +90,7 @@ export function Homepage() {
       </nav>
 
       {/* ─── Hero ────────────────────────────────────────────────────────── */}
-      <section className="relative z-20 mx-auto flex min-h-[82vh] max-w-5xl flex-col items-center justify-center px-6 py-20 text-center sm:px-8">
+      <section className="relative z-20 mx-auto flex max-w-5xl flex-col items-center justify-center px-6 pt-16 pb-10 text-center sm:px-8 sm:pt-20">
         <FadeIn delay={0.05}>
           <h1 className="mb-8 font-serif text-[56px] leading-[0.94] tracking-[-0.03em] text-[#1a1812] sm:text-[92px] md:text-[118px]">
             Cinematic sites,{' '}
@@ -127,7 +127,7 @@ export function Homepage() {
 
         {/* Stat row */}
         <FadeIn delay={0.3}>
-          <div className="mt-16 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-left">
+          <div className="mt-14 flex flex-wrap items-center justify-center gap-x-10 gap-y-4 text-left">
             {[
               { v: '12', l: 'Templates' },
               { v: '5 min', l: 'Prompt to deploy' },
@@ -141,6 +141,72 @@ export function Homepage() {
                 </div>
               </div>
             ))}
+          </div>
+        </FadeIn>
+      </section>
+
+      {/* ─── Cinematic hero showcase ─────────────────────────────────────── */}
+      <section className="relative z-20 mx-auto max-w-6xl px-4 pb-20 sm:px-8 sm:pb-28">
+        <FadeIn delay={0.4}>
+          <div className="cinematic-float relative">
+            {/* Glow pad behind the frame */}
+            <div
+              aria-hidden="true"
+              className="absolute -inset-x-10 -inset-y-6 rounded-[40px] blur-3xl"
+              style={{
+                background:
+                  'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(140,80,40,0.22), transparent 70%)',
+              }}
+            />
+            {/* Browser-chrome frame */}
+            <div className="relative overflow-hidden rounded-[22px] border border-[#1a1812]/12 bg-[#1a1812] shadow-[0_60px_120px_-40px_rgba(26,24,18,0.55),0_30px_60px_-20px_rgba(26,24,18,0.35)]">
+              <div className="flex items-center gap-2 border-b border-white/5 bg-[#15130e] px-4 py-3">
+                <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e]" />
+                <span className="h-2.5 w-2.5 rounded-full bg-[#28c840]" />
+                <div className="ml-4 flex-1 rounded-md bg-white/5 px-3 py-1 text-[11px] font-mono text-white/40">
+                  yoursite.com
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-[0.2em] text-white/40">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#28c840]" />
+                  live
+                </div>
+              </div>
+              <div className="relative aspect-[16/9] overflow-hidden bg-black">
+                <video
+                  className="absolute inset-0 h-full w-full object-cover"
+                  src="https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/homepage-bg.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  aria-hidden="true"
+                />
+                {/* Subtle film grain on top of video */}
+                <div className="pointer-events-none absolute inset-0 opacity-[0.18] mix-blend-overlay"
+                  style={{
+                    backgroundImage:
+                      "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.7'/></svg>\")",
+                    backgroundSize: '220px 220px',
+                  }}
+                />
+                {/* Faint scroll-cue gradient at bottom */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/50 to-transparent" />
+                {/* Scroll indicator */}
+                <div className="pointer-events-none absolute bottom-5 left-1/2 -translate-x-1/2 font-mono text-[10px] uppercase tracking-[0.28em] text-white/60">
+                  scroll to animate ↓
+                </div>
+              </div>
+            </div>
+            {/* Caption under the showcase */}
+            <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 font-mono text-[10px] uppercase tracking-[0.22em] text-[#1a1812]/55">
+              <span>120 frames</span>
+              <span className="text-[#1a1812]/25">·</span>
+              <span>Canvas 2D flipbook</span>
+              <span className="text-[#1a1812]/25">·</span>
+              <span>Inlined in your export</span>
+            </div>
           </div>
         </FadeIn>
       </section>
@@ -388,13 +454,32 @@ function TemplateCard({
             background: `linear-gradient(135deg, ${template.gradient[0]}, ${template.gradient[1]})`,
           }}
         >
-          {template.previewUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={template.previewUrl}
-              alt={template.title}
-              className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.04]"
+          {template.loopUrl ? (
+            <video
+              src={template.loopUrl}
+              poster={template.previewUrl}
+              className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.02]"
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="metadata"
+              aria-hidden="true"
             />
+          ) : (
+            template.previewUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={template.previewUrl}
+                alt={template.title}
+                className="absolute inset-0 h-full w-full object-cover transition group-hover:scale-[1.04]"
+              />
+            )
+          )}
+          {/* Subtle gradient at bottom so the category badge stays readable
+              when videos have bright content */}
+          {template.loopUrl && (
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/30 to-transparent" />
           )}
         </button>
         <div className="flex items-center justify-between gap-3 px-4 py-3">

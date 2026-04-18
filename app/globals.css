@@ -146,3 +146,22 @@ body {
 .divider {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
+
+/* Cinematic hero showcase — subtle float to suggest cinematic motion */
+@keyframes cinematicFloat {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.004);
+  }
+}
+.cinematic-float {
+  animation: cinematicFloat 7s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cinematic-float {
+    animation: none;
+  }
+}

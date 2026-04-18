@@ -3,7 +3,7 @@ import { z } from 'zod';
 const schema = z.object({
   OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY missing — set it in .env.local'),
   ANTHROPIC_API_KEY: z.string().min(1, 'ANTHROPIC_API_KEY missing — set it in .env.local'),
-  OPENAI_IMAGE_MODEL: z.string().default('the image model.5'),
+  OPENAI_IMAGE_MODEL: z.string().default('gpt-image-1.5'),
   OPENAI_VIDEO_MODEL: z.string().default('sora-2'),
   ANTHROPIC_MODEL: z.string().default('claude-opus-4-7'),
 
