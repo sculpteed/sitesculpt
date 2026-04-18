@@ -41,7 +41,7 @@ export async function generateKeyframeImage(args: {
       prompt: safePrompt,
       n: 1,
       size: sizeForAspect(args.aspect),
-      quality: 'medium',
+      quality: 'high',
     });
 
     const b64 = response.data?.[0]?.b64_json;
@@ -58,7 +58,7 @@ export async function generateKeyframeImage(args: {
         prompt: fallback,
         n: 1,
         size: sizeForAspect(args.aspect),
-        quality: 'medium',
+        quality: 'high',
       });
       const b64 = response.data?.[0]?.b64_json;
       if (!b64) throw new Error('OpenAI image API returned no b64_json');

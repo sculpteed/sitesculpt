@@ -115,7 +115,7 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
           />
         </Field>
 
-        <Field label="What is it?" required helper="1–2 sentences. Be specific about who it's for.">
+        <Field label="Describe what you&rsquo;re building" required helper="1–2 sentences. The more specific you are, the more cinematic the result.">
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -136,7 +136,7 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
                 onSubmit(compiled, aspect);
               }
             }}
-            placeholder="An AI scheduling tool that protects deep work time for remote engineering teams."
+            placeholder="A studio making hand-thrown ceramics for the table. Flagship in Brooklyn, online everywhere."
             rows={3}
             className="w-full resize-none rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2.5 text-[14px] text-warm placeholder:text-warm-subtle outline-none transition focus:border-[var(--color-border-strong)]"
           />
@@ -188,7 +188,7 @@ export function GuidedForm({ onSubmit, busy = false }: GuidedFormProps) {
             </div>
             <div className="min-w-0 flex-1">
               <div className="mb-0.5 flex items-center gap-2">
-                <span className="text-[12px] font-medium text-warm">AI decide</span>
+                <span className="text-[12px] font-medium text-warm">Auto-derive</span>
                 {paletteMode === 'ai' ? (
                   <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--color-accent)]">
                     Recommended

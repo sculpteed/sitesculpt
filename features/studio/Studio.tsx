@@ -407,8 +407,8 @@ export function Studio() {
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-4">
               <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--color-accent)] border-t-transparent" />
-              <div className="text-[13px] text-warm-muted">Building your site…</div>
-              <div className="text-[11px] text-warm-subtle">Writing copy and structuring sections</div>
+              <div className="text-[13px] text-warm-muted">Sculpting your vision…</div>
+              <div className="text-[11px] text-warm-subtle">Writing cinematic copy and composing sections</div>
             </div>
           )}
           <div className="absolute right-0 top-0 z-20 flex h-full w-[380px] flex-col border-l border-[var(--color-border)] bg-[rgba(13,10,8,0.95)] backdrop-blur-xl">
@@ -439,8 +439,8 @@ export function Studio() {
                   </em>
                 </h2>
                 <p className="max-w-sm text-[13px] leading-relaxed text-warm-muted">
-                  A few quick details — our engine sculpts the copy, the cinematic, and the
-                  production-ready code. The more you tell us, the sharper the result.
+                  A few quick details — we sculpt the copy, the cinematic motion, and the
+                  production-ready code. The more specific you are, the more cinematic the result.
                 </p>
               </div>
               <GuidedForm onSubmit={handleBriefSubmit} busy={funnelBusy} />

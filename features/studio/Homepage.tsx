@@ -15,6 +15,8 @@ import {
 export function Homepage() {
   const router = useRouter();
   const applyTemplate = useStudioStore((s) => s.applyTemplate);
+  const setDescription = useStudioStore((s) => s.setDescription);
+  const [customPrompt, setCustomPrompt] = useState('');
 
   const handleTemplateClick = (t: Template): void => {
     applyTemplate(t);
@@ -23,6 +25,15 @@ export function Homepage() {
 
   const handleGetStarted = (): void => {
     router.push('/pricing?from=hero');
+  };
+
+  const handleCustomPromptSubmit = (): void => {
+    if (customPrompt.trim().length < 6) {
+      router.push('/pricing?from=custom');
+      return;
+    }
+    setDescription(customPrompt.trim());
+    router.push('/pricing?from=custom');
   };
 
   const featuredTemplates = TEMPLATES.slice(0, 3);
@@ -102,26 +113,27 @@ export function Homepage() {
         </FadeIn>
         <FadeIn delay={0.12}>
           <p className="mx-auto mb-10 max-w-xl text-[15px] leading-relaxed text-[#1a1812]/65 sm:text-[17px]">
-            Describe your business. Sitesculpt generates a 3D scroll-driven website with AI copy,
-            cinematic motion, and production-ready Next.js code — in about five minutes.
+            Describe anything, or start from a template. Every site is fully tailored — cinematic
+            3D motion, editorial copy, and production-ready Next.js code. Built for you, in about
+            five minutes.
           </p>
         </FadeIn>
 
         <FadeIn delay={0.2}>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <ScaleOnHover>
-              <button
-                onClick={handleGetStarted}
+              <a
+                href="#describe"
                 className="rounded-full bg-[#1a1812] px-7 py-3.5 text-[14px] font-semibold text-[#efeae0] shadow-[0_20px_50px_-20px_rgba(26,24,18,0.45)] transition hover:opacity-90"
               >
-                Start Building &rarr;
-              </button>
+                Describe your site &rarr;
+              </a>
             </ScaleOnHover>
             <a
               href="#templates"
               className="rounded-full border border-[#1a1812]/15 bg-white/20 px-6 py-3.5 text-[14px] font-medium text-[#1a1812]/80 backdrop-blur-sm transition hover:border-[#1a1812]/30 hover:text-[#1a1812]"
             >
-              Explore Templates
+              Or pick a starter
             </a>
           </div>
         </FadeIn>
@@ -156,6 +168,81 @@ export function Homepage() {
         </FadeIn>
       </section>
 
+      {/* ─── Custom prompt entry ─────────────────────────────────────────── */}
+      <section id="describe" className="relative z-20 mx-auto max-w-4xl px-6 pb-24 sm:px-8 sm:pb-28">
+        <FadeIn delay={0.5}>
+          <div className="relative overflow-hidden rounded-2xl border border-[#1a1812]/12 bg-white/40 p-8 shadow-[0_30px_80px_-40px_rgba(26,24,18,0.25)] backdrop-blur-sm sm:p-12">
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 opacity-70"
+              style={{
+                background:
+                  'radial-gradient(ellipse 60% 80% at 100% 0%, rgba(200,150,100,0.12), transparent 60%), radial-gradient(ellipse 50% 60% at 0% 100%, rgba(140,80,40,0.10), transparent 60%)',
+              }}
+            />
+            <div className="relative">
+              <div className="mb-5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.24em] text-[#1a1812]/55 sm:text-[11px]">
+                <span className="inline-block h-px w-6 bg-[#1a1812]/25" />
+                <span>Or start from nothing</span>
+              </div>
+              <h2 className="mb-4 font-serif text-4xl leading-[0.98] tracking-[-0.025em] text-[#1a1812] sm:text-5xl md:text-6xl">
+                Describe anything.{' '}
+                <em className="italic text-[#8a5a2b]">We sculpt it.</em>
+              </h2>
+              <p className="mb-8 max-w-xl text-[14px] leading-relaxed text-[#1a1812]/65 sm:text-[16px]">
+                Templates are guides, not limits. Type what you&rsquo;re building — in one sentence
+                or a paragraph — and every site is generated from scratch, tailored to your brand,
+                tone, and audience. Full cinematic treatment, every time.
+              </p>
+              <div className="rounded-xl border border-[#1a1812]/12 bg-white/70 p-2 shadow-sm focus-within:border-[#1a1812]/30">
+                <textarea
+                  value={customPrompt}
+                  onChange={(e) => setCustomPrompt(e.target.value)}
+                  onKeyDown={(e) => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                      e.preventDefault();
+                      handleCustomPromptSubmit();
+                    }
+                  }}
+                  rows={3}
+                  placeholder="A studio making hand-thrown ceramics for the table. Flagship in Brooklyn, online everywhere."
+                  className="w-full resize-none bg-transparent px-3 py-2 font-sans text-[15px] leading-relaxed text-[#1a1812] placeholder:text-[#1a1812]/35 outline-none sm:text-[16px]"
+                />
+                <div className="flex items-center justify-between gap-3 border-t border-[#1a1812]/08 px-3 pb-1 pt-3">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-[#1a1812]/45">
+                    <kbd className="rounded border border-[#1a1812]/15 bg-[#1a1812]/05 px-1.5 py-0.5 text-[9px]">
+                      ⌘
+                    </kbd>{' '}
+                    <kbd className="rounded border border-[#1a1812]/15 bg-[#1a1812]/05 px-1.5 py-0.5 text-[9px]">
+                      ↵
+                    </kbd>{' '}
+                    to sculpt
+                  </div>
+                  <ScaleOnHover>
+                    <button
+                      type="button"
+                      onClick={handleCustomPromptSubmit}
+                      className="rounded-full bg-[#1a1812] px-5 py-2.5 text-[13px] font-semibold text-[#efeae0] transition hover:opacity-90"
+                    >
+                      Sculpt my site &rarr;
+                    </button>
+                  </ScaleOnHover>
+                </div>
+              </div>
+              <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#1a1812]/55">
+                <span>3D cinematic motion</span>
+                <span className="text-[#1a1812]/25">·</span>
+                <span>Tailored copy</span>
+                <span className="text-[#1a1812]/25">·</span>
+                <span>Real Next.js export</span>
+                <span className="text-[#1a1812]/25">·</span>
+                <span>~5 min</span>
+              </div>
+            </div>
+          </div>
+        </FadeIn>
+      </section>
+
       {/* ─── Featured templates showcase ─────────────────────────────────── */}
       <section
         id="templates"
@@ -169,14 +256,14 @@ export function Homepage() {
             </div>
             <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
               <h2 className="font-serif text-4xl leading-[0.98] tracking-[-0.025em] text-[#1a1812] sm:text-5xl md:text-6xl">
-                Pick a starter.{' '}
+                Pick a blueprint.{' '}
                 <em className="italic text-[#8a5a2b]">
-                  Ship today.
+                  Make it yours.
                 </em>
               </h2>
               <p className="max-w-sm text-[14px] leading-relaxed text-[#1a1812]/60">
-                Each template is a live deployed site. Click preview to open it full-screen, or
-                use it as the starting point for yours.
+                Every template is a real deployed site. Use one as a starting point — we&rsquo;ll
+                re-sculpt the copy, palette, and motion for your brand.
               </p>
             </div>
           </div>
