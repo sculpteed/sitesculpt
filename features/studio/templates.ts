@@ -78,6 +78,7 @@ export const TEMPLATES: Template[] = [
     pages: ['features', 'pricing', 'faq'],
     gradient: ['#0f172a', '#22d3ee'],
     previewUrl: '/templates/saas-landing.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/saas-landing.mp4',
     livePreviewId: 'aba626bcf260a89f',
   },
 
@@ -111,6 +112,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'case-studies', 'team', 'contact'],
     gradient: ['#F4EFE6', '#1f2937'],
     previewUrl: '/templates/creative-agency.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/creative-agency.mp4',
     livePreviewId: '2b156f2560f7a324',
   },
 
@@ -195,6 +197,7 @@ export const TEMPLATES: Template[] = [
     pages: ['about', 'team', 'contact', 'testimonials'],
     gradient: ['#e8f0ec', '#5e9b8a'],
     previewUrl: '/templates/nonprofit.jpg',
+    loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/nonprofit.mp4',
     livePreviewId: '31d8a7a3138f2438',
   },
 
