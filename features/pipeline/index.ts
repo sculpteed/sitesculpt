@@ -23,6 +23,7 @@ import { composeSite } from './steps/composeSite';
 import { generateImage } from './steps/generateImage';
 import { generateVideo } from './steps/generateVideo';
 import { extractFrames } from './steps/extractFrames';
+import { runChecks, type CheckResult } from './quality/checks';
 
 /**
  * Parallel pipeline orchestrator.
@@ -65,13 +66,43 @@ export async function runPipeline(
     });
 
     // ─── Steps 2 + 3 run in parallel ───────────────────────────────────────
+    //
+    // composeSite is gated by runChecks(). If the first attempt fails any
+    // error-severity check, we retry ONCE with the failures pinned into the
+    // prompt so the model can fix them directly. This is the difference
+    // between shipping a mediocre site silently and catching the bad frames
+    // before the user sees them. Budget: +$0.001 + ~3s on the retry path,
+    // which fires for maybe 5% of generations.
     const composeSitePromise = runStepCached<SiteStructure>({
       step: 'composeSite',
       projectId,
       file: 'site.json',
       status,
       emit,
-      run: () => composeSite(input.prompt),
+      run: async () => {
+        const first = await composeSite(input.prompt);
+        const firstChecks = runChecks(scene, first);
+        const firstFailures = errorFailures(firstChecks);
+        if (firstFailures.length === 0) {
+          logChecks(projectId, 'pass', firstChecks);
+          return first;
+        }
+        logChecks(projectId, 'retry', firstChecks);
+        const repairHint = firstFailures
+          .map((c) => `- ${c.name}: ${c.message ?? 'failed'}`)
+          .join('\n');
+        const retried = await composeSite(input.prompt, undefined, repairHint);
+        const retryChecks = runChecks(scene, retried);
+        const retryFailures = errorFailures(retryChecks);
+        if (retryFailures.length === 0) {
+          logChecks(projectId, 'retry-pass', retryChecks);
+          return retried;
+        }
+        // Second attempt still failing — ship it anyway but log loudly.
+        // Shipping is less bad than an infinite retry loop or a hard error.
+        logChecks(projectId, 'retry-fail', retryChecks);
+        return retried;
+      },
     });
 
     const generateImagePromise = runStepIfMissing({
@@ -85,14 +116,12 @@ export async function runPipeline(
 
     const [site] = await Promise.all([composeSitePromise, generateImagePromise]);
 
-    // ─── Step 4 + 5: generateVideo + extractFrames (OPTIONAL) ──────────────
-    // the video model video is 720p which looks blurry when stretched to full viewport.
-    // The keyframe (1536×1024) + CSS Ken Burns looks sharper and is the
-    // default hero treatment. the video model is skipped by default (saves $0.40 + 2min).
-    // When a user explicitly opts into video (premium toggle), set
-    // input.enableVideo = true to run these steps.
+    // ─── Step 4 + 5: generateVideo + extractFrames ─────────────────────────
+    // Cinematic scroll motion is the product's core promise, so video is ON
+    // by default. Callers that want to skip it (smoke tests, cheap retries)
+    // can pass `enableVideo: false` in the input. Cost: +$0.40 and +~2min.
     let frameCount = 0;
-    const enableVideo = (input as { enableVideo?: boolean }).enableVideo ?? false;
+    const enableVideo = (input as { enableVideo?: boolean }).enableVideo ?? true;
 
     if (enableVideo) {
       await runStepIfMissing({
@@ -181,6 +210,31 @@ async function runStepCached<T>(args: {
   await writeJson(args.projectId, args.file, result);
   await args.emit(args.step, { state: 'done' });
   return result;
+}
+
+// ─── Quality-check helpers ──────────────────────────────────────────────────
+
+function errorFailures(checks: CheckResult[]): CheckResult[] {
+  return checks.filter((c) => !c.pass && c.severity === 'error');
+}
+
+function logChecks(
+  projectId: string,
+  phase: 'pass' | 'retry' | 'retry-pass' | 'retry-fail',
+  checks: CheckResult[],
+): void {
+  const fails = checks.filter((c) => !c.pass);
+  if (fails.length === 0) {
+    console.log(`[quality] ${projectId} ${phase} — all ${checks.length} checks passed`);
+    return;
+  }
+  const summary = fails
+    .map((c) => `${c.severity === 'error' ? 'ERR' : 'WARN'} ${c.name}${c.message ? `: ${c.message}` : ''}`)
+    .join(' | ');
+  const tag = phase === 'retry-fail' ? 'error' : 'warn';
+  console[tag === 'error' ? 'error' : 'warn'](
+    `[quality] ${projectId} ${phase} — ${fails.length}/${checks.length} failed: ${summary}`,
+  );
 }
 
 async function runStepIfMissing(args: {
