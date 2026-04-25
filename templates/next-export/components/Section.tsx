@@ -51,6 +51,8 @@ export interface SectionProps {
   layout: SectionLayout;
   /** Brand-specific eyebrow label from the model. Falls back to layout default. */
   label?: string;
+  /** Visual variant for layouts that ship multiple looks. */
+  variant?: 'default' | 'alt';
   title: string;
   body: string;
   cta?: string;
@@ -182,7 +184,9 @@ function IntroLayout({ label, title, body }: SectionProps) {
   );
 }
 
-function FeatureGridLayout({ label, title, body, items = [] }: SectionProps) {
+function FeatureGridLayout(props: SectionProps) {
+  if (props.variant === 'alt') return <FeatureGridAltLayout {...props} />;
+  const { label, title, body, items = [] } = props;
   // Bento-style: first item spans the full width as a "hero feature",
   // remaining items in a 2- or 3-col grid. Creates visual asymmetry.
   const heroFeature = items[0];
@@ -237,6 +241,55 @@ function FeatureGridLayout({ label, title, body, items = [] }: SectionProps) {
           </StaggerItem>
         ))}
       </Stagger>
+    </section>
+  );
+}
+
+function FeatureGridAltLayout({ label, title, body, items = [] }: SectionProps) {
+  // Alternating-side full-width rows. Use for 3-5 narrative-rich features
+  // that deserve breathing room — bento grid would crush them.
+  return (
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
+      <Reveal>
+        <SectionEyebrow>{label}</SectionEyebrow>
+        <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-end">
+          <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
+          <p className="max-w-xl text-base leading-relaxed text-muted-foreground">{body}</p>
+        </div>
+      </Reveal>
+      <Separator className="mt-16 mb-16 bg-border" />
+      <div className="space-y-16 md:space-y-24">
+        {items.map((item, i) => {
+          const isOdd = i % 2 === 1;
+          return (
+            <Reveal key={i} delay={i * 0.05}>
+              <div
+                className={`grid items-start gap-8 md:gap-16 md:grid-cols-[6rem_1fr] ${
+                  isOdd ? 'md:grid-cols-[1fr_6rem]' : ''
+                }`}
+              >
+                <div
+                  className={`font-serif text-7xl leading-none tracking-tighter text-primary md:text-8xl lg:text-9xl ${
+                    isOdd ? 'md:order-2 md:text-right' : ''
+                  }`}
+                >
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <div className={isOdd ? 'md:order-1' : ''}>
+                  <div className="mb-4 font-serif text-3xl leading-tight tracking-tight text-foreground md:text-4xl">
+                    {item.name}
+                  </div>
+                  {item.description ? (
+                    <p className="max-w-xl text-base leading-[1.65] text-muted-foreground md:text-[17px]">
+                      {item.description}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+            </Reveal>
+          );
+        })}
+      </div>
     </section>
   );
 }
@@ -381,7 +434,9 @@ function FaqLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function LogoStripLayout({ title, items = [] }: SectionProps) {
+function LogoStripLayout(props: SectionProps) {
+  if (props.variant === 'alt') return <LogoGridLayout {...props} />;
+  const { title, items = [] } = props;
   return (
     <section className="border-y border-border py-16">
       <div className="mx-auto max-w-6xl">
@@ -402,6 +457,34 @@ function LogoStripLayout({ title, items = [] }: SectionProps) {
             </div>
           ))}
         </Marquee>
+      </div>
+    </section>
+  );
+}
+
+function LogoGridLayout({ title, items = [] }: SectionProps) {
+  // 4-column justified grid. Use when there are 4-12 named logos that
+  // should read as a curated client list rather than a marquee.
+  const cols = items.length <= 4 ? 'sm:grid-cols-2 md:grid-cols-4' : 'sm:grid-cols-3 md:grid-cols-4';
+  return (
+    <section className="border-y border-border py-16">
+      <div className="mx-auto max-w-6xl px-6">
+        {title ? (
+          <Reveal>
+            <div className="mb-10 text-center font-mono text-[10px] uppercase tracking-[0.25em] text-muted-foreground">
+              {title}
+            </div>
+          </Reveal>
+        ) : null}
+        <Stagger className={`grid gap-x-12 gap-y-10 ${cols}`} stagger={0.06}>
+          {items.map((item, i) => (
+            <StaggerItem key={i}>
+              <div className="flex h-12 items-center justify-center font-serif text-xl italic leading-none tracking-tight text-foreground/55 transition-opacity hover:text-foreground/85">
+                {item.name}
+              </div>
+            </StaggerItem>
+          ))}
+        </Stagger>
       </div>
     </section>
   );
@@ -542,7 +625,9 @@ function TeamGridLayout({ label, title, body, items = [] }: SectionProps) {
   );
 }
 
-function TestimonialWallLayout({ label, title, body, items = [] }: SectionProps) {
+function TestimonialWallLayout(props: SectionProps) {
+  if (props.variant === 'alt') return <TestimonialTallLayout {...props} />;
+  const { label, title, body, items = [] } = props;
   return (
     <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
@@ -566,6 +651,42 @@ function TestimonialWallLayout({ label, title, body, items = [] }: SectionProps)
                 {(t.description || t.role) && ` · ${t.description ?? t.role}`}
               </figcaption>
             </HoverLift>
+          </StaggerItem>
+        ))}
+      </Stagger>
+    </section>
+  );
+}
+
+function TestimonialTallLayout({ label, title, body, items = [] }: SectionProps) {
+  // 1-col stacked oversize pull-quotes. For 1-3 deep case-study quotes
+  // that each deserve full editorial weight.
+  return (
+    <section className="mx-auto max-w-4xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
+      <Reveal>
+        <SectionEyebrow>{label}</SectionEyebrow>
+        <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
+        {body ? <Lede>{body}</Lede> : null}
+      </Reveal>
+      <Stagger className="mt-16 space-y-20" stagger={0.15}>
+        {items.slice(0, 3).map((t, i) => (
+          <StaggerItem key={i}>
+            <figure className="border-l-2 border-primary pl-8 md:pl-12">
+              <div className="mb-4 font-serif text-5xl leading-none text-primary">&ldquo;</div>
+              <blockquote className="font-serif text-2xl italic leading-[1.35] tracking-[-0.01em] text-foreground md:text-3xl lg:text-4xl">
+                {t.quote ?? t.name}
+              </blockquote>
+              <figcaption className="mt-8 flex items-baseline gap-3">
+                <span className="font-serif text-xl tracking-tight text-foreground">
+                  {t.quote ? t.name : ''}
+                </span>
+                {(t.description || t.role) ? (
+                  <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                    {t.description ?? t.role}
+                  </span>
+                ) : null}
+              </figcaption>
+            </figure>
           </StaggerItem>
         ))}
       </Stagger>

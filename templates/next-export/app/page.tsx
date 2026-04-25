@@ -93,12 +93,14 @@ export default function Page() {
         )}
 
         {/* Sections — with visual zone treatments for variety */}
-        {(site.sections as readonly { layout: string; title: string; body: string; cta?: string; items?: readonly Record<string, unknown>[] }[]).map((section, i) => {
+        {(site.sections as readonly { layout: string; label?: string; variant?: 'default' | 'alt'; title: string; body: string; cta?: string; items?: readonly Record<string, unknown>[] }[]).map((section, i) => {
           const zone = getZone(section.layout, i);
           return (
             <div key={i} id={`section-${i}`} className={zone.className} style={zone.style}>
               <Section
                 layout={section.layout as Parameters<typeof Section>[0]['layout']}
+                label={section.label}
+                variant={section.variant}
                 title={section.title}
                 body={section.body}
                 cta={section.cta}

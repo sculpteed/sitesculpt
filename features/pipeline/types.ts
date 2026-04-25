@@ -122,6 +122,10 @@ export interface SiteSection {
   /** Short eyebrow label that appears above the heading — the model  this
    *  per brand instead of the renderer hardcoding "Capabilities" every time. */
   label?: string;
+  /** Visual variant for layouts that ship multiple looks (e.g. feature-grid
+   *  has 'default' bento and 'alt' alternating-side rows). The model picks
+   *  per section based on item count + narrative emphasis. */
+  variant?: 'default' | 'alt';
   title: string;
   body: string;
   /** Optional CTA label */

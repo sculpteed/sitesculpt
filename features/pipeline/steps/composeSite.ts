@@ -51,6 +51,8 @@ function clamp(s: string | undefined, n: number): string | undefined {
 function normalizeSection(s: SiteSection): SiteSection {
   return {
     layout: s.layout,
+    label: s.label,
+    variant: s.variant === 'alt' ? 'alt' : undefined,
     title: (s.title ?? '').slice(0, LIMITS.sectionTitle),
     body: trimToSentence(s.body ?? '', LIMITS.sectionBody),
     cta: clamp(s.cta, LIMITS.sectionCta),
@@ -70,7 +72,7 @@ function normalizeSection(s: SiteSection): SiteSection {
 }
 
 function normalizeSiteStructure(site: SiteStructure): SiteStructure {
-  const sections = (site.sections ?? []).slice(0, 10).map(normalizeSection);
+  const sections = (site.sections ?? []).slice(0, 8).map(normalizeSection);
   return {
     brandName: (site.brandName ?? '').slice(0, LIMITS.brandName),
     hero: {
@@ -111,6 +113,15 @@ Aim for copy that feels:
 Each section MUST use one of these layouts. Choose the layout that best serves the message, not a default order:
 
 ${LAYOUT_CATALOG}
+
+## LAYOUT VARIANTS
+
+Three layouts ship a second look you can opt into via \`variant: "alt"\`:
+- **feature-grid** + alt: alternating-side full-width rows with giant serif numerals. Use when the section has 3-5 NARRATIVE-RICH features that deserve breathing room. Default bento works for 4-7 short capabilities; alt works for "here's what we believe" manifesto-style features.
+- **testimonial-wall** + alt: 1-col stacked oversize pull-quotes with left rule. Use when the section has 1-3 DEEP case-study quotes (each quote 2-4 sentences). Default 2-col grid works for 4-6 short testimonials; alt works for the "two clients who really mattered" treatment.
+- **logo-strip** + alt: justified 4-col grid (no marquee). Use when there are 4-12 NAMED logos that should read as a curated client list. Default infinite marquee works for 12+ logos as ambient social proof; alt works for "here are the eight clients we've shipped for".
+
+Default to omitting the variant field. Only set \`"variant": "alt"\` when the criteria above match — picking it for the wrong content makes the section read worse, not better.
 
 ## SECTION ORDER & VARIETY
 
@@ -291,6 +302,11 @@ export async function composeSite(
                   'contact-block',
                   'cta',
                 ],
+              },
+              variant: {
+                type: 'string',
+                enum: ['default', 'alt'],
+                description: 'Optional visual variant. Use "alt" for: (a) feature-grid when there are 3-5 narrative-rich features that deserve full-width alternating-side rows; (b) testimonial-wall when there are 1-3 deep pull-quotes that should each get their own full-width tall card; (c) logo-strip when there are 4-12 named logos that should sit in a justified grid instead of an infinite marquee. Otherwise omit.',
               },
               title: { type: 'string', minLength: 2, maxLength: 70 },
               body: { type: 'string', minLength: 10, maxLength: 350 },
