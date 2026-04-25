@@ -1,4 +1,4 @@
-import { generateKeyframeImage } from '@/lib/providers/openai-image';
+import { generateRoutedKeyframe } from '@/lib/providers/image-router';
 import { writeFileBytes } from '@/lib/cache';
 import type { Aspect, Scene } from '@/features/pipeline/types';
 
@@ -11,10 +11,17 @@ export async function generateImage(args: {
   scene: Scene;
   aspect: Aspect;
 }): Promise<{ keyframePath: string }> {
-  const bytes = await generateKeyframeImage({
+  const { bytes, provider, attempted } = await generateRoutedKeyframe({
     prompt: args.scene.visualPrompt,
     aspect: args.aspect,
   });
+  if (provider !== attempted) {
+    console.warn(
+      `[generateImage] ${args.projectId} keyframe routed to ${provider} after ${attempted} failed`,
+    );
+  } else {
+    console.log(`[generateImage] ${args.projectId} keyframe via ${provider}`);
+  }
   await writeFileBytes(args.projectId, 'keyframe.png', bytes);
   return { keyframePath: 'keyframe.png' };
 }

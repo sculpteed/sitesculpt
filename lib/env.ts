@@ -27,8 +27,14 @@ const schema = z.object({
     .url()
     .default('http://localhost:3003'),
 
-  // fal.ai — Flux image generation (better quality than GPT Image)
+  // fal.ai — alternate keyframe provider, often higher fidelity than the
+  // OpenAI path for cinematic / text-bearing scenes.
   FAL_API_KEY: z.string().optional(),
+
+  // Image provider routing. `auto` picks fal when FAL_API_KEY is set and
+  // falls back to openai on missing key or runtime error. Force a single
+  // provider by setting `openai` or `fal`.
+  IMAGE_PROVIDER: z.enum(['auto', 'openai', 'fal']).default('auto'),
 
   // Vercel Blob — optional for local dev, required in production.
   // Get from: Vercel Dashboard → Storage → Create Blob Store → Tokens
