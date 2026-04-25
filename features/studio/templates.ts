@@ -216,4 +216,88 @@ export const TEMPLATES: Template[] = [
     previewUrl: '/templates/space-research.jpg',
     loopUrl: 'https://1sd6xyxycslrxoqp.public.blob.vercel-storage.com/template-loops/space-research.mp4',
   },
+
+  // ─── Functional product templates ────────────────────────────────────────
+  // Static Draftly-style hero illustrations showing actual product UI
+  // (kanban cards, glass containers, dashboard widgets, input fields).
+  // No loopUrl — the gallery card displays the static keyframe image.
+
+  {
+    id: 'med-spa',
+    title: 'Soren Aesthetics',
+    subtitle: 'Med Spa & Wellness Clinic',
+    category: 'Healthcare',
+    brandName: 'Soren',
+    description:
+      'A luxury medical spa offering personalized aesthetic treatments — botox, laser therapy, microneedling — administered by board-certified specialists in Los Angeles.',
+    toneId: 'luxurious',
+    pages: ['features', 'pricing', 'team', 'contact'],
+    gradient: ['#f5e6e8', '#c9a584'],
+    previewUrl: '/templates/med-spa.jpg',
+  },
+  {
+    id: 'real-estate',
+    title: 'Thornhill Group',
+    subtitle: 'Real Estate Brokerage',
+    category: 'Real Estate',
+    brandName: 'Thornhill',
+    description:
+      'A boutique real estate brokerage specializing in Brooklyn brownstones and Manhattan lofts. 24 agents, $2B+ in sales, community-rooted since 2003.',
+    toneId: 'editorial',
+    pages: ['features', 'team', 'case-studies', 'contact'],
+    gradient: ['#1a1812', '#c9a574'],
+    previewUrl: '/templates/real-estate.jpg',
+  },
+  {
+    id: 'project-mgmt',
+    title: 'Polaris',
+    subtitle: 'Team Project Management',
+    category: 'Productivity SaaS',
+    brandName: 'Polaris',
+    description:
+      'One workspace for projects, files, conversations and milestones. Built for teams of 5–50 who need clarity without overhead.',
+    toneId: 'minimal',
+    pages: ['features', 'pricing', 'testimonials', 'faq'],
+    gradient: ['#fafafb', '#5b6cf0'],
+    previewUrl: '/templates/project-mgmt.jpg',
+  },
+  {
+    id: 'analytics-saas',
+    title: 'Mira',
+    subtitle: 'Product Analytics',
+    category: 'Analytics SaaS',
+    brandName: 'Mira',
+    description:
+      "Real-time product analytics for product teams who don't have time to dig. See what's working — right now.",
+    toneId: 'technical',
+    pages: ['features', 'pricing', 'testimonials', 'faq'],
+    gradient: ['#0a0a14', '#22d3ee'],
+    previewUrl: '/templates/analytics-saas.jpg',
+  },
+  {
+    id: 'boutique-hotel',
+    title: 'Vesper',
+    subtitle: 'Boutique Hotel',
+    category: 'Hospitality',
+    brandName: 'Vesper',
+    description:
+      'A 14-room boutique hotel on the Amalfi coast. Hand-tiled bathrooms, sea-facing terraces, an honor bar, no televisions.',
+    toneId: 'luxurious',
+    pages: ['features', 'team', 'testimonials', 'contact'],
+    gradient: ['#e8d5b8', '#2c5b7a'],
+    previewUrl: '/templates/boutique-hotel.jpg',
+  },
+  {
+    id: 'productivity-app',
+    title: 'Apex',
+    subtitle: 'Personal Productivity App',
+    category: 'Application',
+    brandName: 'Apex',
+    description:
+      'A personal task and project tracker. Daily focus blocks, weekly reviews, year-long goals — in one calm app.',
+    toneId: 'minimal',
+    pages: ['features', 'pricing', 'testimonials'],
+    gradient: ['#f5f0e8', '#5d7c5e'],
+    previewUrl: '/templates/productivity-app.jpg',
+  },
 ];
