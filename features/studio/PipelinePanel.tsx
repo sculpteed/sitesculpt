@@ -9,6 +9,7 @@ const LABELS: Record<StepName, { title: string; hint: string }> = {
   expandPrompt: { title: 'Scene brief', hint: 'Expanding your brief into a scene' },
   composeSite: { title: 'Copy + sections', hint: 'Writing hero copy and structure' },
   generateImage: { title: 'Hero image', hint: 'Rendering your hero visual' },
+  compositeAssets: { title: 'Brand pass', hint: 'Compositing your brand into the scene' },
   generateVideo: { title: 'Motion', hint: 'Synthesising the motion loop' },
   extractFrames: { title: 'Frames', hint: 'Extracting frames for scroll playback' },
 };

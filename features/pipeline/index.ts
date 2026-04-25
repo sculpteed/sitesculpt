@@ -21,6 +21,7 @@ import type {
 import { expandPrompt } from './steps/expandPrompt';
 import { composeSite } from './steps/composeSite';
 import { generateImage } from './steps/generateImage';
+import { compositeAssets } from './steps/compositeAssets';
 import { generateVideo } from './steps/generateVideo';
 import { extractFrames } from './steps/extractFrames';
 import { runChecks, type CheckResult } from './quality/checks';
@@ -116,6 +117,26 @@ export async function runPipeline(
 
     const [site] = await Promise.all([composeSitePromise, generateImagePromise]);
 
+    // ─── Step 3.5: compositeAssets (opt-in) ─────────────────────────────────
+    // When the user supplied brand assets (logo, product photos), composite
+    // them onto the keyframe BEFORE the video runs so the motion model
+    // animates the branded version. Skipped entirely when no assets — zero
+    // regression on the default path.
+    const assets = input.brandAssets ?? [];
+    if (assets.length > 0) {
+      await runStepIfMissing({
+        step: 'compositeAssets',
+        projectId,
+        sentinel: 'composite-applied.flag',
+        status,
+        emit,
+        run: () => compositeAssets({ projectId, assets }),
+      });
+    } else {
+      // No assets — mark done immediately so SSE clients see a clean step list.
+      await emit('compositeAssets', { state: 'done', message: 'skipped (no brand assets)' });
+    }
+
     // ─── Step 4 + 5: generateVideo + extractFrames ─────────────────────────
     // Cinematic scroll motion is the product's core promise, so video is ON
     // by default. Callers that want to skip it (smoke tests, cheap retries)
@@ -184,6 +205,7 @@ function findRunningStep(status: ProjectStatus): StepName | undefined {
     'expandPrompt',
     'composeSite',
     'generateImage',
+    'compositeAssets',
     'generateVideo',
     'extractFrames',
   ];

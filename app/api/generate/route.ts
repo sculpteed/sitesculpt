@@ -11,9 +11,18 @@ export const runtime = 'nodejs';
 export const maxDuration = 60;
 export const dynamic = 'force-dynamic';
 
+const brandAssetSchema = z.object({
+  url: z.string().url(),
+  kind: z.enum(['logo', 'product', 'reference']),
+  placement: z.string().max(200).optional(),
+});
+
 const bodySchema = z.object({
   prompt: z.string().min(3).max(2000),
   aspect: z.enum(['16:9', '9:16', '1:1']),
+  // Cap at 3 — matches the compositor's MAX_ASSETS so anything beyond is
+  // silently dropped at the provider boundary anyway.
+  brandAssets: z.array(brandAssetSchema).max(3).optional(),
 });
 
 /**
