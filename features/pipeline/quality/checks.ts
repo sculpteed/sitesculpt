@@ -62,15 +62,21 @@ const PROVIDER_LEAKS: string[] = [
   'ffmpeg',
 ];
 
-// Layouts that MUST have items[] populated to render meaningfully.
-const LAYOUTS_REQUIRING_ITEMS: SectionLayout[] = [
-  'feature-grid',
-  'stat-grid',
-  'quote',
-  'numbered-steps',
-  'faq-accordion',
-  'logo-strip',
-];
+// Layouts that MUST have items[] populated to render meaningfully, with
+// the minimum item count for each. Below the floor the section renders
+// thin and reads as broken / placeholder. The pipeline retries the gen
+// once when this fails.
+const LAYOUT_ITEM_FLOORS: Partial<Record<SectionLayout, number>> = {
+  'feature-grid': 3,        // bento needs hero + at least 2 in the rest grid
+  'stat-grid': 3,           // 4-col grid reads sparse with <3
+  'quote': 1,               // attribution
+  'numbered-steps': 3,      // process implies multi-step
+  'faq-accordion': 3,       // <3 reads incomplete
+  'logo-strip': 6,          // marquee needs density; grid alt minimum 4 still ok
+  'pricing-tiers': 2,       // single-tier sites are rare
+  'team-grid': 2,           // solo founder uses feature-grid instead
+  'testimonial-wall': 2,    // single testimonial uses 'quote' layout
+};
 
 export function runChecks(scene: Scene, site: SiteStructure): CheckResult[] {
   return [
@@ -188,11 +194,13 @@ function checkSectionVariety(site: SiteStructure): CheckResult {
 function checkLayoutItemsPopulated(site: SiteStructure): CheckResult {
   const offenders: string[] = [];
   for (const s of site.sections) {
-    if (LAYOUTS_REQUIRING_ITEMS.includes(s.layout)) {
-      const count = s.items?.length ?? 0;
-      if (count === 0) {
-        offenders.push(`${s.layout}("${s.title.slice(0, 20)}")`);
-      }
+    const floor = LAYOUT_ITEM_FLOORS[s.layout];
+    if (floor === undefined) continue;
+    const count = s.items?.length ?? 0;
+    if (count < floor) {
+      offenders.push(
+        `${s.layout}("${s.title.slice(0, 20)}"): ${count}/${floor}`,
+      );
     }
   }
   if (offenders.length > 0) {
@@ -200,7 +208,7 @@ function checkLayoutItemsPopulated(site: SiteStructure): CheckResult {
       name: 'layouts have items',
       pass: false,
       severity: 'error',
-      message: `missing items: ${offenders.join(', ')}`,
+      message: `below item floor: ${offenders.join(', ')}`,
     };
   }
   return { name: 'layouts have items', pass: true, severity: 'error' };
