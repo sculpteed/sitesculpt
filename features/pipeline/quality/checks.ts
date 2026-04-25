@@ -9,16 +9,45 @@ export interface CheckResult {
 
 const HEX_RE = /^#[0-9a-fA-F]{6}$/;
 
-// Words that are cliché / generic marketing slop — rejecting these as the
-// SOLE content of a field catches the "Welcome to X" / "Learn more" pattern.
+// AI-slop / generic-marketing patterns. Anchored so they catch the offending
+// phrase as the START of a field (or as the whole field) — avoids false
+// positives where a buzzword appears mid-sentence in legit copy.
+//
+// The system prompt explicitly bans most of these by name; this gate
+// enforces it post-generation so they trigger a retry instead of shipping.
 const GENERIC_PATTERNS: RegExp[] = [
+  // Filler openers
   /^welcome to\b/i,
   /^lorem ipsum/i,
+  // Generic CTAs
   /^click here\b/i,
   /^learn more\.?$/i,
   /^get started\.?$/i,
   /^sign up (now|today)\.?$/i,
-  /^the best .* in the world/i,
+  /^read more\.?$/i,
+  /^find out more\.?$/i,
+  /^discover more\.?$/i,
+  // Hyperbole openers
+  /^the (best|ultimate|leading|#1) /i,
+  /^your (one[- ]stop|ultimate|all[- ]in[- ]one) /i,
+  /^the (future|next[- ]generation) of /i,
+  // Marketing verb-stacking
+  /^revolutioniz(e|ing) /i,
+  /^transform your /i,
+  /^elevate your /i,
+  /^supercharge your /i,
+  /^empower (your|every|teams|customers|users) /i,
+  /^unlock (your|the|new) /i,
+  // Generic value props
+  /\bworld[- ]class\b/i,
+  /\bcutting[- ]edge\b/i,
+  /\bbest[- ]in[- ]class\b/i,
+  /\bindustry[- ]leading\b/i,
+  /\bnext[- ]level\b/i,
+  /\bseamless(ly)?\b/i,
+  // Buzzword stacking — three+ vague abstract nouns in close range
+  /\bsolutions?\s+(for|that)\s+(every|all)\b/i,
+  /^the .* (platform|solution|engine) for /i,
 ];
 
 // Strings that should never appear in user-facing output (provider leaks).
@@ -51,6 +80,7 @@ export function runChecks(scene: Scene, site: SiteStructure): CheckResult[] {
     checkSectionCount(site),
     checkLayoutVariety(site),
     checkLayoutItemsPopulated(site),
+    checkSectionVariety(site),
     checkNoGenericCopy(site),
     checkNoProviderLeaks(scene, site),
     checkPaletteValidHex(scene),
@@ -102,12 +132,13 @@ function checkBrandName(site: SiteStructure): CheckResult {
 
 function checkSectionCount(site: SiteStructure): CheckResult {
   const n = site.sections.length;
-  if (n < 5 || n > 10) {
+  // Draftly-style: short, focused. 5–8 is the sweet spot. >8 reads padded.
+  if (n < 5 || n > 8) {
     return {
       name: 'section count',
       pass: false,
       severity: 'error',
-      message: `${n} sections, want 5–10`,
+      message: `${n} sections, want 5–8`,
     };
   }
   return { name: 'section count', pass: true, severity: 'error' };
@@ -129,6 +160,29 @@ function checkLayoutVariety(site: SiteStructure): CheckResult {
     severity: 'error',
     message: `${unique.size} unique`,
   };
+}
+
+function checkSectionVariety(site: SiteStructure): CheckResult {
+  // No two adjacent sections may use the same layout. Prevents the "two
+  // feature-grids back-to-back" / "stat-grid then another stat-grid" slop
+  // that makes generated sites read as templated.
+  const offenders: string[] = [];
+  for (let i = 1; i < site.sections.length; i += 1) {
+    const prev = site.sections[i - 1];
+    const cur = site.sections[i];
+    if (prev && cur && prev.layout === cur.layout) {
+      offenders.push(`${i - 1}+${i}: ${cur.layout}`);
+    }
+  }
+  if (offenders.length > 0) {
+    return {
+      name: 'section variety',
+      pass: false,
+      severity: 'error',
+      message: `adjacent same-layout: ${offenders.join(', ')}`,
+    };
+  }
+  return { name: 'section variety', pass: true, severity: 'error' };
 }
 
 function checkLayoutItemsPopulated(site: SiteStructure): CheckResult {
@@ -153,6 +207,9 @@ function checkLayoutItemsPopulated(site: SiteStructure): CheckResult {
 }
 
 function checkNoGenericCopy(site: SiteStructure): CheckResult {
+  // Promoted to error severity so generic SaaS slop forces a retry instead
+  // of shipping. The system prompt teaches voice-first copy; this gate
+  // makes sure the model actually obeys.
   const fields: string[] = [
     site.hero.headline,
     site.hero.subheadline,
@@ -168,13 +225,13 @@ function checkNoGenericCopy(site: SiteStructure): CheckResult {
         return {
           name: 'no generic copy',
           pass: false,
-          severity: 'warn',
+          severity: 'error',
           message: `generic phrase: "${trimmed.slice(0, 40)}"`,
         };
       }
     }
   }
-  return { name: 'no generic copy', pass: true, severity: 'warn' };
+  return { name: 'no generic copy', pass: true, severity: 'error' };
 }
 
 function checkNoProviderLeaks(scene: Scene, site: SiteStructure): CheckResult {

@@ -125,7 +125,7 @@ Vary:
 - The NUMBER of items per section (3 features vs 6 reads differently)
 - The TONE of titles (declaratives vs questions vs single words)
 
-Ship 5–9 sections. Fewer, sharper is better than longer, padded.
+Ship 5–8 sections. Fewer, sharper is better than longer, padded. NEVER place two sections with the same layout adjacent to each other — vary the rhythm.
 
 ## COPY SPECIFICS
 
