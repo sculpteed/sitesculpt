@@ -7,8 +7,19 @@ export type StepName =
   | 'expandPrompt'
   | 'composeSite'
   | 'generateImage'
+  | 'compositeAssets'
   | 'generateVideo'
   | 'extractFrames';
+
+/** A user-supplied brand asset composited onto the keyframe. */
+export interface BrandAsset {
+  /** Public URL the image generator can fetch — Vercel Blob, https://, or data: URI. */
+  url: string;
+  /** What it is — drives the default compositing instruction. */
+  kind: 'logo' | 'product' | 'reference';
+  /** Optional free-text placement override, e.g. "lower-right, ~12% of frame width". */
+  placement?: string;
+}
 
 export interface Progress {
   state: 'pending' | 'running' | 'done' | 'error';

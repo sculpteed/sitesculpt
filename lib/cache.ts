@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import type { Progress, StepName } from '@/features/pipeline/types';
+import type { BrandAsset, Progress, StepName } from '@/features/pipeline/types';
 
 // ─── Dual-mode storage ──────────────────────────────────────────────────────
 // Uses Vercel Blob when BLOB_READ_WRITE_TOKEN is set (production + preview),
@@ -22,6 +22,8 @@ export interface GenerateInput {
   prompt: string;
   aspect: '16:9' | '9:16' | '1:1';
   variationSeed?: string;
+  /** Brand assets composited onto the keyframe before video generation. */
+  brandAssets?: BrandAsset[];
 }
 
 export function hashInput(input: GenerateInput): string {
@@ -29,6 +31,14 @@ export function hashInput(input: GenerateInput): string {
     prompt: input.prompt.trim().toLowerCase(),
     aspect: input.aspect,
     seed: input.variationSeed ?? '',
+    // Asset URLs participate in the cache key so swapping a logo invalidates
+    // the prior keyframe. Placement/kind affect the composite instruction so
+    // they belong here too.
+    assets: (input.brandAssets ?? []).map((a) => ({
+      u: a.url,
+      k: a.kind,
+      p: a.placement ?? '',
+    })),
   });
   return createHash('sha256').update(normalized).digest('hex').slice(0, 16);
 }
@@ -198,6 +208,7 @@ export function initialStatus(projectId: string, input: GenerateInput): ProjectS
       expandPrompt: { state: 'pending' },
       composeSite: { state: 'pending' },
       generateImage: { state: 'pending' },
+      compositeAssets: { state: 'pending' },
       generateVideo: { state: 'pending' },
       extractFrames: { state: 'pending' },
     },

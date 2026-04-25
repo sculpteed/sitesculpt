@@ -8,6 +8,7 @@ export const STEP_ORDER: readonly StepName[] = [
   'expandPrompt',
   'composeSite',
   'generateImage',
+  'compositeAssets',
   'generateVideo',
   'extractFrames',
 ] as const;
