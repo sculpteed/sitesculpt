@@ -188,7 +188,7 @@ function FeatureGridLayout({ label, title, body, items = [] }: SectionProps) {
   const heroFeature = items[0];
   const restFeatures = items.slice(1);
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <SectionEyebrow>{label}</SectionEyebrow>
         <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-end">
@@ -270,7 +270,7 @@ function SplitImageLayout({ label, title, body, cta }: SectionProps) {
 
 function StatGridLayout({ label, title, body, items = [] }: SectionProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <SectionEyebrow>{label}</SectionEyebrow>
         <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
@@ -318,7 +318,7 @@ function QuoteLayout({ body, items = [] }: SectionProps) {
 
 function NumberedStepsLayout({ label, title, body, items = [] }: SectionProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <SectionEyebrow>{label}</SectionEyebrow>
         <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
@@ -349,7 +349,7 @@ function NumberedStepsLayout({ label, title, body, items = [] }: SectionProps) {
 
 function FaqLayout({ label, title, body, items = [] }: SectionProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <div className="grid gap-12 md:grid-cols-[1fr_1.4fr]">
         <Reveal>
           <SectionEyebrow>{label}</SectionEyebrow>
@@ -415,7 +415,7 @@ function PricingTiersLayout({ label, title, body, items = [] }: SectionProps) {
         ? 'md:grid-cols-2'
         : 'md:grid-cols-3';
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <div className="mx-auto max-w-2xl text-center">
           <SectionEyebrow>
@@ -492,7 +492,7 @@ function TeamGridLayout({ label, title, body, items = [] }: SectionProps) {
   // Real photos when provided; otherwise oversized serif initials as the
   // identity mark.
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <SectionEyebrow>{label}</SectionEyebrow>
         <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
@@ -544,7 +544,7 @@ function TeamGridLayout({ label, title, body, items = [] }: SectionProps) {
 
 function TestimonialWallLayout({ label, title, body, items = [] }: SectionProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <SectionEyebrow>{label}</SectionEyebrow>
         <DisplayHeading>{italicizeLast(title)}</DisplayHeading>
@@ -575,7 +575,7 @@ function TestimonialWallLayout({ label, title, body, items = [] }: SectionProps)
 
 function ContactBlockLayout({ label, title, body, items = [] }: SectionProps) {
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <div className="grid gap-16 md:grid-cols-2 md:items-end">
         <Reveal>
           <SectionEyebrow>{label}</SectionEyebrow>

@@ -113,9 +113,22 @@ async function renderPageTsx(args: {
   const template = await fs.readFile(path.join(TEMPLATE_DIR, 'app', 'page.tsx'), 'utf8');
   const siteJson = JSON.stringify(args.site, null, 2);
   const paletteJson = JSON.stringify(args.scene.palette, null, 2);
+  // Default to balanced if expandPrompt didn't emit a style block (older
+  // generations or legacy briefs). The renderer falls back to balanced too.
+  const styleJson = JSON.stringify(
+    args.scene.style ?? {
+      heroLayout: 'centered',
+      typography: 'editorial',
+      accentUsage: 'text',
+      density: 'balanced',
+    },
+    null,
+    2,
+  );
   return template
     .replace(/__SITE_JSON__/g, siteJson)
     .replace(/__PALETTE_JSON__/g, paletteJson)
+    .replace(/__STYLE_JSON__/g, styleJson)
     .replace(/__FRAME_COUNT__/g, String(args.frameCount));
 }
 

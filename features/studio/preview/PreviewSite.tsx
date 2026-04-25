@@ -29,6 +29,18 @@ export function PreviewSite({
   editable = false,
 }: PreviewSiteProps) {
   const palette = scene.palette;
+  const density = scene.style?.density ?? 'balanced';
+
+  // Section vertical padding scales with the brief's density token. Sections
+  // read --sec-y-sm / --sec-y-md via Tailwind arbitrary values; defaults
+  // (6rem/8rem) match historical balanced behavior so legacy generations
+  // without scene.style render identically.
+  const densityVars: Record<string, string> =
+    density === 'spacious'
+      ? { '--sec-y-sm': '8rem', '--sec-y-md': '11rem' }
+      : density === 'compact'
+        ? { '--sec-y-sm': '4rem', '--sec-y-md': '6rem' }
+        : { '--sec-y-sm': '6rem', '--sec-y-md': '8rem' };
 
   const tokens: CSSProperties = {
     '--color-background': palette.background,
@@ -46,6 +58,7 @@ export function PreviewSite({
     '--color-input': `color-mix(in oklab, ${palette.foreground} 12%, transparent)`,
     '--color-ring': palette.accent,
     '--color-border': `color-mix(in oklab, ${palette.foreground} 10%, transparent)`,
+    ...densityVars,
     backgroundColor: palette.background,
     color: palette.foreground,
     fontFamily: 'var(--font-sans), -apple-system, BlinkMacSystemFont, "Inter", sans-serif',

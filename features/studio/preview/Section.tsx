@@ -192,7 +192,7 @@ function FeatureGridLayout(props: SectionProps) {
   const heroFeature = items[0];
   const restFeatures = items.slice(1);
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <ELabel props={props} />
         <div className="grid gap-12 md:grid-cols-[1fr_1.4fr] md:items-end">
@@ -270,7 +270,7 @@ function SplitImageLayout(props: SectionProps) {
 function StatGridLayout(props: SectionProps) {
   const { title, body, items = [] } = props;
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <ELabel props={props} />
         <EHeading title={title} props={props} />
@@ -330,7 +330,7 @@ function QuoteLayout(props: SectionProps) {
 function NumberedStepsLayout(props: SectionProps) {
   const { title, body, items = [] } = props;
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <ELabel props={props} />
         <EHeading title={title} props={props} />
@@ -360,7 +360,7 @@ function NumberedStepsLayout(props: SectionProps) {
 function FaqLayout(props: SectionProps) {
   const { title, body, items = [] } = props;
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <div className="grid gap-12 md:grid-cols-[1fr_1.4fr]">
         <Reveal>
           <ELabel props={props} />
@@ -418,7 +418,7 @@ function PricingTiersLayout(props: SectionProps) {
     items.length === 1 ? 'md:grid-cols-1' :
     items.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3';
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <div className="mx-auto max-w-2xl text-center">
           <SectionEyebrow>
@@ -483,7 +483,7 @@ function PricingTiersLayout(props: SectionProps) {
 function TeamGridLayout(props: SectionProps) {
   const { title, body, items = [] } = props;
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <ELabel props={props} />
         <EHeading title={title} props={props} />
@@ -531,7 +531,7 @@ function TeamGridLayout(props: SectionProps) {
 function TestimonialWallLayout(props: SectionProps) {
   const { title, body, items = [] } = props;
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <Reveal>
         <ELabel props={props} />
         <EHeading title={title} props={props} />
@@ -563,7 +563,7 @@ function TestimonialWallLayout(props: SectionProps) {
 function ContactBlockLayout(props: SectionProps) {
   const { title, body, items = [] } = props;
   return (
-    <section className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+    <section className="mx-auto max-w-6xl px-6 py-[var(--sec-y-sm,6rem)] md:py-[var(--sec-y-md,8rem)]">
       <div className="grid gap-16 md:grid-cols-2 md:items-end">
         <Reveal>
           <ELabel props={props} />
