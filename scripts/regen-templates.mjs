@@ -18,14 +18,26 @@ import path from 'node:path';
 
 fal.config({ credentials: process.env.FAL_API_KEY });
 
-const PORT = 3003;
+const PORT = Number(process.env.SITESCULPT_DEV_PORT ?? 3000);
 const BASE_URL = `http://localhost:${PORT}`;
 const BG_DIR = 'public/templates/bg';
 const OUT_DIR = 'public/templates';
 
 async function loadConfigs() {
-  // All 9 non-cinematic templates
-  return [
+  // CLI: pass ids explicitly ("npm run regen-templates -- restaurant-site
+  // dental-site"), or "all" for everything. With no args, default to the
+  // website-theme-only set so a default run regenerates the recently-added
+  // templates without touching the older 9.
+  const args = process.argv.slice(2);
+  const WEBSITE_THEMES = [
+    'restaurant-site',
+    'dental-site',
+    'law-firm-site',
+    'online-academy-site',
+    'real-estate-site',
+    'dev-tool-site',
+  ];
+  const ATMOSPHERIC = [
     'saas-landing',
     'creative-agency',
     'app-landing',
@@ -36,6 +48,9 @@ async function loadConfigs() {
     'nonprofit',
     'space-research',
   ];
+  if (args.length === 0) return WEBSITE_THEMES;
+  if (args.length === 1 && args[0] === 'all') return [...ATMOSPHERIC, ...WEBSITE_THEMES];
+  return args;
 }
 
 // Import config via a small fetch to our own dev server — simplest way
